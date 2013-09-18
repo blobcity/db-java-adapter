@@ -905,11 +905,15 @@ public abstract class BlobCityCloudStorage {
                 }
                 p.getWriteMethod().invoke(this, l);
 
-            } else {
+            } else if (field.getType() == List.class && "".equals(value)) {
+                // Since the type required is List and the data is empty, value was an empty String a new ArrayList is to be given
+                p.getWriteMethod().invoke(this, new ArrayList());
+            }
+            else {
                 p.getWriteMethod().invoke(this, value);
             }
         } catch (Exception ex) {
-            Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex + "-" +field.getName() + " couldn't be set");
+            Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, "{0} couldn''t be set. Field Type was {1} but got {2}", new Object[]{field.getName(), field.getType(), value.getClass().getCanonicalName()});
         } 
     }
 
