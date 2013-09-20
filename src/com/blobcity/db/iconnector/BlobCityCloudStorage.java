@@ -573,20 +573,24 @@ public abstract class BlobCityCloudStorage {
             switch (queryType) {
                 case SELECT:
                     if (jsonResponseObject.getInt("ack") == 0) {
+                        if(jsonResponseObject.getString("cause") != null){
+                            throw new OperationFailed(jsonResponseObject.getString("cause"));
+                        }
 
-                        throw new OperationFailed("Load with a null or empty PrimayKey is not yet supported");
+                        
                     } else if (jsonResponseObject.getInt("ack") == 1) {
 
                         //if the save is successful, and the payload is retrieved, set it back to the object
                         if (jsonResponseObject.has("p")) {
                             jsonPayloadResponseObject = jsonResponseObject.getJSONObject("p");
                             setResponse(jsonPayloadResponseObject);
+                            return true;
                         }
                         else{//TODO: no payload found
-                            
+                            return false;
                             
                         }
-                        return true;
+                        
                     }
                     break;
 
