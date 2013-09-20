@@ -707,7 +707,6 @@ public abstract class BlobCityCloudStorage {
             }
             wr.close();
             rd.close();
-            return true;
         } catch (JSONException ex) {
             Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
 
