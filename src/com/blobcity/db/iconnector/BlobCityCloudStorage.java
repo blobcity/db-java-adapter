@@ -556,7 +556,7 @@ public abstract class BlobCityCloudStorage {
 
             /* Send request */
             ////System.out.println("====================Request to the db : " + blobCityPostRequest);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 
             /* Receive response */
             responseString = rd.readLine();
