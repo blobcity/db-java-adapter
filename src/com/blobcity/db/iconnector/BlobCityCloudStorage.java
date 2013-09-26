@@ -14,11 +14,11 @@ import com.blobcity.db.fieldannotations.Primary;
 import com.blobcity.db.constants.CustomAnnotations;
 import com.blobcity.db.constants.JSONConstants;
 import com.blobcity.db.constants.QueryType;
+import com.blobcity.db.credentials.AppCredentials;
 import com.blobcity.db.exceptions.InvalidCredentialsException;
 import com.blobcity.db.exceptions.InvalidEntityException;
 import com.blobcity.db.exceptions.InvalidColumnFormatException;
 import com.blobcity.db.exceptions.InvalidFieldException;
-import com.blobcity.db.exceptions.NoPrimaryKeySpecifiedException;
 import com.blobcity.db.exceptions.OperationFailed;
 import com.blobcity.db.exceptions.RecordExistsException;
 import com.blobcity.db.fieldannotations.AutoDefine;
@@ -84,6 +84,9 @@ public abstract class BlobCityCloudStorage {
     }
 
     public BlobCityCloudStorage() {
+        account = AppCredentials.getInstance().getAccount();
+        user = AppCredentials.getInstance().getUser();
+        token = AppCredentials.getInstance().getToken();
     }
 
     /**
@@ -556,7 +559,7 @@ public abstract class BlobCityCloudStorage {
 
             /* Send request */
             ////System.out.println("====================Request to the db : " + blobCityPostRequest);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 
             /* Receive response */
             responseString = rd.readLine();
