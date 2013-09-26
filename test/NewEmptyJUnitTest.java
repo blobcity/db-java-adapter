@@ -3,18 +3,11 @@
  * and open the template in the editor.
  */
 
-import com.blobcity.db.exceptions.InvalidCredentialsException;
-import com.blobcity.db.exceptions.InvalidEntityException;
-import com.blobcity.db.exceptions.InvalidFieldException;
-import com.blobcity.db.exceptions.OperationFailed;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -47,18 +40,7 @@ public class NewEmptyJUnitTest {
 
     @Test
     public void select_all() {
-        SamplePOJO_3 p3 = new SamplePOJO_3();
-        
-        try {
-            assertEquals(p3.selectAll(), true);
-        } catch (InvalidCredentialsException ex) {
-            Logger.getLogger(NewEmptyJUnitTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidEntityException ex) {
-            Logger.getLogger(NewEmptyJUnitTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidFieldException ex) {
-            Logger.getLogger(NewEmptyJUnitTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (OperationFailed ex) {
-            Logger.getLogger(NewEmptyJUnitTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        TestPojo testPojo = TestPojo.newInstance("something");
+        assert testPojo.getId().equals("something");
     }
 }
