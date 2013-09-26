@@ -558,12 +558,12 @@ public abstract class BlobCityCloudStorage {
             wr.flush();
 
             /* Send request */
-            System.out.println("====================Request to the db : " + blobCityPostRequest);
+            ////System.out.println("====================Request to the db : " + blobCityPostRequest);
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
             /* Receive response */
             responseString = rd.readLine();
-            System.out.println("===================Response from db : " + responseString);
+            ////System.out.println("===================Response from db : " + responseString);
 
             if (responseString.equals("null")) {
                 throw new OperationFailed("Connection Lost");
