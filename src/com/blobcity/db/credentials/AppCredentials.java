@@ -9,9 +9,9 @@ package com.blobcity.db.credentials;
  * @author Sanket Sarang <sanket@blobcity.net>
  */
 public class AppCredentials {
-    private String account;
-    private String user;
-    private String token;
+    private String account ="";
+    private String user = "";
+    private String token = "";
     
     private boolean set = false;
 
