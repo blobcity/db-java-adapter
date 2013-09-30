@@ -14,11 +14,11 @@ import com.blobcity.db.fieldannotations.Primary;
 import com.blobcity.db.constants.CustomAnnotations;
 import com.blobcity.db.constants.JSONConstants;
 import com.blobcity.db.constants.QueryType;
+import com.blobcity.db.credentials.AppCredentials;
 import com.blobcity.db.exceptions.InvalidCredentialsException;
 import com.blobcity.db.exceptions.InvalidEntityException;
 import com.blobcity.db.exceptions.InvalidColumnFormatException;
 import com.blobcity.db.exceptions.InvalidFieldException;
-import com.blobcity.db.exceptions.NoPrimaryKeySpecifiedException;
 import com.blobcity.db.exceptions.OperationFailed;
 import com.blobcity.db.exceptions.RecordExistsException;
 import com.blobcity.db.fieldannotations.AutoDefine;
@@ -84,6 +84,9 @@ public abstract class BlobCityCloudStorage {
     }
 
     public BlobCityCloudStorage() {
+        account = AppCredentials.getInstance().getAccount();
+        user = AppCredentials.getInstance().getUser();
+        token = AppCredentials.getInstance().getToken();
     }
 
     /**
@@ -556,7 +559,7 @@ public abstract class BlobCityCloudStorage {
 
             /* Send request */
             ////System.out.println("====================Request to the db : " + blobCityPostRequest);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 
             /* Receive response */
             responseString = rd.readLine();
@@ -573,20 +576,24 @@ public abstract class BlobCityCloudStorage {
             switch (queryType) {
                 case SELECT:
                     if (jsonResponseObject.getInt("ack") == 0) {
+                        if(jsonResponseObject.getString("cause") != null){
+                            throw new OperationFailed(jsonResponseObject.getString("cause"));
+                        }
 
-                        throw new OperationFailed("Load with a null or empty PrimayKey is not yet supported");
+                        
                     } else if (jsonResponseObject.getInt("ack") == 1) {
 
                         //if the save is successful, and the payload is retrieved, set it back to the object
                         if (jsonResponseObject.has("p")) {
                             jsonPayloadResponseObject = jsonResponseObject.getJSONObject("p");
                             setResponse(jsonPayloadResponseObject);
+                            return true;
                         }
                         else{//TODO: no payload found
-                            
+                            return false;
                             
                         }
-                        return true;
+                        
                     }
                     break;
 
@@ -707,7 +714,6 @@ public abstract class BlobCityCloudStorage {
             }
             wr.close();
             rd.close();
-            return true;
         } catch (JSONException ex) {
             Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
 
