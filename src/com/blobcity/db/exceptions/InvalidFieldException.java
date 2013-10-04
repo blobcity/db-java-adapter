@@ -9,7 +9,16 @@ package com.blobcity.db.exceptions;
  * @author sanketsarang
  */
 public class InvalidFieldException extends Exception {
-    public InvalidFieldException(String message){
+
+    public InvalidFieldException(String message) {
         super(message);
+    }
+
+    public InvalidFieldException(Throwable cause) {
+        super(cause);
+    }
+
+    public InvalidFieldException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
