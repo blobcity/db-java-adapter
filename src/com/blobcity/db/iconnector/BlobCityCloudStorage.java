@@ -35,6 +35,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -49,8 +51,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * This class provides the connection and query execution framework for performing operations on the BlobCity data store. This class must be extended by any
- * POJO that represents a BlobCity Entity.
+ * This class provides the connection and query execution framework for
+ * performing operations on the BlobCity data store. This class must be extended
+ * by any POJO that represents a BlobCity Entity.
  *
  * @author sanketsarang
  * @author Karishma
@@ -492,6 +495,8 @@ public abstract class BlobCityCloudStorage {
             return "VARCHAR";
         } else if (field.getType() == String.class) {
             return "VARCHAR";
+        } else if (field.getType() == BigDecimal.class) {
+            return "VARCHAR";
         } else if ((field.getType() == List.class) || (field.getType() == ArrayList.class)) {
             ParameterizedType pt = (ParameterizedType) field.getGenericType();
             if (pt.getActualTypeArguments()[0] == String.class) {
@@ -837,6 +842,7 @@ public abstract class BlobCityCloudStorage {
             PropertyDescriptor p = new PropertyDescriptor(field.getName(), this.getClass());
             value = p.getReadMethod().invoke(this);
 
+
             //if(value.getClass().getAnnotations())
             /* Get the value associated with the field */
             value = value == null ? "" : value;
@@ -889,6 +895,12 @@ public abstract class BlobCityCloudStorage {
             } else if (field.getType() == List.class && "".equals(value)) {
                 // Since the type required is List and the data is empty, value was an empty String a new ArrayList is to be given
                 p.getWriteMethod().invoke(this, new ArrayList());
+            } else if (field.getType() == BigDecimal.class) {
+                if (!value.toString().isEmpty()) {
+                    p.getWriteMethod().invoke(this, new BigDecimal(value.toString()));
+                } else {
+                    p.getWriteMethod().invoke(this, BigDecimal.ZERO);
+                }
             } else {
                 p.getWriteMethod().invoke(this, value);
             }
