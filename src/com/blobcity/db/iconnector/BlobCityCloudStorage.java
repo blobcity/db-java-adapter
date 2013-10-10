@@ -12,13 +12,13 @@ import com.blobcity.db.fieldannotations.Column;
 import com.blobcity.db.fieldannotations.CompositePrimaryItem;
 import com.blobcity.db.fieldannotations.Primary;
 import com.blobcity.db.constants.CustomAnnotations;
-import com.blobcity.db.constants.JSONConstants;
 import com.blobcity.db.constants.QueryType;
 import com.blobcity.db.credentials.AppCredentials;
 import com.blobcity.db.exceptions.InvalidCredentialsException;
 import com.blobcity.db.exceptions.InvalidEntityException;
 import com.blobcity.db.exceptions.InvalidColumnFormatException;
 import com.blobcity.db.exceptions.InvalidFieldException;
+import com.blobcity.db.exceptions.NoPrimaryKeySpecifiedException;
 import com.blobcity.db.exceptions.OperationFailed;
 import com.blobcity.db.exceptions.RecordExistsException;
 import com.blobcity.db.fieldannotations.AutoDefine;
@@ -31,7 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -395,7 +394,7 @@ public abstract class BlobCityCloudStorage {
                 /*Fetch all fields and process them */
 
                 /* Primary array to hold all the Primary key or Composite Primary keys */
-                JSONArray primaryArray = primaryArray = new JSONArray();
+                JSONArray primaryArray = new JSONArray();
 
                 for (Field field : fieldsList) {
 
@@ -455,12 +454,10 @@ public abstract class BlobCityCloudStorage {
 
                     try {
                         columnValue = this.getFieldValue(field);
-
-
                     } catch (InvocationTargetException ex) {
                         Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (IllegalArgumentException ex) {
-                        throw new InvalidFieldException("Unknown Error");
+                        throw new InvalidFieldException("Unknown Error", ex);
                     } catch (IllegalAccessException ex) {
                         //TODO: Verify whether to display custom exception
                         throw new InvalidFieldException(ex.getMessage());
@@ -525,38 +522,12 @@ public abstract class BlobCityCloudStorage {
         JSONArray arr;
         OutputStreamWriter wr = null;
 
-        String responseString = "";
+        String responseString;
 
         try {
-
-            /* Runtime retrieval of IP */
-//            String urlString = "";
-//            if (mode == BlobCityConnectionMode.SANDBOX) {
-//                urlString = "http://db.blobcity.com/ServerIPs?mode=sandbox&type=db-web-endpoint";
-//            } else if (mode == BlobCityConnectionMode.PRODUCTION) {
-//                urlString = "http://db.blobcity.com/ServerIPs?mode=production&type=db-web-endpoint";
-//            }
-//            URL ipRequestURL = new URL(urlString);
-//            URLConnection connection = ipRequestURL.openConnection();
-//            BufferedReader ipreader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//            String jsonString = ipreader.readLine();
-//
-//            /* JSON Object */
-//            JSONObject obj = new JSONObject(jsonString);
-//            JSONArray ipArray = obj.getJSONArray("ips");
-//            String currentIP = ipArray.getString(0);
-
-            String currentIP = "db2.blobcity.com:8080";
-
-            //String currentIP = "123.238.35.180";
-            //String currentIP = "182.72.4.203";
-            //String currentIP = "localhost";
-
-            // String currentIP = "115.112.185.99";
             /* Prepare URL Request*/
             String data = URLEncoder.encode(blobCityPostRequest, "UTF-8");
-            //URL url = new URL("http://" + currentIP + "/BlobCityDbWeb/BQueryExecuter");
-            URL url = new URL("http://" + currentIP + "/BQueryExecuter");
+            URL url = new URL("http://db2.blobcity.com:8080/BQueryExecuter");
 
             /* Open URL connection */
             URLConnection conn = url.openConnection();
@@ -584,11 +555,10 @@ public abstract class BlobCityCloudStorage {
             switch (queryType) {
                 case SELECT:
                     if (jsonResponseObject.getInt("ack") == 0) {
-                        if (jsonResponseObject.getString("cause") != null) {
+                        if (jsonResponseObject.has("cause") && jsonResponseObject.getString("cause") != null) {
                             throw new OperationFailed(jsonResponseObject.getString("cause"));
                         }
-
-
+                        throw new OperationFailed("Query failed for unknown reasons.");
                     } else if (jsonResponseObject.getInt("ack") == 1) {
 
                         //if the save is successful, and the payload is retrieved, set it back to the object
@@ -723,17 +693,18 @@ public abstract class BlobCityCloudStorage {
             rd.close();
         } catch (JSONException ex) {
             Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
-
         } catch (FileNotFoundException ex) {
             Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
             throw new OperationFailed("Connection Failed");
         } catch (IOException ex) {
             Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            try {
-                wr.close();
-            } catch (IOException ex) {
-                Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
+            if (wr != null) {
+                try {
+                    wr.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return false;
@@ -815,14 +786,13 @@ public abstract class BlobCityCloudStorage {
         //TODO Karishma: Implement this
         for (Annotation annotaion : field.getAnnotations()) {
             if (annotaion.annotationType().equals(Primary.class)) {
-
                 /* Check for primary not null */
-                Primary primary = (Primary) annotaion;
-
-                if (primary
-                        == null) {
-                    throw new InvalidFieldException("No Primary key defined");
-                }
+                /* This code doesn't make sense.. */
+//                Primary primary = (Primary) annotaion;
+//
+//                if (annotaion == null) {
+//                    throw new InvalidFieldException("No Primary key defined");
+//                }
             } else if (annotaion.annotationType().equals(Column.class)) {
 
                 /* Check for name not null */
@@ -852,8 +822,6 @@ public abstract class BlobCityCloudStorage {
      * @return
      */
     protected static boolean contains(Object pk, Class e) {
-        Class class1 = e;
-        ////System.out.println("Class is : " + e + "\nAnnotations: " + class1.getDeclaredAnnotations().length);
         throw new UnsupportedOperationException("Not yet supported");
     }
 
@@ -872,8 +840,7 @@ public abstract class BlobCityCloudStorage {
 
             /* Retrieve the "getter" associtated with the field */
             PropertyDescriptor p = new PropertyDescriptor(field.getName(), this.getClass());
-            value = p.getReadMethod().invoke(this, null);
-
+            value = p.getReadMethod().invoke(this);
 
 
             //if(value.getClass().getAnnotations())
@@ -955,76 +922,5 @@ public abstract class BlobCityCloudStorage {
      */
     public String toJSONString() {
         return "";
-    }
-
-    //TODO: Karishma  - Testing purpose only
-    private void processDummyresponse() {
-        try {
-
-            // {"ack":"1","p":{"column1":"0","column2":"2"}}
-
-            //{"db":"db1","t":"table1","q":"SELECT","p":{"column1":"abc","column2":"XYZ-3"},"ac":"abcom"}
-            String request = "{\"db\":\"db1\",\"t\":\"table1\",\"q\":\"select\",\"p\":{\"column1\":\"abc\",\"column2\":\"XYZ-3\"},\"ac\":\"abcom\"}";
-
-            BufferedReader rd = new BufferedReader(new InputStreamReader(System.in));
-            while (true) {
-                String responseStr = rd.readLine();
-                ////System.out.println("Response from database ========= " + responseStr);
-
-                //process the response string
-                JSONObject jobject = new JSONObject(responseStr);
-                if (jobject.getInt(JSONConstants.ACK) == 1) {
-                    if (!jobject.getString(JSONConstants.PAYLOAD).isEmpty()) {
-                    }
-                }
-                if (jobject.getInt(JSONConstants.ACK) == 1) {
-                    if (jobject.getString(responseStr) == "") {
-                        //throw a custom exception for no payload found
-                    }
-                }
-                //System.out.println("Arr[0] : " + jobject.getString(JSONConstants.ACK));
-                //System.out.println("Arr[1] : " + jobject.getString(JSONConstants.PAYLOAD));
-            }
-        } catch (JSONException ex) {
-            Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    //TODO: Karishma  - Testing purpose only
-    private String queryBuilderTest() {
-        String blobCityPostRequest = "";
-        String response = "";
-        try {
-            // Construct data
-            blobCityPostRequest = "{\"db\":\"db1\",\"t\":\"table1\",\"q\":\"select\",\"p\":{\"column1\":\"abc\",\"column2\":\"XYZ-3\"},\"ac\":\"abcom\"}";
-
-            //System.out.println("Query = " + blobCityPostRequest);
-            String data = URLEncoder.encode(blobCityPostRequest, "UTF-8");
-            // Send data
-            //System.out.println("Query = " + data);
-            URL url = new URL("http://10.241.199.198:8080/BlobCityDbWeb/BQueryExecuter");
-            URLConnection conn = url.openConnection();
-            conn.setDoOutput(true);
-            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-            wr.write(data);
-            wr.flush();
-
-            // Get the response : {"ack":"1","p":{"column1":"0","column2":"2"}}
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            while ((response = rd.readLine()) != null) {
-                //System.out.println("Response from database ========= " + response);
-            }
-            wr.close();
-            rd.close();
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return response;
     }
 }
