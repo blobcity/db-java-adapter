@@ -52,9 +52,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * This class provides the connection and query execution framework for performing
- * operations on the BlobCity data store. This class must be extended by any POJO
- * that represents a BlobCity Entity.
+ * This class provides the connection and query execution framework for
+ * performing operations on the BlobCity data store. This class must be extended
+ * by any POJO that represents a BlobCity Entity.
  *
  * @author sanketsarang
  * @author Karishma
@@ -74,9 +74,10 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Constructor to set the BlobCity Credentials externally
-     * @param account 
-     * @param user 
-     * @param token 
+     *
+     * @param account
+     * @param user
+     * @param token
      */
     public BlobCityCloudStorage(String account, String user, String token) {
         this.account = account;
@@ -92,6 +93,7 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Validates the extending class with all the annotation rules defined
+     *
      * @throws InvalidClassFormatException with proper cause.
      */
     private void validate() throws InvalidColumnFormatException {
@@ -130,6 +132,7 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Process field annotations to validate the extending class
+     *
      * @param map is a map of valid Custom annotations
      * @param fieldList is a list of Fields in the POJO
      * @throws InvalidColumnFormatException If all annotation rules are not met
@@ -154,6 +157,7 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Holds the number of
+     *
      * @param map Holds the custom annotations list
      * @param key Number of occurances of a custom annotation in the POJO
      */
@@ -183,6 +187,7 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Loads a record based on primary key specified
+     *
      * @return boolean to notify if the load was successful
      * @throws InvalidCredentialsException
      * @throws InvalidEntityException
@@ -239,9 +244,8 @@ public abstract class BlobCityCloudStorage {
     }
 
     /**
-     * 
-     * @return 
-     * @throws 
+     *
+     * @return @throws
      */
     public List<String> searchOR() throws InvalidCredentialsException, InvalidEntityException, InvalidFieldException, OperationFailed {
         try {
@@ -253,9 +257,8 @@ public abstract class BlobCityCloudStorage {
     }
 
     /**
-     * 
-     * @return 
-     * @throws 
+     *
+     * @return @throws
      */
     public List<String> searchAND() throws InvalidCredentialsException, InvalidEntityException, InvalidFieldException, OperationFailed {
         try {
@@ -268,6 +271,7 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Will remove the record from the database matching the given Primary Key
+     *
      * @return true is remove is successful else false
      * @throws NoPrimaryKeySpecifiedException If no primary key specified
      */
@@ -474,8 +478,9 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Gets the data type of the field
+     *
      * @param field
-     * @return 
+     * @return
      */
     private String getFieldType(Field field) {
 
@@ -493,9 +498,9 @@ public abstract class BlobCityCloudStorage {
             return "VARCHAR";
         } else if (field.getType() == String.class) {
             return "VARCHAR";
-        } else if (field.getType() == BigDecimal.class){
+        } else if (field.getType() == BigDecimal.class) {
             return "VARCHAR";
-        }else if ((field.getType() == List.class) || (field.getType() == ArrayList.class)) {
+        } else if ((field.getType() == List.class) || (field.getType() == ArrayList.class)) {
             ParameterizedType pt = (ParameterizedType) field.getGenericType();
             if (pt.getActualTypeArguments()[0] == String.class) {
                 return "LIST<VARCHAR>";
@@ -579,11 +584,11 @@ public abstract class BlobCityCloudStorage {
             switch (queryType) {
                 case SELECT:
                     if (jsonResponseObject.getInt("ack") == 0) {
-                        if(jsonResponseObject.getString("cause") != null){
+                        if (jsonResponseObject.getString("cause") != null) {
                             throw new OperationFailed(jsonResponseObject.getString("cause"));
                         }
 
-                        
+
                     } else if (jsonResponseObject.getInt("ack") == 1) {
 
                         //if the save is successful, and the payload is retrieved, set it back to the object
@@ -591,12 +596,11 @@ public abstract class BlobCityCloudStorage {
                             jsonPayloadResponseObject = jsonResponseObject.getJSONObject("p");
                             setResponse(jsonPayloadResponseObject);
                             return true;
-                        }
-                        else{//TODO: no payload found
+                        } else {//TODO: no payload found
                             return false;
-                            
+
                         }
-                        
+
                     }
                     break;
 
@@ -737,6 +741,7 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Set response from the database back to the invoking POJO object
+     *
      * @param jsonPayloadObject
      */
     private void setResponse(JSONObject jsonPayloadObject) {
@@ -765,6 +770,7 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Validate the columns to have valid non-null blobcity credentials
+     *
      * @param blobCityCredentials
      * @throws InvalidCredentialsException
      */
@@ -783,6 +789,7 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Validate the blobcity entity to have valid database and table fields
+     *
      * @param blobCityEntity
      * @throws InvalidEntityException
      */
@@ -799,6 +806,7 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Validate all annotation fields
+     *
      * @param field
      * @throws InvalidFieldException
      */
@@ -838,6 +846,7 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * TODO BC: Yet to implement
+     *
      * @param pk
      * @param e
      * @return
@@ -850,6 +859,7 @@ public abstract class BlobCityCloudStorage {
 
     /**
      * Gets the value associated with the field
+     *
      * @param field
      * @return
      * @throws IllegalAccessException
@@ -864,7 +874,7 @@ public abstract class BlobCityCloudStorage {
             PropertyDescriptor p = new PropertyDescriptor(field.getName(), this.getClass());
             value = p.getReadMethod().invoke(this, null);
 
-            
+
 
             //if(value.getClass().getAnnotations())
             /* Get the value associated with the field */
@@ -877,10 +887,10 @@ public abstract class BlobCityCloudStorage {
     }
 
     /**
-     * 
+     *
      * @param field
      * @param value
-     * @throws IllegalAccessException 
+     * @throws IllegalAccessException
      */
     private void setFieldValue(Field field, Object value) throws IllegalAccessException {
 
@@ -900,7 +910,7 @@ public abstract class BlobCityCloudStorage {
                         }
                     }
                 } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex +"-Class not found: "+str);
+                    Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex + "-Class not found: " + str);
                 }
             } /* Check of the value to be set is in the form of a JSONArray */ else if (value instanceof JSONArray) {
 
@@ -911,26 +921,25 @@ public abstract class BlobCityCloudStorage {
                         l.add(arr.get(i));
                     }
                 } catch (JSONException ex) {
-                    Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex+"-"+field.getName());
+                    Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, null, ex + "-" + field.getName());
                 }
                 p.getWriteMethod().invoke(this, l);
 
             } else if (field.getType() == List.class && "".equals(value)) {
                 // Since the type required is List and the data is empty, value was an empty String a new ArrayList is to be given
                 p.getWriteMethod().invoke(this, new ArrayList());
-            } else if(field.getType() == BigDecimal.class){
-                if(!value.toString().isEmpty()){
-                p.getWriteMethod().invoke(this, new BigDecimal(value.toString()));
-                }else{
+            } else if (field.getType() == BigDecimal.class) {
+                if (!value.toString().isEmpty()) {
+                    p.getWriteMethod().invoke(this, new BigDecimal(value.toString()));
+                } else {
                     p.getWriteMethod().invoke(this, BigDecimal.ZERO);
                 }
-            }
-            else {
+            } else {
                 p.getWriteMethod().invoke(this, value);
             }
         } catch (Exception ex) {
             Logger.getLogger(BlobCityCloudStorage.class.getName()).log(Level.SEVERE, "{0} couldn''t be set. Field Type was {1} but got {2}", new Object[]{field.getName(), field.getType(), value.getClass().getCanonicalName()});
-        } 
+        }
     }
 
     /**
