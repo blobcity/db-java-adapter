@@ -36,6 +36,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -492,7 +493,9 @@ public abstract class BlobCityCloudStorage {
             return "VARCHAR";
         } else if (field.getType() == String.class) {
             return "VARCHAR";
-        } else if ((field.getType() == List.class) || (field.getType() == ArrayList.class)) {
+        } else if (field.getType() == BigDecimal.class){
+            return "VARCHAR";
+        }else if ((field.getType() == List.class) || (field.getType() == ArrayList.class)) {
             ParameterizedType pt = (ParameterizedType) field.getGenericType();
             if (pt.getActualTypeArguments()[0] == String.class) {
                 return "LIST<VARCHAR>";
@@ -861,6 +864,7 @@ public abstract class BlobCityCloudStorage {
             PropertyDescriptor p = new PropertyDescriptor(field.getName(), this.getClass());
             value = p.getReadMethod().invoke(this, null);
 
+            
 
             //if(value.getClass().getAnnotations())
             /* Get the value associated with the field */
@@ -914,6 +918,12 @@ public abstract class BlobCityCloudStorage {
             } else if (field.getType() == List.class && "".equals(value)) {
                 // Since the type required is List and the data is empty, value was an empty String a new ArrayList is to be given
                 p.getWriteMethod().invoke(this, new ArrayList());
+            } else if(field.getType() == BigDecimal.class){
+                if(!value.toString().isEmpty()){
+                p.getWriteMethod().invoke(this, new BigDecimal(value.toString()));
+                }else{
+                    p.getWriteMethod().invoke(this, BigDecimal.ZERO);
+                }
             }
             else {
                 p.getWriteMethod().invoke(this, value);
