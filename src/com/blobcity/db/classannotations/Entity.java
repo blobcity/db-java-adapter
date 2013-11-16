@@ -13,6 +13,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface BlobCityEntity {
+public @interface Entity {
     public String table();
 }

@@ -1,26 +1,33 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2011 - 2013, BlobCity iSolutions Pvt. Ltd.
  */
-
 package com.blobcity.db.exceptions;
 
 /**
+ * Represents any exception that occurs on the database along with the appropriate error code for the exception. More
+ * details on possible error codes can be found at.
  *
- * @author Sanket Sarang <sanket@blobcity.net>
+ * @author Sanket Sarang
  */
-public class DbOperationException extends Exception {
-    
-    private ExceptionType exceptionType;
-    private String message;
-    
-    public DbOperationException(ExceptionType exceptionType) {
-        this.exceptionType = exceptionType;
-        message = "";
+public class DbOperationException extends RuntimeException {
+
+    private String errorCode = "";
+
+    public DbOperationException(final String errorCode) {
+        this.errorCode = errorCode;
     }
-    
-    public DbOperationException(ExceptionType exceptionType, String message) {
-        this.exceptionType = exceptionType;
-        this.message = message;
+
+    public DbOperationException(final String errorCode, final String message) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    @Override
+    public String toString() {
+        return "DbOperationException{" + "errorCode=" + errorCode + '}';
     }
 }

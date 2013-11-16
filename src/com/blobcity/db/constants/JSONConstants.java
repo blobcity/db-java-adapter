@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013, BlobCity iSolutions Pvt. Ltd.
  */
 package com.blobcity.db.constants;
 

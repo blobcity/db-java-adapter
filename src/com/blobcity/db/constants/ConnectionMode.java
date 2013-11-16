@@ -14,6 +14,7 @@ package com.blobcity.db.constants;
  * 
  * @author sanketsarang
  */
+@Deprecated
 public enum ConnectionMode {
     GLOBAL, USER
 }

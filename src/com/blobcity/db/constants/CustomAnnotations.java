@@ -8,6 +8,7 @@ package com.blobcity.db.constants;
  * Holds all valid custom annotations
  * @author Karishma
  */
+@Deprecated
 public enum CustomAnnotations {
     //Field Annotations
 //    AutoDefine, Column, Primary, CompositePrimaryItem, Index, Unique, Searchable;
