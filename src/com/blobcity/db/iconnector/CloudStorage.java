@@ -44,7 +44,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
         }
 
         if (table == null) {
-            table = this.getClass().getName();
+            table = this.getClass().getSimpleName();
         }
 
         TableStore.getInstance().registerClass(table, this.getClass());
@@ -77,8 +77,10 @@ public abstract class CloudStorage<T extends CloudStorage> {
         try {
             T obj = (T) clazz.newInstance();
             obj.setPk(pk);
-            obj.load();
-            return obj;
+            if (obj.load()) {
+                return obj;
+            }
+            return null;
         } catch (InstantiationException ex) {
             throw new RuntimeException(ex);
         } catch (IllegalAccessException ex) {
@@ -236,7 +238,6 @@ public abstract class CloudStorage<T extends CloudStorage> {
             switch (queryType) {
                 case LOAD:
                 case REMOVE:
-                case CONTAINS:
                     requestJson.put("pk", getPrimaryKeyValue());
                     break;
                 case INSERT:
@@ -272,7 +273,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             requestJson.put("app", Credentials.getInstance().getAppId());
             requestJson.put("key", Credentials.getInstance().getAppKey());
             requestJson.put("t", entity.table());
-            requestJson.put("q", queryType.name().replaceAll("_", "-"));
+            requestJson.put("q", queryType.getQueryCode());
 
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             responseJson = new JSONObject(responseString);
@@ -295,7 +296,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             requestJson.put("app", Credentials.getInstance().getAppId());
             requestJson.put("key", Credentials.getInstance().getAppKey());
             requestJson.put("t", entity.table());
-            requestJson.put("q", queryType.name().replaceAll("_", "-"));
+            requestJson.put("q", queryType.getQueryCode());
             requestJson.put("pk", pk);
 
             final String responseString = new QueryExecuter().executeQuery(requestJson);
@@ -364,7 +365,6 @@ public abstract class CloudStorage<T extends CloudStorage> {
     }
 
     private void fromJson(JSONObject jsonObject) {
-        System.out.println("Received JSON: " + jsonObject.toString());
         Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
 
         for (String columnName : structureMap.keySet()) {

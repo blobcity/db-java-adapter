@@ -66,7 +66,6 @@ public class QueryExecuter {
         BufferedReader reader = null;
         try {
             String urlString = "http://db.blobcity.com/rest/bquery?q=" + URLEncoder.encode(jsonObject.toString(), "UTF-8");
-            System.out.println("Url String: " + urlString);
             URL url = new URL(urlString);
             URLConnection connection = url.openConnection();
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));

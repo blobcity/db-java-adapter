@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 public class CloudStorageTest {
 
     private final String EMAIL = "test@blobcity.com";
+    private final String EMAIL2 = "test1@blobcity.com";
     private final String NAME = "Test";
     private final String NAME2 = "BlobCity";
 
@@ -30,7 +31,6 @@ public class CloudStorageTest {
     public static void setUpClass() {
         Credentials.getInstance().init("test", "test");
         List<Object> keys = CloudStorage.selectAll(User.class);
-        System.out.println("Length: " + keys.size());
         for (Object key : keys) {
             CloudStorage.remove(User.class, key);
         }
@@ -42,7 +42,6 @@ public class CloudStorageTest {
 
     @Before
     public void setUp() {
-        
     }
 
     @After
@@ -94,13 +93,11 @@ public class CloudStorageTest {
     @Test
     public void testNewLoadedInstance() {
         System.out.println("newLoadedInstance");
-        Class clazz = null;
-        Object pk = null;
-        CloudStorage expResult = null;
-        CloudStorage result = CloudStorage.newLoadedInstance(clazz, pk);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        User user = CloudStorage.newLoadedInstance(User.class, EMAIL);
+        assertEquals(NAME, user.getName());
+        user = CloudStorage.newLoadedInstance(User.class, EMAIL2);
+        assertNull(user);
+        System.out.println("newLoadedInstance: Successful");
     }
 
     /**
@@ -109,12 +106,10 @@ public class CloudStorageTest {
     @Test
     public void testSelectAll() {
         System.out.println("selectAll");
-        Class clazz = null;
-        List expResult = null;
-        List result = CloudStorage.selectAll(clazz);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        List result = CloudStorage.selectAll(User.class);
+        assertEquals(1, result.size());
+        assertEquals(EMAIL,result.get(0));
+        System.out.println("selectAll: Successful");
     }
 
     /**
@@ -123,26 +118,11 @@ public class CloudStorageTest {
     @Test
     public void testContains() {
         System.out.println("contains");
-        Class clazz = null;
-        Object key = null;
-        boolean expResult = false;
-        boolean result = CloudStorage.contains(clazz, key);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of remove method, of class CloudStorage.
-     */
-    @Test
-    public void testRemove_Class_Object() {
-        System.out.println("remove");
-        Class clazz = null;
-        Object pk = null;
-        CloudStorage.remove(clazz, pk);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        boolean outcome1 = CloudStorage.contains(User.class, EMAIL);//existent record
+        assertEquals(true, outcome1);
+        boolean outcome2 = CloudStorage.contains(User.class, EMAIL2);//in-existent record
+        assertEquals(false, outcome2);
+        System.out.println("contains: Successful");
     }
 
     /**
@@ -164,12 +144,13 @@ public class CloudStorageTest {
     @Test
     public void testLoad() {
         System.out.println("load");
-        CloudStorage instance = new CloudStorageImpl();
-        boolean expResult = false;
-        boolean result = instance.load();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        User user = CloudStorage.newInstance(User.class, EMAIL);
+        boolean loaded = user.load();
+        assertEquals(true, loaded);
+        user = CloudStorage.newInstance(User.class, EMAIL2);
+        loaded = user.load();
+        assertEquals(false, loaded);
+        System.out.println("load: Successful");
     }
 
     /**
@@ -178,10 +159,34 @@ public class CloudStorageTest {
     @Test
     public void testSave() {
         System.out.println("save");
-        CloudStorage instance = new CloudStorageImpl();
-        instance.save();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        User user = CloudStorage.newLoadedInstance(User.class, EMAIL);
+        assertNotNull(user);
+        assertEquals(NAME, user.getName());
+        user.setName(NAME2);
+        user.save();
+        user = CloudStorage.newLoadedInstance(User.class, EMAIL);
+        assertNotNull(user);
+        assertEquals(NAME2, user.getName());
+        System.out.println("save: Successful");
+    }
+    
+    /**
+     * Test of remove method, of class CloudStorage.
+     */
+    @Test
+    public void testRemove_Class_Object() {
+        System.out.println("static remove");
+        if (!CloudStorage.contains(User.class, EMAIL)) {
+            fail("Cannot test remove if record to remove is not present in database. "
+                    + "It is possible that some other methods responsible for data insertion on the contains"
+                    + "method to check for presense of record failed.");
+        }
+        CloudStorage.remove(User.class, EMAIL);
+        if (CloudStorage.contains(User.class, EMAIL)) {
+            fail("Remove operation failed. It is possible that contains method to check presence of record "
+                    + "is misbehaving.");
+        }
+        System.out.println("static remove: Successful");
     }
 
     /**
@@ -189,13 +194,16 @@ public class CloudStorageTest {
      */
     @Test
     public void testRemove_0args() {
-        System.out.println("remove");
-        CloudStorage instance = new CloudStorageImpl();
-        instance.remove();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    public class CloudStorageImpl extends CloudStorage {
+        System.out.println("instance remove");
+        User user = CloudStorage.newInstance(User.class, EMAIL);
+        user.insert();
+        user = CloudStorage.newLoadedInstance(User.class, EMAIL);
+        assertNotNull(user);
+        user.remove();
+        boolean contains = CloudStorage.contains(User.class, EMAIL);
+        if(contains) {
+            fail("Non static remove operation failed. It is possible that contains method used to check removal is misbehaving.");
+        }
+        System.out.println("instance remove: Successful");
     }
 }

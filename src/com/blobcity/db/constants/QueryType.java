@@ -13,7 +13,7 @@ public enum QueryType {
     LOAD("select"),
     SAVE("save"),
     INSERT("insert"), 
-    REMOVE("remove"),
+    REMOVE("delete"),
     SELECT_ALL("select-all"), 
     SEARCH_AND("search-and"), 
     SEARCH_OR("search-or"),
