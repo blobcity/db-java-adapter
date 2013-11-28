@@ -30,7 +30,7 @@ import org.json.JSONObject;
  * @version 1.0
  * @since 1.0
  */
-public abstract class CloudStorage {
+public abstract class CloudStorage<T extends CloudStorage> {
 
     private String table = null;
 
@@ -50,7 +50,7 @@ public abstract class CloudStorage {
         TableStore.getInstance().registerClass(table, this.getClass());
     }
 
-    public static Object newInstance(Class clazz) {
+    public static <T extends CloudStorage> T newInstance(Class<T> clazz) {
         try {
             return clazz.newInstance();
         } catch (InstantiationException ex) {
@@ -61,9 +61,9 @@ public abstract class CloudStorage {
         return null;
     }
 
-    public static Object newInstance(Class clazz, Object pk) throws DbOperationException {
+    public static <T extends CloudStorage> T newInstance(Class clazz, Object pk) throws DbOperationException {
         try {
-            CloudStorage obj = (CloudStorage) clazz.newInstance();
+            T obj = (T) clazz.newInstance();
             obj.setPk(pk);
             return obj;
         } catch (InstantiationException ex) {
@@ -73,9 +73,9 @@ public abstract class CloudStorage {
         }
     }
 
-    public static Object newLoadedInstance(Class clazz, Object pk) {
+    public static <T extends CloudStorage> T newLoadedInstance(Class clazz, Object pk) {
         try {
-            CloudStorage obj = (CloudStorage) clazz.newInstance();
+            T obj = (T) clazz.newInstance();
             obj.setPk(pk);
             obj.load();
             return obj;
@@ -87,29 +87,53 @@ public abstract class CloudStorage {
     }
 
     public static List<Object> selectAll(Class clazz) {
+        JSONObject responseJson = postStaticRequest(clazz, QueryType.SELECT_ALL);
+        JSONArray jsonArray;
+        List<Object> list;
+
         try {
-            CloudStorage obj = (CloudStorage) clazz.newInstance();
-            return obj.selectAll();
-        } catch (InstantiationException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalAccessException ex) {
+            if (responseJson.getString("ack").equals("1")) {
+                jsonArray = responseJson.getJSONArray("keys");
+                list = new ArrayList<Object>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    list.add(jsonArray.get(i));
+                }
+                return list;
+            }
+
+            throw new DbOperationException(responseJson.getString("code"));
+        } catch (JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public static boolean contains(Class clazz, String key) {
+    public static boolean contains(Class clazz, Object key) {
+        JSONObject responseJson = postStaticRequest(clazz, QueryType.CONTAINS, key);
+
         try {
-            CloudStorage obj = (CloudStorage) clazz.newInstance();
-            obj.setPk(key);
-            return obj.contains();
-        } catch (InstantiationException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalAccessException ex) {
+            if (responseJson.getString("ack").equals("1")) {
+                return responseJson.getBoolean("contains");
+            }
+
+            throw new DbOperationException(responseJson.getString("code"));
+        } catch (JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    private void setPk(Object pk) throws DbOperationException {
+    public static void remove(Class clazz, Object pk) {
+        JSONObject responseJson = postStaticRequest(clazz, QueryType.REMOVE, pk);
+
+        try {
+            if (responseJson.getString("ack").equals("0")) {
+                throw new DbOperationException(responseJson.getString("code"));
+            }
+        } catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    protected void setPk(Object pk) throws DbOperationException {
         Field primaryKeyField = TableStore.getInstance().getPkField(table);
         try {
             primaryKeyField.setAccessible(true);
@@ -118,34 +142,6 @@ public abstract class CloudStorage {
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException(ex);
         } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private List<Object> selectAll() {
-        JSONObject responseJson = postRequest(QueryType.SELECT_ALL);
-        JSONArray jsonArray;
-        List<Object> list;
-        try {
-            jsonArray = responseJson.getJSONArray("pk");
-
-            list = new ArrayList<Object>();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                list.add(jsonArray.get(i));
-            }
-
-            return list;
-        } catch (JSONException ex) {
-            Logger.getLogger(CloudStorage.class.getName()).log(Level.SEVERE, null, ex);
-            throw new DbOperationException("INTERNAL OPERATION ERROR");
-        }
-    }
-
-    public boolean contains() {
-        JSONObject responseJson = postRequest(QueryType.CONTAINS);
-        try {
-            return responseJson.getBoolean("p");
-        } catch (JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -164,26 +160,43 @@ public abstract class CloudStorage {
                     reportIfError(responseJson);
                 }
             }
-            
+
             payloadJson = responseJson.getJSONObject("p");
-            fromJson(responseJson);
+            fromJson(payloadJson);
             return true;
         } catch (JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public void save() throws DbOperationException {
+    public void save() {
         JSONObject responseJson = postRequest(QueryType.SAVE);
         reportIfError(responseJson);
     }
 
-    public void insert() throws DbOperationException {
+    public boolean insert() {
         JSONObject responseJson = postRequest(QueryType.INSERT);
-        reportIfError(responseJson);
+        try {
+            if (responseJson.getString("ack").equals("1")) {
+                final JSONObject payloadJson = responseJson.getJSONObject("p");
+                fromJson(payloadJson);
+                return true;
+            } else if (responseJson.getString("ack").equals("0")) {
+                final String errorCode = responseJson.getString("code");
+                if (errorCode.equals("DB201")) {
+                    return false;
+                } else {
+                    reportIfError(responseJson);
+                }
+            }
+        } catch (Exception ex) {
+            reportIfError(responseJson);
+        }
+
+        return false;
     }
-    
-    public boolean remove() throws DbOperationException {
+
+    public void remove() throws DbOperationException {
         JSONObject responseJson;
         responseJson = postRequest(QueryType.REMOVE);
         try {
@@ -191,13 +204,13 @@ public abstract class CloudStorage {
             /* If ack:0 then check for error code and report accordingly */
             if (responseJson.getString("ack").equals("0")) {
                 if (responseJson.getString("code").equals("DB200")) {
-                    return false;
+                    return;
                 } else {
                     reportIfError(responseJson);
                 }
             }
-            
-            return true;
+
+            return;
         } catch (JSONException ex) {
             throw new RuntimeException(ex);
         }
@@ -210,7 +223,6 @@ public abstract class CloudStorage {
 //    public List<String> searchAND() throws DbOperationException {
 //        return (List<String>) postRequest(QueryType.SEARCH_AND);
 //    }
-
     private JSONObject postRequest(QueryType queryType) {
         JSONObject requestJson;
         JSONObject responseJson;
@@ -219,7 +231,7 @@ public abstract class CloudStorage {
             requestJson.put("app", Credentials.getInstance().getAppId());
             requestJson.put("key", Credentials.getInstance().getAppKey());
             requestJson.put("t", table);
-            requestJson.put("q", queryType.name().replaceAll("_", "-"));
+            requestJson.put("q", queryType.getQueryCode());
 
             switch (queryType) {
                 case LOAD:
@@ -243,6 +255,53 @@ public abstract class CloudStorage {
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException(ex);
         } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static JSONObject postStaticRequest(Class clazz, QueryType queryType) {
+        JSONObject requestJson;
+        JSONObject responseJson;
+        Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+        if (entity == null) {
+            throw new RuntimeException(clazz.getName() + " is not a valid entity class");
+        }
+
+        requestJson = new JSONObject();
+        try {
+            requestJson.put("app", Credentials.getInstance().getAppId());
+            requestJson.put("key", Credentials.getInstance().getAppKey());
+            requestJson.put("t", entity.table());
+            requestJson.put("q", queryType.name().replaceAll("_", "-"));
+
+            final String responseString = new QueryExecuter().executeQuery(requestJson);
+            responseJson = new JSONObject(responseString);
+            return responseJson;
+        } catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static JSONObject postStaticRequest(Class clazz, QueryType queryType, Object pk) {
+        JSONObject requestJson;
+        JSONObject responseJson;
+        Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+        if (entity == null) {
+            throw new RuntimeException(clazz.getName() + " is not a valid entity class");
+        }
+
+        requestJson = new JSONObject();
+        try {
+            requestJson.put("app", Credentials.getInstance().getAppId());
+            requestJson.put("key", Credentials.getInstance().getAppKey());
+            requestJson.put("t", entity.table());
+            requestJson.put("q", queryType.name().replaceAll("_", "-"));
+            requestJson.put("pk", pk);
+
+            final String responseString = new QueryExecuter().executeQuery(requestJson);
+            responseJson = new JSONObject(responseString);
+            return responseJson;
+        } catch (JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -305,6 +364,7 @@ public abstract class CloudStorage {
     }
 
     private void fromJson(JSONObject jsonObject) {
+        System.out.println("Received JSON: " + jsonObject.toString());
         Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
 
         for (String columnName : structureMap.keySet()) {

@@ -7,7 +7,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import org.json.JSONObject;
 
 /**
  * Caches table structures, so that annotations are not require to be processed

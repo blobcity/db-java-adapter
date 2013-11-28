@@ -7,9 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 /**
  *
  * @author Karishma
- * @author Sanket Sarang <sanket@blobcity.net>
+ * @author Sanket Sarang
  * @since 1.0
- * @version 1.1
+ * @version 1.0
  */
 
 @Retention(RetentionPolicy.RUNTIME)

@@ -3,7 +3,13 @@
  */
 package com.blobcity.db.bquery;
 
-import com.blobcity.db.exceptions.DbOperationException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.json.JSONObject;
@@ -15,7 +21,7 @@ import org.json.JSONObject;
  */
 public class QueryExecuter {
 
-    private static OperationMode operationMode;
+    private static OperationMode operationMode = OperationMode.HTTP;
     private static final String JNDI_RESOURCE = "java:global/TestEAR/TEjb/Calculator!com.CalculatorRemote";
     private static InitialContext context;
 
@@ -57,6 +63,26 @@ public class QueryExecuter {
     }
 
     private String executeHTTP(JSONObject jsonObject) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        BufferedReader reader = null;
+        try {
+            String urlString = "http://db.blobcity.com/rest/bquery?q=" + URLEncoder.encode(jsonObject.toString(), "UTF-8");
+            System.out.println("Url String: " + urlString);
+            URL url = new URL(urlString);
+            URLConnection connection = url.openConnection();
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            return reader.readLine();
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException(ex);
+        } catch (IOException ex) {
+            throw new RuntimeException("The database may be unavailable at this time for communication.", ex);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
     }
 }

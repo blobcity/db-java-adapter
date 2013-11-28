@@ -10,7 +10,7 @@ package com.blobcity.db.constants;
  */
 public enum QueryType {
 
-    LOAD("load"),
+    LOAD("select"),
     SAVE("save"),
     INSERT("insert"), 
     REMOVE("remove"),
