@@ -1,10 +1,12 @@
 /*
  * Copyright 2013, BlobCity iSolutions Pvt. Ltd.
  */
-package com.blobcity.db.iconnector;
+package com.blobcity.db;
 
-import com.blobcity.db.adapter.test.entity.User;
+import com.blobcity.db.test.entity.User;
 import com.blobcity.db.constants.Credentials;
+import com.blobcity.db.search.SearchParams;
+import com.blobcity.db.search.SearchType;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -108,7 +110,7 @@ public class CloudStorageTest {
         System.out.println("selectAll");
         List result = CloudStorage.selectAll(User.class);
         assertEquals(1, result.size());
-        assertEquals(EMAIL,result.get(0));
+        assertEquals(EMAIL, result.get(0));
         System.out.println("selectAll: Successful");
     }
 
@@ -153,6 +155,37 @@ public class CloudStorageTest {
         System.out.println("load: Successful");
     }
 
+    @Test
+    public void testSearch() {
+        System.out.println("search static");
+        SearchParams searchParams = new SearchParams();
+        searchParams.add("name", NAME);
+        searchParams.add("name", NAME2);
+        List<Object> list = CloudStorage.search(User.class, SearchType.AND, searchParams);
+        assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
+        System.out.println("search static: Successful");
+    }
+    
+    @Test
+    public void testSearchAnd() {
+        System.out.println("searchAnd");
+        User user = CloudStorage.newInstance(User.class);
+        user.setName(NAME);
+        List<Object> list = user.searchAnd();
+        assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
+        System.out.println("searchAnd: Successful");
+    }
+    
+    @Test
+    public void testSearchOr() {
+        System.out.println("searchOr");
+        User user = CloudStorage.newInstance(User.class);
+        user.setName(NAME);
+        List<Object> list = user.searchAnd();
+        assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
+        System.out.println("searchOr: Successful");
+    }
+
     /**
      * Test of save method, of class CloudStorage.
      */
@@ -169,7 +202,7 @@ public class CloudStorageTest {
         assertEquals(NAME2, user.getName());
         System.out.println("save: Successful");
     }
-    
+
     /**
      * Test of remove method, of class CloudStorage.
      */
@@ -201,7 +234,7 @@ public class CloudStorageTest {
         assertNotNull(user);
         user.remove();
         boolean contains = CloudStorage.contains(User.class, EMAIL);
-        if(contains) {
+        if (contains) {
             fail("Non static remove operation failed. It is possible that contains method used to check removal is misbehaving.");
         }
         System.out.println("instance remove: Successful");

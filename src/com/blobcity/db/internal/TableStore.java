@@ -1,5 +1,5 @@
 
-package com.blobcity.db.iconnector;
+package com.blobcity.db.internal;
 
 import com.blobcity.db.fieldannotations.Column;
 import com.blobcity.db.fieldannotations.Primary;

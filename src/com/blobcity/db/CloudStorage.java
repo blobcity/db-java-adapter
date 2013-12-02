@@ -1,14 +1,17 @@
 /**
  * Copyright 2011 - 2013, BlobCity iSolutions Pvt. Ltd.
  */
-package com.blobcity.db.iconnector;
+package com.blobcity.db;
 
+import com.blobcity.db.search.SearchType;
+import com.blobcity.db.search.SearchParams;
 import com.blobcity.db.bquery.QueryExecuter;
 import com.blobcity.db.classannotations.Entity;
 import com.blobcity.db.constants.Credentials;
 import com.blobcity.db.fieldannotations.Primary;
 import com.blobcity.db.constants.QueryType;
 import com.blobcity.db.exceptions.DbOperationException;
+import com.blobcity.db.internal.TableStore;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -134,6 +137,14 @@ public abstract class CloudStorage<T extends CloudStorage> {
             throw new RuntimeException(ex);
         }
     }
+    
+    public static List<Object> search(Class clazz, SearchType searchType, SearchParams searchParams) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    public static List<Object> filter(Class clazz, String filterName) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
     protected void setPk(Object pk) throws DbOperationException {
         Field primaryKeyField = TableStore.getInstance().getPkField(table);
@@ -198,7 +209,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
         return false;
     }
 
-    public void remove() throws DbOperationException {
+    public void remove() {
         JSONObject responseJson;
         responseJson = postRequest(QueryType.REMOVE);
         try {
@@ -218,13 +229,14 @@ public abstract class CloudStorage<T extends CloudStorage> {
         }
     }
 
-//    public List<Object> searchOR() throws DbOperationException {
-//        return (List<String>) postRequest(QueryType.SEARCH_OR);
-//    }
-//
-//    public List<String> searchAND() throws DbOperationException {
-//        return (List<String>) postRequest(QueryType.SEARCH_AND);
-//    }
+    public List<Object> searchOr() {
+        throw new UnsupportedOperationException("Not yet supported.");
+    }
+
+    public List<String> searchAnd() {
+        throw new UnsupportedOperationException("Not yet supported.");
+    }
+    
     private JSONObject postRequest(QueryType queryType) {
         JSONObject requestJson;
         JSONObject responseJson;
