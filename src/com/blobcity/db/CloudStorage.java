@@ -64,9 +64,9 @@ public abstract class CloudStorage<T extends CloudStorage> {
         return null;
     }
 
-    public static <T extends CloudStorage> T newInstance(Class clazz, Object pk) throws DbOperationException {
+    public static <T extends CloudStorage> T newInstance(Class<T> clazz, Object pk) throws DbOperationException {
         try {
-            T obj = (T) clazz.newInstance();
+            T obj = clazz.newInstance();
             obj.setPk(pk);
             return obj;
         } catch (InstantiationException ex) {
@@ -76,9 +76,9 @@ public abstract class CloudStorage<T extends CloudStorage> {
         }
     }
 
-    public static <T extends CloudStorage> T newLoadedInstance(Class clazz, Object pk) {
+    public static <T extends CloudStorage> T newLoadedInstance(Class<T> clazz, Object pk) {
         try {
-            T obj = (T) clazz.newInstance();
+            T obj = clazz.newInstance();
             obj.setPk(pk);
             if (obj.load()) {
                 return obj;
