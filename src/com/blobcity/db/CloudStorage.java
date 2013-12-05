@@ -25,7 +25,7 @@ import org.json.JSONObject;
 
 /**
  * This class provides the connection and query execution framework for performing operations on the BlobCity data
- * store. This class must be extended by any POJO that represents a BlobCity Entity.
+ * store. This class must be extended by any Model that represents a BlobCity Entity.
  *
  * @author Sanket Sarang
  * @author Karishma
