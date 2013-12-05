@@ -23,47 +23,49 @@ import org.json.JSONObject;
  */
 public class QueryExecuter {
 
-    private static OperationMode operationMode = OperationMode.HTTP;
+    private static OperationMode operationMode;
     private static final String JNDI_LOCAL_RESOURCE = "java:global/BlobCityDB/BQueryExecutorBean";
     private static final String JNDI_REMOTE_RESOURCE = "java:global/BlobCityDB/BQueryExecutorBean!com.blobcity.db.bquery.BQueryExecutorBeanRemote";
+    private static BQueryExecutorBeanRemote bean;
     private static InitialContext context;
 
     static {
-        Logger.getLogger("BlobCity").log(Level.INFO, "Default operation mode is http");
-
-        /* Check for availability of local EJB */
-        try {
-            context = new InitialContext();
-            context.lookup(JNDI_LOCAL_RESOURCE);
-            operationMode = OperationMode.LOCAL_EJB;
-            Logger.getLogger("BlobCity").log(Level.INFO, "Operation mode set to no-query");
-        } catch (NamingException ex) {
-            //do nothing
-        }
-
-        /* Check for availability of remote EJB */
-        if (operationMode == OperationMode.HTTP) {
+        opmode:
+        {
+            /* Check for availability of local EJB */
             try {
                 context = new InitialContext();
-                BQueryExecutorBeanRemote bean = (BQueryExecutorBeanRemote) context.lookup(JNDI_REMOTE_RESOURCE);
-                operationMode = OperationMode.REMOTE_EJB;
-                Logger.getLogger("BlobCity").log(Level.INFO, "Operation mode set to remote-ejb");
+                context.lookup(JNDI_LOCAL_RESOURCE);
+                Logger.getLogger("BlobCity").log(Level.INFO, "Operation mode of no-query available in the current context. "
+                        + "Please consider compiling your application on the BlobCity Cloud to leverage no-query capabilities");
             } catch (NamingException ex) {
                 //do nothing
             }
+
+            /* Check for availability of remote EJB */
+            try {
+                context = new InitialContext();
+                bean = (BQueryExecutorBeanRemote) context.lookup(JNDI_REMOTE_RESOURCE);
+                operationMode = OperationMode.REMOTE_EJB;
+                Logger.getLogger("BlobCity").log(Level.INFO, "Operation mode set to remote-ejb");
+                break opmode;
+            } catch (NamingException ex) {
+                //do nothing
+            }
+
+            /* Use default operation mode of HTTP */
+            operationMode = OperationMode.HTTP;
+            Logger.getLogger("BlobCity").log(Level.INFO, "Using default operation mode of http");
         }
     }
 
     public String executeQuery(JSONObject queryJson) {
         switch (operationMode) {
-            case LOCAL_EJB:
-                return executeLocalEJB(queryJson);
             case REMOTE_EJB:
                 return executeRemoteEJB(queryJson);
-            case HTTP:
+            default:
                 return executeHTTP(queryJson);
         }
-        return null;
     }
 
     private String executeLocalEJB(JSONObject jsonObject) {
@@ -74,12 +76,7 @@ public class QueryExecuter {
     }
 
     private String executeRemoteEJB(JSONObject jsonObject) {
-        try {
-            BQueryExecutorBeanRemote bean = (BQueryExecutorBeanRemote) context.lookup(JNDI_REMOTE_RESOURCE);
-            return bean.runQuery(jsonObject.toString());
-        } catch (NamingException ex) {
-            throw new RuntimeException("Could not load database remote EJB for running database queries", ex);
-        }
+        return bean.runQuery(jsonObject.toString());
     }
 
     private String executeHTTP(JSONObject jsonObject) {
