@@ -67,9 +67,15 @@ public class TableStore {
                 if(a instanceof Column) {
                     Column column = (Column)a;
                     columnName = column.name();
-                } else if (a instanceof Primary && primaryKeyField == null) {
-                    primaryKeyField = field;
                 } 
+                else if (a instanceof Primary) {
+                    if(primaryKeyField != null) {
+                        throw new RuntimeException("Possible repetition of primary key annotation in table: " + tableName 
+                                + ". Reapeat value found for fields " + primaryKeyField.getName() + " and " + field.getName()
+                                + ". The @Primary annotation may be applied to only one field in an entity class");
+                    }
+                    primaryKeyField = field;
+                }
             }
             
             columnFieldMap.put(columnName, field);
