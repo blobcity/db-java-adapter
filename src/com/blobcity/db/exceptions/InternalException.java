@@ -12,7 +12,7 @@ package com.blobcity.db.exceptions;
  * It is reasonable to assume that such an exception will never arise and if at all it arises it is a major fault that
  * may need fixing from BlobCity side before your program becomes functional again.
  * 
- * If you encounter this exception after a recent update by BlobCity to it's API or database, you much check if a newer
+ * If you encounter this exception after a recent update by BlobCity to it's API or database, you must check if a newer
  * version of the adapter is available and consider updating your adapter.
  * 
  * @author Sanket Sarang
@@ -20,7 +20,7 @@ package com.blobcity.db.exceptions;
 public class InternalException extends RuntimeException {
     
     public InternalException() {
-        super("unknown error");
+        super("Unknown error. Please check if you are using the latest version of the adpater or contact BlobCity Support");
     }
     
     public InternalException(String message) {
