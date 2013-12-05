@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -33,15 +30,6 @@ public class SearchParams {
     }
 
     public JSONObject asJson() {
-        JSONObject jsonObject = new JSONObject();
-        for(String key : map.keySet()) {
-            Set<Object> valueSet = map.get(key);
-            try {
-                jsonObject.put(key, valueSet);
-            } catch (JSONException ex) {
-                Logger.getLogger(SearchParams.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return jsonObject;
+        return new JSONObject(map);
     }
 }
