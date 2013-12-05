@@ -19,7 +19,7 @@ import java.util.Map;
 class TableStore {
 
     private Map<String, Map<String, Field>> tableStructureMap = new HashMap<String, Map<String, Field>>();
-    private Map<String, Class> tableClassMap = new HashMap<String, Class>();
+    private Map<String, Class<? extends CloudStorage>> tableClassMap = new HashMap<String, Class<? extends CloudStorage>>();
     private Map<String, Field> tablePrimaryMap = new HashMap<String, Field>();
 
     private TableStore() {
@@ -34,7 +34,7 @@ class TableStore {
         private static final TableStore INSTANCE = new TableStore();
     }
 
-    public void registerClass(String name, Class clazz) {
+    public <T extends CloudStorage> void registerClass(String name, Class<T> clazz) {
         tableClassMap.put(name, clazz);
     }
 

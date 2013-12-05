@@ -269,7 +269,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
         }
     }
     
-    private static JSONObject postStaticRequest(Class clazz, QueryType queryType) {
+    private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType) {
         JSONObject requestJson;
         JSONObject responseJson;
         Entity entity = (Entity) clazz.getAnnotation(Entity.class);
@@ -292,7 +292,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
         }
     }
     
-    private static JSONObject postStaticRequest(Class clazz, QueryType queryType, Object pk) {
+    private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType, Object pk) {
         JSONObject requestJson;
         JSONObject responseJson;
         Entity entity = (Entity) clazz.getAnnotation(Entity.class);
