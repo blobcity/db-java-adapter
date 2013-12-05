@@ -17,7 +17,7 @@ import com.blobcity.db.test.entity.TestableCloudStorage;
 @Entity(table = FloatTable.TABLENAME)
 public class FloatTable extends TestableCloudStorage<FloatTable> {
 
-    public static final String TABLENAME = "FloatTable";
+    public static final transient String TABLENAME = "FloatTable";
     
     @Primary
     @Column(name = "pk")

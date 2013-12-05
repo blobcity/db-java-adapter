@@ -187,11 +187,18 @@ public class DbAdminService {
      * @throws ValidationException if the server returns an error code
      */
     public boolean dropTable(String appId, String tableName) throws ValidationException {
-        checkNotNull(appId);
-        checkNotNull(tableName);
-        JSONObject json = new DropTableRequest(appId, appKey).createRequest(tableName);
-        Ack ack = executeQuery(json.toString());
-        return parseAck(ack);
+        try {
+            checkNotNull(appId);
+            checkNotNull(tableName);
+            //workaround for backup timestamp conflict
+            Thread.sleep(15);
+            JSONObject json = new DropTableRequest(appId, appKey).createRequest(tableName);
+            Ack ack = executeQuery(json.toString());
+            return parseAck(ack);
+        } catch (InterruptedException ex) {
+            logger.log(Level.SEVERE, "Drop Table sleep interrupted. Drop table angry", ex);
+            return false;
+        }
     }
 
     /**

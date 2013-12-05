@@ -17,7 +17,7 @@ import com.blobcity.db.test.entity.TestableCloudStorage;
 @Entity(table = IntTable.TABLENAME)
 public class IntTable extends TestableCloudStorage<IntTable> {
 
-    public static final String TABLENAME = "IntTable";
+    public static final transient String TABLENAME = "IntTable";
     @Primary
     @Column(name = "pk")
     private int pk;

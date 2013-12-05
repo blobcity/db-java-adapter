@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @Entity(table = BadTable.TABLENAME)
 public class BadTable extends TestableCloudStorage<BadTable> {
 
-    public static final String TABLENAME = "BadTable";
+    public static final transient String TABLENAME = "BadTable";
     
     @Primary
     @Column(name = "email")

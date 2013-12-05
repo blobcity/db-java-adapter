@@ -17,7 +17,7 @@ import com.blobcity.db.test.entity.TestableCloudStorage;
 @Entity(table = CharTable.TABLENAME)
 public class CharTable extends TestableCloudStorage<CharTable> {
 
-    public static final String TABLENAME = "DoubleTable";
+    public static final transient String TABLENAME = "CharTable";
     
     @Primary
     @Column(name = "pk")

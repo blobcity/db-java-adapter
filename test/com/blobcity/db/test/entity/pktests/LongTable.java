@@ -17,7 +17,7 @@ import com.blobcity.db.test.entity.TestableCloudStorage;
 @Entity(table = LongTable.TABLENAME)
 public class LongTable extends TestableCloudStorage<LongTable> {
 
-    public static final String TABLENAME = "LongTable";
+    public static final transient String TABLENAME = "LongTable";
     
     @Primary
     @Column(name = "pk")

@@ -331,6 +331,7 @@ public class CloudStorageTest {
     public void testChangeDataType() throws ValidationException, InstantiationException, IllegalAccessException {
         List<Class<? extends TestableCloudStorage>> tables = new ArrayList<Class<? extends TestableCloudStorage>>();
         tables.add(Table1.class);
+        tables.add(Table2.class);
         clearSecondaryTables(tables);
         DbAdminService service = new DbAdminService();
         Table1 record1 = new Table1();
@@ -349,28 +350,16 @@ public class CloudStorageTest {
         col.setName("name");
         col.setType(ColumnType.FLOAT);
         assertTrue(service.alterColumn("test", Table1.TABLENAME, col));
+        assertTrue(service.renameTable("test", Table1.TABLENAME, Table2.TABLENAME));
 
         List<Object> pks = Table2.selectAll(Table2.class);
         for (Object pk : pks) {
             String email = (String) pk;
             Table2 instance = Table2.newLoadedInstance(Table2.class, email);
             if (email.equals("test@blobcity.info")) {
-                assertEquals(instance.getName(), 5.46, 0);
+                assertEquals(instance.getName(), 5.46, 0.0001);
             } else if (email.equals("test1@blobcity.info")) {
                 assertEquals(instance.getName(), 0, 0);
-            } else {
-                fail("Unexpected record in table: " + instance.toString());
-            }
-        }
-
-        pks = Table1.selectAll(Table2.class);
-        for (Object pk : pks) {
-            String email = (String) pk;
-            Table1 instance = Table1.newLoadedInstance(Table1.class, email);
-            if (email.equals("test@blobcity.info")) {
-                assertEquals(instance.getName(), "5.46");
-            } else if (email.equals("test1@blobcity.info")) {
-                assertEquals(instance.getName(), "");
             } else {
                 fail("Unexpected record in table: " + instance.toString());
             }
@@ -387,11 +376,14 @@ public class CloudStorageTest {
     }
 
     @Test
-    public void testBadDataType() throws ValidationException {
+    public void testBadDataType() throws ValidationException, InstantiationException, IllegalAccessException {
         //Create table with unsuported datatype
         //insert
         //what should the outcome be?
         DbAdminService service = new DbAdminService();
+        List<Class<? extends TestableCloudStorage>> deleteList = new ArrayList<Class<? extends TestableCloudStorage>>();
+        deleteList.add(BadTable.class);
+        clearSecondaryTables(deleteList);
         BadTable table = new BadTable();
         service.createTable("test", table.getStructure());
         table.setEmail("test@blobcity.info");

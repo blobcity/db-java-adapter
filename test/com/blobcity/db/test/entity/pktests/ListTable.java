@@ -19,7 +19,7 @@ import java.util.List;
 @Entity(table = ListTable.TABLENAME)
 public class ListTable extends TestableCloudStorage<ListTable> {
 
-    public static final String TABLENAME = "DoubleTable";
+    public static final transient String TABLENAME = "DoubleTable";
     @Primary
     @Column(name = "pk")
     private List<Character> pk;

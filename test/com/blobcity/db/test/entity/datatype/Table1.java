@@ -17,7 +17,7 @@ import com.blobcity.db.test.entity.TestableCloudStorage;
 @Entity(table = Table1.TABLENAME)
 public class Table1 extends TestableCloudStorage<Table1> {
 
-    public static final String TABLENAME = "Table1";
+    public static final  transient String TABLENAME = "Table1";
     
     @Primary
     @Column(name = "email")
