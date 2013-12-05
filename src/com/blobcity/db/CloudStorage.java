@@ -90,7 +90,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
         }
     }
 
-    public static List<Object> selectAll(Class clazz) {
+    public static <T extends CloudStorage> List<Object> selectAll(Class<T> clazz) {
         JSONObject responseJson = postStaticRequest(clazz, QueryType.SELECT_ALL);
         JSONArray jsonArray;
         List<Object> list;
@@ -111,7 +111,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
         }
     }
 
-    public static boolean contains(Class clazz, Object key) {
+    public static <T extends CloudStorage> boolean contains(Class<T> clazz, Object key) {
         JSONObject responseJson = postStaticRequest(clazz, QueryType.CONTAINS, key);
 
         try {
@@ -125,7 +125,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
         }
     }
 
-    public static void remove(Class clazz, Object pk) {
+    public static <T extends CloudStorage> void remove(Class<T> clazz, Object pk) {
         JSONObject responseJson = postStaticRequest(clazz, QueryType.REMOVE, pk);
 
         try {
@@ -137,11 +137,11 @@ public abstract class CloudStorage<T extends CloudStorage> {
         }
     }
 
-    public static List<Object> search(Class clazz, SearchType searchType, SearchParams searchParams) {
+    public static <T extends CloudStorage> List<Object> search(Class<T> clazz, SearchType searchType, SearchParams searchParams) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public static List<Object> filter(Class clazz, String filterName) {
+    public static <T extends CloudStorage> List<Object> filter(Class<T> clazz, String filterName) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
