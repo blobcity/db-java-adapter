@@ -11,7 +11,6 @@ import com.blobcity.db.constants.Credentials;
 import com.blobcity.db.fieldannotations.Primary;
 import com.blobcity.db.constants.QueryType;
 import com.blobcity.db.exceptions.DbOperationException;
-import com.blobcity.db.internal.TableStore;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -137,11 +136,11 @@ public abstract class CloudStorage<T extends CloudStorage> {
             throw new RuntimeException(ex);
         }
     }
-    
+
     public static List<Object> search(Class clazz, SearchType searchType, SearchParams searchParams) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     public static List<Object> filter(Class clazz, String filterName) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -236,7 +235,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
     public List<String> searchAnd() {
         throw new UnsupportedOperationException("Not yet supported.");
     }
-    
+
     private JSONObject postRequest(QueryType queryType) {
         JSONObject requestJson;
         JSONObject responseJson;
