@@ -1,13 +1,31 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2011 - 2013, BlobCity iSolutions Pvt. Ltd.
  */
 package com.blobcity.db.constants;
 
 /**
  *
  * @author Karishma
+ * @author Sanket Sarang
  */
 public enum QueryType {
-    SELECT, SAVE, INSERT, UPDATE, DELETE, CREATE_TABLE, TABLE_EXISTS, SELECT_ALL, SEARCH_AND, SEARCH_OR
+
+    LOAD("select"),
+    SAVE("save"),
+    INSERT("insert"), 
+    REMOVE("delete"),
+    SELECT_ALL("select-all"), 
+    SEARCH_AND("search-and"), 
+    SEARCH_OR("search-or"),
+    CONTAINS("contains");
+    
+    private final String queryCode;
+    
+    QueryType(final String queryCode) {
+        this.queryCode = queryCode;
+    }
+
+    public String getQueryCode() {
+        return queryCode;
+    }
 }
