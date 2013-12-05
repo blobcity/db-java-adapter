@@ -3,10 +3,25 @@
  */
 package com.blobcity.db;
 
+import com.blobcity.adminpanel.db.bo.Column;
+import com.blobcity.adminpanel.db.bo.ColumnType;
+import com.blobcity.adminpanel.db.service.DbAdminService;
+import com.blobcity.adminpanel.exceptions.ValidationException;
 import com.blobcity.db.test.entity.User;
 import com.blobcity.db.constants.Credentials;
 import com.blobcity.db.search.SearchParams;
 import com.blobcity.db.search.SearchType;
+import com.blobcity.db.test.entity.pktests.CharTable;
+import com.blobcity.db.test.entity.pktests.DoubleTable;
+import com.blobcity.db.test.entity.pktests.FloatTable;
+import com.blobcity.db.test.entity.TestableCloudStorage;
+import com.blobcity.db.test.entity.datatype.BadTable;
+import com.blobcity.db.test.entity.datatype.Table1;
+import com.blobcity.db.test.entity.datatype.Table2;
+import com.blobcity.db.test.entity.pktests.IntTable;
+import com.blobcity.db.test.entity.pktests.LongTable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.After;
@@ -22,12 +37,6 @@ import static org.junit.Assert.*;
  * @author Akshay Dewan <akshay.dewan@blobcity.net>
  */
 public class CloudStorageTest {
-
-    private final String EMAIL = "test@blobcity.com";
-    private final String EMAIL2 = "test1@blobcity.com";
-    private final String EMAIL3 = "temp@blobcity.com";
-    private final String NAME = "Test";
-    private final String NAME2 = "BlobCity";
 
     public CloudStorageTest() {
     }
@@ -45,6 +54,16 @@ public class CloudStorageTest {
         }
     }
 
+    private static void clearSecondaryTables(List<Class<? extends TestableCloudStorage>> tablesToDelete) throws InstantiationException, IllegalAccessException {
+        DbAdminService service = new DbAdminService();
+        for (Class<? extends TestableCloudStorage> clazz : tablesToDelete) {
+            try {
+                service.dropTable("test", clazz.newInstance().getTableName());
+            } catch (ValidationException ex) {
+            }
+        }
+    }
+
     @AfterClass
     public static void tearDownClass() {
     }
@@ -57,10 +76,10 @@ public class CloudStorageTest {
     public void tearDown() {
         clearTable();
     }
-    
+
     private User createSample() {
-        User user = CloudStorage.newInstance(User.class, EMAIL3);
-        user.setName(NAME);
+        User user = CloudStorage.newInstance(User.class, "temp@blobcity.info");
+        user.setName("Test");
         user.setCharField('c');
         user.setDoubleField(0.0011);
         user.setFloatField(3.14f);
@@ -95,9 +114,9 @@ public class CloudStorageTest {
     @Test
     public void testNewInstance_Class_Object() {
         System.out.println("newInstance_Class_Object");
-        User user = CloudStorage.newInstance(User.class, EMAIL);
+        User user = CloudStorage.newInstance(User.class, "test@blobcity.info");
         assertNotNull(user);
-        assertEquals(EMAIL, user.getEmail());
+        assertEquals("test@blobcity.info", user.getEmail());
         System.out.println("newInstance_Class_Object: Successful");
     }
 
@@ -146,7 +165,8 @@ public class CloudStorageTest {
     public void testSelectAll() {
         System.out.println("selectAll");
         User insertedUser = createSample();
-        insertedUser.insert();
+        insertedUser.setEmail("test2");
+        assertTrue(insertedUser.insert());
         List result = CloudStorage.selectAll(User.class);
         assertEquals(1, result.size());
         assertEquals(insertedUser.getEmail(), result.get(0));
@@ -176,8 +196,8 @@ public class CloudStorageTest {
         System.out.println("setPk");
         User user = CloudStorage.newInstance(User.class);
         assertNotNull(user);
-        user.setPk(EMAIL);
-        assertEquals(EMAIL, user.getEmail());
+        user.setPk("test@blobcity.info");
+        assertEquals("test@blobcity.info", user.getEmail());
         System.out.println("setPk: Successful");
     }
 
@@ -202,8 +222,8 @@ public class CloudStorageTest {
     public void testSearch() {
         System.out.println("search static");
         SearchParams searchParams = new SearchParams();
-        searchParams.add("name", NAME);
-        searchParams.add("name", NAME2);
+        searchParams.add("name", "test@blobcity.info");
+        searchParams.add("name", "test2@blobcity.info");
         List<Object> list = CloudStorage.search(User.class, SearchType.AND, searchParams);
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("search static: Successful");
@@ -213,7 +233,7 @@ public class CloudStorageTest {
     public void testSearchAnd() {
         System.out.println("searchAnd");
         User user = CloudStorage.newInstance(User.class);
-        user.setName(NAME);
+        user.setName("test@blobcity.info");
         List<Object> list = user.searchAnd();
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("searchAnd: Successful");
@@ -223,7 +243,7 @@ public class CloudStorageTest {
     public void testSearchOr() {
         System.out.println("searchOr");
         User user = CloudStorage.newInstance(User.class);
-        user.setName(NAME);
+        user.setName("test@blobcity.info");
         List<Object> list = user.searchAnd();
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("searchOr: Successful");
@@ -281,12 +301,111 @@ public class CloudStorageTest {
         }
         System.out.println("instance remove: Successful");
     }
+
+    @Test
+    public void testPKTypes() throws ValidationException, InstantiationException, IllegalAccessException {
+        DbAdminService service = new DbAdminService();
+//        IntTable intTable = new IntTable();
+//        service.createTable("test", intTable.getStructure());
+//        intTable.setPk(5);
+//        boolean success = intTable.insert();
+//        assertTrue(success);
+        List<Class<? extends TestableCloudStorage>> tables = new ArrayList<Class<? extends TestableCloudStorage>>();
+        tables.add(IntTable.class);
+        tables.add(FloatTable.class);
+        tables.add(LongTable.class);
+        tables.add(DoubleTable.class);
+        tables.add(CharTable.class);
+        clearSecondaryTables(tables);
+        for (Class<? extends TestableCloudStorage> clazz : tables) {
+            TestableCloudStorage table = clazz.newInstance();
+            service.createTable("test", table.getStructure());
+            assertTrue("Insert failed for " + table.getTableName(), table.insert());
+            assertTrue("Load failed for " + table.getTableName(), table.load());
+        }
+        clearSecondaryTables(tables);
+        //TODO list pk
+    }
+
+    @Test
+    public void testChangeDataType() throws ValidationException, InstantiationException, IllegalAccessException {
+        List<Class<? extends TestableCloudStorage>> tables = new ArrayList<Class<? extends TestableCloudStorage>>();
+        tables.add(Table1.class);
+        clearSecondaryTables(tables);
+        DbAdminService service = new DbAdminService();
+        Table1 record1 = new Table1();
+        service.createTable("test", record1.getStructure());
+
+        record1.setEmail("test@blobcity.info");
+        record1.setName("5.46");
+        assertTrue(record1.insert());
+
+        Table1 record2 = new Table1();
+        record2.setEmail("test1@blobcity.info");
+        record2.setName("abcd");
+        assertTrue(record2.insert());
+
+        com.blobcity.adminpanel.db.bo.Column col = new Column();
+        col.setName("name");
+        col.setType(ColumnType.FLOAT);
+        assertTrue(service.alterColumn("test", Table1.TABLENAME, col));
+
+        List<Object> pks = Table2.selectAll(Table2.class);
+        for (Object pk : pks) {
+            String email = (String) pk;
+            Table2 instance = Table2.newLoadedInstance(Table2.class, email);
+            if (email.equals("test@blobcity.info")) {
+                assertEquals(instance.getName(), 5.46, 0);
+            } else if (email.equals("test1@blobcity.info")) {
+                assertEquals(instance.getName(), 0, 0);
+            } else {
+                fail("Unexpected record in table: " + instance.toString());
+            }
+        }
+
+        pks = Table1.selectAll(Table2.class);
+        for (Object pk : pks) {
+            String email = (String) pk;
+            Table1 instance = Table1.newLoadedInstance(Table1.class, email);
+            if (email.equals("test@blobcity.info")) {
+                assertEquals(instance.getName(), "5.46");
+            } else if (email.equals("test1@blobcity.info")) {
+                assertEquals(instance.getName(), "");
+            } else {
+                fail("Unexpected record in table: " + instance.toString());
+            }
+        }
+    }
+
+    @Test
+    public void testChangeCredentials() {
+        try {
+            Credentials.getInstance().init("test1", "test1");
+        } catch (Throwable t) {
+            assertTrue(t instanceof IllegalStateException);
+        }
+    }
+
+    @Test
+    public void testBadDataType() throws ValidationException {
+        //Create table with unsuported datatype
+        //insert
+        //what should the outcome be?
+        DbAdminService service = new DbAdminService();
+        BadTable table = new BadTable();
+        service.createTable("test", table.getStructure());
+        table.setEmail("test@blobcity.info");
+        table.setName(BigDecimal.TEN);
+        table.insert(); //assertTrue?
+        table.load();
+        table.getName(); //?
+    }
     /*
      * TODO
      * 1. Change of data type
      * 2. All possible PKs
      * 3. Alls PKs that are not allowed
-     * 4. BigDecimal to String conversion
+     * 4. Unsupported java type for column
      * 5. Table with non-column field
      * 6. Invalid credentials. Setting credentials twice.
      * 7. Multiple PKs
