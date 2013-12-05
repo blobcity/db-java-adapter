@@ -3,6 +3,7 @@
  */
 package com.blobcity.db;
 
+import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.fieldannotations.Column;
 import com.blobcity.db.fieldannotations.Primary;
 import java.lang.annotation.Annotation;
@@ -70,8 +71,8 @@ class TableStore {
                     columnName = column.name();
                 } else if (a instanceof Primary) {
                     if (primaryKeyField != null) {
-                        throw new RuntimeException("Possible repetition of primary key annotation in table: " + tableName
-                                + ". Reapeat value found for fields " + primaryKeyField.getName() + " and " + field.getName()
+                        throw new InternalAdapterException("Possible repetition of primary key annotation in table: " + tableName
+                                + ". Repeat value found for fields " + primaryKeyField.getName() + " and " + field.getName()
                                 + ". The @Primary annotation may be applied to only one field in an entity class");
                     }
                     primaryKeyField = field;

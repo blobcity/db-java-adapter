@@ -3,6 +3,7 @@
  */
 package com.blobcity.db.bquery;
 
+import com.blobcity.db.exceptions.InternalAdapterException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -88,15 +89,15 @@ public class QueryExecuter {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             return reader.readLine();
         } catch (MalformedURLException ex) {
-            throw new RuntimeException(ex);
+            throw new InternalAdapterException(ex);
         } catch (IOException ex) {
-            throw new RuntimeException("The database may be unavailable at this time for communication.", ex);
+            throw new InternalAdapterException("The database may be unavailable at this time for communication.", ex);
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException ex) {
-                    throw new RuntimeException(ex);
+                    throw new InternalAdapterException(ex);
                 }
             }
         }

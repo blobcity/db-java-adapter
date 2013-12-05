@@ -221,8 +221,6 @@ public abstract class CloudStorage<T extends CloudStorage> {
                     reportIfError(responseJson);
                 }
             }
-            
-            return;
         } catch (JSONException ex) {
             throw new InternalException("Error in API JSON response", ex);
         }
@@ -299,7 +297,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
         JSONObject responseJson;
         Entity entity = (Entity) clazz.getAnnotation(Entity.class);
         if (entity == null) {
-            throw new RuntimeException(clazz.getName() + " is not a valid entity class");
+            throw new InternalAdapterException(clazz.getName() + " is not a valid entity class");
         }
         
         requestJson = new JSONObject();
