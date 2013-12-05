@@ -10,8 +10,8 @@ package com.blobcity.db.exceptions;
 public class InternalAdapterException extends RuntimeException {
 
     public InternalAdapterException() {
-        super("This error occured interally within the adapter. Please make sure that your code and execution enviorment"
-                + " is configured correctly. Contact BlobCity Support for furhter assistance.");
+        super("This error occurred interally within the adapter. Please make sure that your code and execution environment"
+                + " is configured correctly. Contact BlobCity Support for further assistance.");
     }
 
     public InternalAdapterException(String message) {

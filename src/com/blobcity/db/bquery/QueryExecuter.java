@@ -97,7 +97,7 @@ public class QueryExecuter {
                 try {
                     reader.close();
                 } catch (IOException ex) {
-                    throw new InternalAdapterException(ex);
+                    //do nothing
                 }
             }
         }

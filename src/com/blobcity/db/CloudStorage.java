@@ -12,7 +12,7 @@ import com.blobcity.db.fieldannotations.Primary;
 import com.blobcity.db.constants.QueryType;
 import com.blobcity.db.exceptions.DbOperationException;
 import com.blobcity.db.exceptions.InternalAdapterException;
-import com.blobcity.db.exceptions.InternalException;
+import com.blobcity.db.exceptions.InternalDbException;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -108,7 +108,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             
             throw new DbOperationException(responseJson.getString("code"));
         } catch (JSONException ex) {
-            throw new InternalException("Error in API JSON response", ex);
+            throw new InternalDbException("Error in API JSON response", ex);
         }
     }
     
@@ -122,7 +122,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             
             throw new DbOperationException(responseJson.getString("code"));
         } catch (JSONException ex) {
-            throw new InternalException("Error in API JSON response", ex);
+            throw new InternalDbException("Error in API JSON response", ex);
         }
     }
     
@@ -134,7 +134,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
                 throw new DbOperationException(responseJson.getString("code"));
             }
         } catch (JSONException ex) {
-            throw new InternalException("Error in API JSON response", ex);
+            throw new InternalDbException("Error in API JSON response", ex);
         }
     }
     
@@ -178,7 +178,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             fromJson(payloadJson);
             return true;
         } catch (JSONException ex) {
-            throw new InternalException("Error in API JSON response", ex);
+            throw new InternalDbException("Error in API JSON response", ex);
         }
     }
     
@@ -222,7 +222,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
                 }
             }
         } catch (JSONException ex) {
-            throw new InternalException("Error in API JSON response", ex);
+            throw new InternalDbException("Error in API JSON response", ex);
         }
     }
     
@@ -254,14 +254,14 @@ public abstract class CloudStorage<T extends CloudStorage> {
                     requestJson.put("p", asJson());
                     break;
                 default:
-                    throw new InternalException("Attempting to executed unknown or unidentifed query");
+                    throw new InternalDbException("Attempting to executed unknown or unidentifed query");
             }
             
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
-            throw new InternalException("Error in processing request/response JSON", ex);
+            throw new InternalDbException("Error in processing request/response JSON", ex);
         } catch (IllegalArgumentException ex) {
             throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
         } catch (IllegalAccessException ex) {
@@ -274,7 +274,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
         JSONObject responseJson;
         Entity entity = (Entity) clazz.getAnnotation(Entity.class);
         if (entity == null) {
-            throw new InternalException(clazz.getName() + " is not a valid entity class");
+            throw new InternalDbException(clazz.getName() + " is not a valid entity class");
         }
         
         requestJson = new JSONObject();
@@ -288,7 +288,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
-            throw new InternalException("Error in processing request/response JSON", ex);
+            throw new InternalDbException("Error in processing request/response JSON", ex);
         }
     }
     
@@ -312,7 +312,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
-            throw new InternalException("Error in processing request/response JSON", ex);
+            throw new InternalDbException("Error in processing request/response JSON", ex);
         }
     }
     
@@ -333,7 +333,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
                 throw new DbOperationException(code, cause);
             }
         } catch (JSONException ex) {
-            throw new InternalException("Error in API JSON response", ex);
+            throw new InternalDbException("Error in API JSON response", ex);
         }
     }
     
@@ -382,7 +382,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             try {
                 field.set(this, jsonObject.get(columnName));
             } catch (JSONException ex) {
-                throw new InternalException("Error in processing JSON", ex);
+                throw new InternalDbException("Error in processing JSON", ex);
             } catch (IllegalArgumentException ex) {
                 throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
             } catch (IllegalAccessException ex) {
