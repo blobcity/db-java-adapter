@@ -11,6 +11,7 @@ import com.blobcity.db.constants.Credentials;
 import com.blobcity.db.fieldannotations.Primary;
 import com.blobcity.db.constants.QueryType;
 import com.blobcity.db.exceptions.DbOperationException;
+import com.blobcity.db.exceptions.InternalException;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -56,11 +57,10 @@ public abstract class CloudStorage<T extends CloudStorage> {
         try {
             return clazz.newInstance();
         } catch (InstantiationException ex) {
-            Logger.getLogger(CloudStorage.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(CloudStorage.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
         }
-        return null;
     }
 
     public static <T extends CloudStorage> T newInstance(Class<T> clazz, Object pk) throws DbOperationException {
@@ -96,7 +96,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
         List<Object> list;
 
         try {
-            if (responseJson.getString("ack").equals("1")) {
+            if ("1".equals(responseJson.getString("ack"))) {
                 jsonArray = responseJson.getJSONArray("keys");
                 list = new ArrayList<Object>();
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -107,7 +107,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
 
             throw new DbOperationException(responseJson.getString("code"));
         } catch (JSONException ex) {
-            throw new RuntimeException(ex);
+            throw new InternalException("Error in API JSON response", ex);
         }
     }
 
@@ -115,13 +115,13 @@ public abstract class CloudStorage<T extends CloudStorage> {
         JSONObject responseJson = postStaticRequest(clazz, QueryType.CONTAINS, key);
 
         try {
-            if (responseJson.getString("ack").equals("1")) {
+            if ("1".equals(responseJson.getString("ack"))) {
                 return responseJson.getBoolean("contains");
             }
 
             throw new DbOperationException(responseJson.getString("code"));
         } catch (JSONException ex) {
-            throw new RuntimeException(ex);
+            throw new InternalException("Error in API JSON response", ex);
         }
     }
 
@@ -133,7 +133,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
                 throw new DbOperationException(responseJson.getString("code"));
             }
         } catch (JSONException ex) {
-            throw new RuntimeException(ex);
+            throw new InternalException("Error in API JSON response", ex);
         }
     }
 
@@ -165,8 +165,8 @@ public abstract class CloudStorage<T extends CloudStorage> {
         try {
 
             /* If ack:0 then check for error code and report accordingly */
-            if (responseJson.getString("ack").equals("0")) {
-                if (responseJson.getString("code").equals("DB200")) {
+            if ("0".equals(responseJson.getString("ack"))) {
+                if ("DB200".equals(responseJson.getString("code"))) {
                     return false;
                 } else {
                     reportIfError(responseJson);
@@ -177,7 +177,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             fromJson(payloadJson);
             return true;
         } catch (JSONException ex) {
-            throw new RuntimeException(ex);
+            throw new InternalException("Error in API JSON response", ex);
         }
     }
 
@@ -189,13 +189,12 @@ public abstract class CloudStorage<T extends CloudStorage> {
     public boolean insert() {
         JSONObject responseJson = postRequest(QueryType.INSERT);
         try {
-            if (responseJson.getString("ack").equals("1")) {
+            if ("1".equals(responseJson.getString("ack"))) {
                 final JSONObject payloadJson = responseJson.getJSONObject("p");
                 fromJson(payloadJson);
                 return true;
-            } else if (responseJson.getString("ack").equals("0")) {
-                final String errorCode = responseJson.getString("code");
-                if (errorCode.equals("DB201")) {
+            } else if ("0".equals(responseJson.getString("ack"))) {
+                if ("DB201".equals(responseJson.getString("code"))) {
                     return false;
                 } else {
                     reportIfError(responseJson);
@@ -214,7 +213,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
         try {
 
             /* If ack:0 then check for error code and report accordingly */
-            if (responseJson.getString("ack").equals("0")) {
+            if ("0".equals(responseJson.getString("ack"))) {
                 if (responseJson.getString("code").equals("DB200")) {
                     return;
                 } else {
@@ -224,7 +223,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
 
             return;
         } catch (JSONException ex) {
-            throw new RuntimeException(ex);
+            throw new InternalException("Error in API JSON response", ex);
         }
     }
 
@@ -256,14 +255,14 @@ public abstract class CloudStorage<T extends CloudStorage> {
                     requestJson.put("p", asJson());
                     break;
                 default:
-                    throw new RuntimeException("Unrecognized / unsupported query executed");
+                    throw new InternalException("Attempting to executed unknown or unidentifed query");
             }
 
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
-            throw new RuntimeException(ex);
+            throw new InternalException("Error in processing request/response JSON", ex);
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException(ex);
         } catch (IllegalAccessException ex) {
@@ -290,7 +289,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
-            throw new RuntimeException(ex);
+            throw new InternalException("Error in processing request/response JSON", ex);
         }
     }
 
@@ -314,13 +313,13 @@ public abstract class CloudStorage<T extends CloudStorage> {
             responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
-            throw new RuntimeException(ex);
+            throw new InternalException("Error in processing request/response JSON", ex);
         }
     }
 
     private void reportIfError(JSONObject jsonObject) {
         try {
-            if (!jsonObject.getString("ack").equals("1")) {
+            if (!"1".equals(jsonObject.getString("ack"))) {
                 String cause = "";
                 String code = "";
 
@@ -335,7 +334,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
                 throw new DbOperationException(code, cause);
             }
         } catch (JSONException ex) {
-            throw new RuntimeException(ex);
+            throw new InternalException("Error in API JSON response", ex);
         }
     }
 
@@ -384,7 +383,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             try {
                 field.set(this, jsonObject.get(columnName));
             } catch (JSONException ex) {
-                throw new RuntimeException(ex);
+                throw new InternalException("Error in processing JSON", ex);
             } catch (IllegalArgumentException ex) {
                 throw new RuntimeException(ex);
             } catch (IllegalAccessException ex) {
