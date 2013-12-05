@@ -28,6 +28,9 @@ public class DbOperationException extends RuntimeException {
 
     @Override
     public String toString() {
-        return "DbOperationException{" + "errorCode=" + errorCode + '}';
+        final String s = getClass().getName();
+        final String message = getLocalizedMessage();
+        final String baseStr = (message != null) ? (s + ": " + message) : s;
+        return errorCode != null && !"".equals(errorCode) ? baseStr + " (" + errorCode + ")" : baseStr;
     }
 }

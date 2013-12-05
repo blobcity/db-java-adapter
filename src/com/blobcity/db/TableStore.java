@@ -3,6 +3,7 @@
  */
 package com.blobcity.db;
 
+import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.fieldannotations.Column;
 import com.blobcity.db.fieldannotations.Primary;
 import java.lang.annotation.Annotation;
@@ -18,7 +19,7 @@ import java.util.Map;
 class TableStore {
 
     private Map<String, Map<String, Field>> tableStructureMap = new HashMap<String, Map<String, Field>>();
-    private Map<String, Class> tableClassMap = new HashMap<String, Class>();
+    private Map<String, Class<? extends CloudStorage>> tableClassMap = new HashMap<String, Class<? extends CloudStorage>>();
     private Map<String, Field> tablePrimaryMap = new HashMap<String, Field>();
 
     private TableStore() {
@@ -33,7 +34,7 @@ class TableStore {
         private static final TableStore INSTANCE = new TableStore();
     }
 
-    public void registerClass(String name, Class clazz) {
+    public <T extends CloudStorage> void registerClass(String name, Class<T> clazz) {
         tableClassMap.put(name, clazz);
     }
 
@@ -70,8 +71,8 @@ class TableStore {
                     columnName = column.name();
                 } else if (a instanceof Primary) {
                     if (primaryKeyField != null) {
-                        throw new RuntimeException("Possible repetition of primary key annotation in table: " + tableName
-                                + ". Reapeat value found for fields " + primaryKeyField.getName() + " and " + field.getName()
+                        throw new InternalAdapterException("Repetition of primary key annotation in table: " + tableName
+                                + ". Repeat value found for fields " + primaryKeyField.getName() + " and " + field.getName()
                                 + ". The @Primary annotation may be applied to only one field in an entity class");
                     }
                     primaryKeyField = field;
