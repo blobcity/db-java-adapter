@@ -71,7 +71,7 @@ class TableStore {
                     columnName = column.name();
                 } else if (a instanceof Primary) {
                     if (primaryKeyField != null) {
-                        throw new InternalAdapterException("Possible repetition of primary key annotation in table: " + tableName
+                        throw new InternalAdapterException("Repetition of primary key annotation in table: " + tableName
                                 + ". Repeat value found for fields " + primaryKeyField.getName() + " and " + field.getName()
                                 + ". The @Primary annotation may be applied to only one field in an entity class");
                     }
