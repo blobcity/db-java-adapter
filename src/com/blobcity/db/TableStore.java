@@ -88,31 +88,4 @@ class TableStore {
         tablePrimaryMap.put(tableName, primaryKeyField);
         tableStructureMap.put(tableName, columnFieldMap);
     }
-    
-//      private void loadTableStructure(final String tableName) {
-//        if (!tableClassMap.containsKey(tableName)) {
-//            return;
-//        }
-//        Field[] fields = tableClassMap.get(tableName).getDeclaredFields();
-//        Map<String, Field> columnFieldMap = new HashMap<String, Field>();
-//        Field primaryKeyField = null;
-//        for (Field field : fields) {
-//            boolean isColumn = false;
-//            String columnName = null;
-//            for (Annotation a : field.getAnnotations()) {
-//                if (a instanceof Column) {
-//                    Column column = (Column) a;
-//                    columnName = column.name();
-//                    isColumn = true;
-//                } else if (a instanceof Primary && primaryKeyField == null) {
-//                    primaryKeyField = field;
-//                }
-//            }
-//            if (isColumn) {
-//                columnFieldMap.put(columnName, field);
-//            }
-//        }
-//        tablePrimaryMap.put(tableName, primaryKeyField);
-//        tableStructureMap.put(tableName, columnFieldMap);
-//    }
 }

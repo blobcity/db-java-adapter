@@ -305,11 +305,6 @@ public class CloudStorageTest {
     @Test
     public void testPKTypes() throws ValidationException, InstantiationException, IllegalAccessException {
         DbAdminService service = new DbAdminService();
-//        IntTable intTable = new IntTable();
-//        service.createTable("test", intTable.getStructure());
-//        intTable.setPk(5);
-//        boolean success = intTable.insert();
-//        assertTrue(success);
         List<Class<? extends TestableCloudStorage>> tables = new ArrayList<Class<? extends TestableCloudStorage>>();
         tables.add(IntTable.class);
         tables.add(FloatTable.class);
@@ -392,16 +387,4 @@ public class CloudStorageTest {
         table.load();
         table.getName(); //?
     }
-    /*
-     * TODO
-     * 1. Change of data type
-     * 2. All possible PKs
-     * 3. Alls PKs that are not allowed
-     * 4. Unsupported java type for column
-     * 5. Table with non-column field
-     * 6. Invalid credentials. Setting credentials twice.
-     * 7. Multiple PKs
-     * 8. Columns with same name
-     * 9. Schema altered with object not updated
-     */
 }

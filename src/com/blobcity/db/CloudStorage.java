@@ -380,7 +380,6 @@ public abstract class CloudStorage<T extends CloudStorage> {
             Field field = structureMap.get(columnName);
             field.setAccessible(true);
             try {
-                //field.set(this, jsonObject.get(columnName));
                 setFieldValue(field, jsonObject.get(columnName));
             } catch (JSONException ex) {
                 throw new InternalDbException("Error in processing JSON", ex);
