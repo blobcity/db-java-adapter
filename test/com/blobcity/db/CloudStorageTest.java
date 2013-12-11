@@ -165,7 +165,7 @@ public class CloudStorageTest {
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("search static: Successful");
     }
-    
+
     @Test
     public void testSearchAnd() {
         System.out.println("searchAnd");
@@ -175,13 +175,13 @@ public class CloudStorageTest {
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("searchAnd: Successful");
     }
-    
+
     @Test
     public void testSearchOr() {
         System.out.println("searchOr");
         User user = CloudStorage.newInstance(User.class);
         user.setName(NAME);
-        List<Object> list = user.searchAnd();
+        List<Object> list = user.searchOr();
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("searchOr: Successful");
     }
