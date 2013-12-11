@@ -237,7 +237,7 @@ public abstract class CloudStorage {
         throw new UnsupportedOperationException("Not yet supported.");
     }
 
-    public List<String> searchAnd() {
+    public List<Object> searchAnd() {
         throw new UnsupportedOperationException("Not yet supported.");
     }
 
