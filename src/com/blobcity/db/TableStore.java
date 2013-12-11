@@ -68,7 +68,9 @@ class TableStore {
             for (Annotation a : field.getAnnotations()) {
                 if (a instanceof Column) {
                     Column column = (Column) a;
-                    columnName = column.name();
+                    if (column.name() != null && !"".equals(column.name())) {
+                        columnName = column.name();
+                    }
                 } else if (a instanceof Primary) {
                     if (primaryKeyField != null) {
                         throw new InternalAdapterException("Repetition of primary key annotation in table: " + tableName
