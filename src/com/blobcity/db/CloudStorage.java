@@ -95,16 +95,20 @@ public abstract class CloudStorage {
     }
 
     public static <T extends CloudStorage> List<Object> selectAll(Class<T> clazz) {
+        return selectAll(clazz, Object.class);
+    }
+
+    public static <T extends CloudStorage, P extends Object> List<P> selectAll(final Class<T> clazz, final Class<P> returnTypeClazz) {
         JSONObject responseJson = postStaticRequest(clazz, QueryType.SELECT_ALL);
         JSONArray jsonArray;
-        List<Object> list;
+        List<P> list;
 
         try {
             if ("1".equals(responseJson.getString("ack"))) {
                 jsonArray = responseJson.getJSONArray("keys");
-                list = new ArrayList<Object>();
+                list = new ArrayList<P>();
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    list.add(jsonArray.get(i));
+                    list.add((P) jsonArray.get(i));
                 }
                 return list;
             }
