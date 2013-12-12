@@ -67,7 +67,7 @@ public abstract class CloudStorage {
         }
     }
 
-    public static <T extends CloudStorage> T newInstance(Class<T> clazz, Object pk) throws DbOperationException {
+    public static <T extends CloudStorage> T newInstance(Class<T> clazz, Object pk) {
         try {
             T obj = clazz.newInstance();
             obj.setPk(pk);
@@ -108,7 +108,7 @@ public abstract class CloudStorage {
                 jsonArray = responseJson.getJSONArray("keys");
                 list = new ArrayList<P>();
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    list.add((P) jsonArray.get(i));
+                    list.add(dataTypeTransform((P) jsonArray.getString(i), returnTypeClazz));
                 }
                 return list;
             }
@@ -153,7 +153,7 @@ public abstract class CloudStorage {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    protected void setPk(Object pk) throws DbOperationException {
+    protected void setPk(Object pk) {
         Field primaryKeyField = TableStore.getInstance().getPkField(table);
         try {
             primaryKeyField.setAccessible(true);
@@ -216,17 +216,12 @@ public abstract class CloudStorage {
     }
 
     public void remove() {
-        JSONObject responseJson;
-        responseJson = postRequest(QueryType.REMOVE);
+        final JSONObject responseJson = postRequest(QueryType.REMOVE);
         try {
 
             /* If ack:0 then check for error code and report accordingly */
-            if ("0".equals(responseJson.getString("ack"))) {
-                if (responseJson.getString("code").equals("DB200")) {
-                    return;
-                } else {
-                    reportIfError(responseJson);
-                }
+            if ("0".equals(responseJson.getString("ack")) && !responseJson.getString("code").equals("DB200")) {
+                reportIfError(responseJson);
             }
         } catch (JSONException ex) {
             throw new InternalDbException("Error in API JSON response", ex);
@@ -398,6 +393,35 @@ public abstract class CloudStorage {
                 throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
             }
         }
+    }
+
+    /**
+     * Transforms data type of a column dynamically leveraging Java Type Erasure. Currently supports all types that can be used as primary keys in tables.
+     *
+     * @param <P> Requested data format class parameter
+     * @param value value to be transformed
+     * @param returnTypeClazz Class object in who's image the {@code value} has to be transformed
+     * @return transformed data object to an appropriate type
+     */
+    private static <P extends Object> P dataTypeTransform(final P value, final Class<P> returnTypeClazz) {
+        if (returnTypeClazz == Integer.class) {
+            return (P) Integer.valueOf(value.toString());
+        }
+
+        if (returnTypeClazz == Float.class) {
+            return (P) Integer.valueOf(value.toString());
+        }
+
+        if (returnTypeClazz == Long.class) {
+            return (P) Integer.valueOf(value.toString());
+        }
+
+        if (returnTypeClazz == Double.class) {
+            return (P) Double.valueOf(value.toString());
+        }
+
+        // String
+        return value;
     }
 
     /**
