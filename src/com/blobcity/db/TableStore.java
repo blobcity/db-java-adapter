@@ -8,6 +8,7 @@ import com.blobcity.db.fieldannotations.Column;
 import com.blobcity.db.fieldannotations.Primary;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +65,9 @@ class TableStore {
         Field primaryKeyField = null;
         for (Field field : fields) {
             String columnName = field.getName();
+            if(Modifier.isTransient(field.getModifiers())) {
+                continue;
+            }
 
             for (Annotation a : field.getAnnotations()) {
                 if (a instanceof Column) {
@@ -80,7 +84,6 @@ class TableStore {
                     primaryKeyField = field;
                 }
             }
-
             columnFieldMap.put(columnName, field);
         }
 

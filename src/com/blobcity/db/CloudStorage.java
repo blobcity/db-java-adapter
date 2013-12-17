@@ -384,7 +384,7 @@ public abstract class CloudStorage {
             Field field = structureMap.get(columnName);
             field.setAccessible(true);
             try {
-                field.set(this, jsonObject.get(columnName));
+                setFieldValue(field, jsonObject.get(columnName));
             } catch (JSONException ex) {
                 throw new InternalDbException("Error in processing JSON", ex);
             } catch (IllegalArgumentException ex) {
@@ -431,7 +431,7 @@ public abstract class CloudStorage {
      * @throws IllegalAccessException
      */
     private void setFieldValue(Field field, Object value) throws IllegalAccessException {
-
+        
         try {
             PropertyDescriptor p = new PropertyDescriptor(field.getName(), this.getClass());
 
@@ -466,6 +466,10 @@ public abstract class CloudStorage {
             } else if (field.getType() == List.class && "".equals(value)) {
                 // Since the type required is List and the data is empty, value was an empty String a new ArrayList is to be given
                 p.getWriteMethod().invoke(this, new ArrayList());
+            } else if (field.getType().equals(Float.TYPE)) {
+                p.getWriteMethod().invoke(this, new Float(value.toString()));
+            } else if (field.getType().equals(Character.TYPE)) {
+                p.getWriteMethod().invoke(this, new Character(value.toString().charAt(0)));
             } else {
                 p.getWriteMethod().invoke(this, value);
             }

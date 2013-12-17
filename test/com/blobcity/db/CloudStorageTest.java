@@ -3,10 +3,26 @@
  */
 package com.blobcity.db;
 
+import com.blobcity.adminpanel.db.bo.Column;
+import com.blobcity.adminpanel.db.bo.ColumnType;
+import com.blobcity.adminpanel.db.service.DbAdminService;
+import com.blobcity.adminpanel.exceptions.ValidationException;
 import com.blobcity.db.test.entity.User;
 import com.blobcity.db.constants.Credentials;
 import com.blobcity.db.search.SearchParams;
 import com.blobcity.db.search.SearchType;
+import com.blobcity.db.test.entity.pktests.CharTable;
+import com.blobcity.db.test.entity.pktests.DoubleTable;
+import com.blobcity.db.test.entity.pktests.FloatTable;
+import com.blobcity.db.test.entity.TestableCloudStorage;
+import com.blobcity.db.test.entity.datatype.BadTable;
+import com.blobcity.db.test.entity.datatype.Table1;
+import com.blobcity.db.test.entity.datatype.Table2;
+import com.blobcity.db.test.entity.pktests.IntTable;
+import com.blobcity.db.test.entity.pktests.LongTable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -18,13 +34,9 @@ import static org.junit.Assert.*;
 /**
  *
  * @author Sanket Sarang <sanket@blobcity.net>
+ * @author Akshay Dewan <akshay.dewan@blobcity.net>
  */
 public class CloudStorageTest {
-
-    private final String EMAIL = "test@blobcity.com";
-    private final String EMAIL2 = "test1@blobcity.com";
-    private final String NAME = "Test";
-    private final String NAME2 = "BlobCity";
 
     public CloudStorageTest() {
     }
@@ -32,9 +44,23 @@ public class CloudStorageTest {
     @BeforeClass
     public static void setUpClass() {
         Credentials.getInstance().init("test", "test");
+        clearTable();
+    }
+
+    private static void clearTable() {
         List<Object> keys = CloudStorage.selectAll(User.class);
         for (Object key : keys) {
             CloudStorage.remove(User.class, key);
+        }
+    }
+
+    private static void clearSecondaryTables(List<Class<? extends TestableCloudStorage>> tablesToDelete) throws InstantiationException, IllegalAccessException {
+        DbAdminService service = new DbAdminService();
+        for (Class<? extends TestableCloudStorage> clazz : tablesToDelete) {
+            try {
+                service.dropTable("test", clazz.newInstance().getTableName());
+            } catch (ValidationException ex) {
+            }
         }
     }
 
@@ -48,6 +74,27 @@ public class CloudStorageTest {
 
     @After
     public void tearDown() {
+        clearTable();
+    }
+
+    private User createSample() {
+        User user = CloudStorage.newInstance(User.class, "temp@blobcity.info");
+        user.setName("Test");
+        user.setCharField('c');
+        user.setDoubleField(0.0011);
+        user.setFloatField(3.14f);
+        user.setIntField(7);
+        List<Character> charList = Arrays.asList('a', 'b', 'c');
+        List<Double> doubleList = Arrays.asList(1.1, 1.2, 1.3, 1.4);
+        List<Float> floatList = Arrays.asList(3.1f, 3.2f, 3.3f);
+        List<Integer> intList = Arrays.asList(5, 6, 7, 8);
+        List<String> stringList = Arrays.asList("how", "questions", "authors", "indicator");
+        user.setListCharField(charList);
+        user.setListDoubleField(doubleList);
+        user.setListFloatField(floatList);
+        user.setListIntField(intList);
+        user.setListStringField(stringList);
+        return user;
     }
 
     /**
@@ -58,7 +105,7 @@ public class CloudStorageTest {
         System.out.println("newInstance_Class");
         User user = CloudStorage.newInstance(User.class);
         assertNotNull(user);
-        System.out.println("newInstance_Class: Successful");;
+        System.out.println("newInstance_Class: Successful");
     }
 
     /**
@@ -67,9 +114,9 @@ public class CloudStorageTest {
     @Test
     public void testNewInstance_Class_Object() {
         System.out.println("newInstance_Class_Object");
-        User user = CloudStorage.newInstance(User.class, EMAIL);
+        User user = CloudStorage.newInstance(User.class, "test@blobcity.info");
         assertNotNull(user);
-        assertEquals(EMAIL, user.getEmail());
+        assertEquals("test@blobcity.info", user.getEmail());
         System.out.println("newInstance_Class_Object: Successful");
     }
 
@@ -79,9 +126,8 @@ public class CloudStorageTest {
     @Test
     public void testInsert() {
         System.out.println("insert");
-        User user = CloudStorage.newInstance(User.class, EMAIL);
+        User user = createSample();
         assertNotNull(user);
-        user.setName(NAME);
         boolean result = user.insert();
         assertEquals(true, result);
         result = user.insert();
@@ -95,10 +141,20 @@ public class CloudStorageTest {
     @Test
     public void testNewLoadedInstance() {
         System.out.println("newLoadedInstance");
-        User user = CloudStorage.newLoadedInstance(User.class, EMAIL);
-        assertEquals(NAME, user.getName());
-        user = CloudStorage.newLoadedInstance(User.class, EMAIL2);
-        assertNull(user);
+        User insertedUser = createSample();
+        insertedUser.insert();
+        User user = CloudStorage.newLoadedInstance(User.class, insertedUser.getEmail());
+        assertEquals(user.getName(), insertedUser.getName());
+        assertEquals(user.getCharField(), insertedUser.getCharField());
+        assertEquals(user.getDoubleField(), insertedUser.getDoubleField(), 0);
+        assertEquals(user.getEmail(), insertedUser.getEmail());
+        assertEquals(user.getFloatField(), insertedUser.getFloatField(), 0);
+        assertEquals(user.getIntField(), insertedUser.getIntField());
+        assertEquals(user.getListCharField(), insertedUser.getListCharField());
+        assertEquals(user.getListDoubleField(), insertedUser.getListDoubleField());
+        assertEquals(user.getListFloatField(), insertedUser.getListFloatField());
+        assertEquals(user.getListIntField(), insertedUser.getListIntField());
+        assertEquals(user.getListStringField(), insertedUser.getListStringField());
         System.out.println("newLoadedInstance: Successful");
     }
 
@@ -108,9 +164,12 @@ public class CloudStorageTest {
     @Test
     public void testSelectAll() {
         System.out.println("selectAll");
+        User insertedUser = createSample();
+        insertedUser.setEmail("test2");
+        assertTrue(insertedUser.insert());
         List result = CloudStorage.selectAll(User.class);
         assertEquals(1, result.size());
-        assertEquals(EMAIL, result.get(0));
+        assertEquals(insertedUser.getEmail(), result.get(0));
         System.out.println("selectAll: Successful");
     }
 
@@ -120,9 +179,11 @@ public class CloudStorageTest {
     @Test
     public void testContains() {
         System.out.println("contains");
-        boolean outcome1 = CloudStorage.contains(User.class, EMAIL);//existent record
+        User insertedUser = createSample();
+        insertedUser.insert();
+        boolean outcome1 = CloudStorage.contains(User.class, insertedUser.getEmail());//existent record
         assertEquals(true, outcome1);
-        boolean outcome2 = CloudStorage.contains(User.class, EMAIL2);//in-existent record
+        boolean outcome2 = CloudStorage.contains(User.class, "foo");//in-existent record
         assertEquals(false, outcome2);
         System.out.println("contains: Successful");
     }
@@ -135,8 +196,8 @@ public class CloudStorageTest {
         System.out.println("setPk");
         User user = CloudStorage.newInstance(User.class);
         assertNotNull(user);
-        user.setPk(EMAIL);
-        assertEquals(EMAIL, user.getEmail());
+        user.setPk("test@blobcity.info");
+        assertEquals("test@blobcity.info", user.getEmail());
         System.out.println("setPk: Successful");
     }
 
@@ -146,10 +207,12 @@ public class CloudStorageTest {
     @Test
     public void testLoad() {
         System.out.println("load");
-        User user = CloudStorage.newInstance(User.class, EMAIL);
+        User insertedUser = createSample();
+        insertedUser.insert();
+        User user = CloudStorage.newInstance(User.class, insertedUser.getEmail());
         boolean loaded = user.load();
         assertEquals(true, loaded);
-        user = CloudStorage.newInstance(User.class, EMAIL2);
+        user = CloudStorage.newInstance(User.class, "foo");
         loaded = user.load();
         assertEquals(false, loaded);
         System.out.println("load: Successful");
@@ -159,8 +222,8 @@ public class CloudStorageTest {
     public void testSearch() {
         System.out.println("search static");
         SearchParams searchParams = new SearchParams();
-        searchParams.add("name", NAME);
-        searchParams.add("name", NAME2);
+        searchParams.add("name", "test@blobcity.info");
+        searchParams.add("name", "test2@blobcity.info");
         List<Object> list = CloudStorage.search(User.class, SearchType.AND, searchParams);
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("search static: Successful");
@@ -170,7 +233,7 @@ public class CloudStorageTest {
     public void testSearchAnd() {
         System.out.println("searchAnd");
         User user = CloudStorage.newInstance(User.class);
-        user.setName(NAME);
+        user.setName("test@blobcity.info");
         List<Object> list = user.searchAnd();
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("searchAnd: Successful");
@@ -180,8 +243,8 @@ public class CloudStorageTest {
     public void testSearchOr() {
         System.out.println("searchOr");
         User user = CloudStorage.newInstance(User.class);
-        user.setName(NAME);
-        List<Object> list = user.searchOr();
+        user.setName("test@blobcity.info");
+        List<Object> list = user.searchAnd();
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("searchOr: Successful");
     }
@@ -192,14 +255,16 @@ public class CloudStorageTest {
     @Test
     public void testSave() {
         System.out.println("save");
-        User user = CloudStorage.newLoadedInstance(User.class, EMAIL);
+        User sample = createSample();
+        sample.insert();
+        User user = CloudStorage.newLoadedInstance(User.class, sample.getEmail());
         assertNotNull(user);
-        assertEquals(NAME, user.getName());
-        user.setName(NAME2);
+        assertEquals(sample.getName(), user.getName());
+        user.setName("Name2");
         user.save();
-        user = CloudStorage.newLoadedInstance(User.class, EMAIL);
+        user = CloudStorage.newLoadedInstance(User.class, sample.getEmail());
         assertNotNull(user);
-        assertEquals(NAME2, user.getName());
+        assertEquals("Name2", user.getName());
         System.out.println("save: Successful");
     }
 
@@ -209,13 +274,10 @@ public class CloudStorageTest {
     @Test
     public void testRemove_Class_Object() {
         System.out.println("static remove");
-        if (!CloudStorage.contains(User.class, EMAIL)) {
-            fail("Cannot test remove if record to remove is not present in database. "
-                    + "It is possible that some other methods responsible for data insertion on the contains"
-                    + "method to check for presense of record failed.");
-        }
-        CloudStorage.remove(User.class, EMAIL);
-        if (CloudStorage.contains(User.class, EMAIL)) {
+        User sample = createSample();
+        sample.insert();
+        CloudStorage.remove(User.class, sample.getEmail());
+        if (CloudStorage.contains(User.class, sample.getEmail())) {
             fail("Remove operation failed. It is possible that contains method to check presence of record "
                     + "is misbehaving.");
         }
@@ -228,15 +290,101 @@ public class CloudStorageTest {
     @Test
     public void testRemove_0args() {
         System.out.println("instance remove");
-        User user = CloudStorage.newInstance(User.class, EMAIL);
+        User user = createSample();
         user.insert();
-        user = CloudStorage.newLoadedInstance(User.class, EMAIL);
+        user = CloudStorage.newLoadedInstance(User.class, user.getEmail());
         assertNotNull(user);
         user.remove();
-        boolean contains = CloudStorage.contains(User.class, EMAIL);
+        boolean contains = CloudStorage.contains(User.class, user.getEmail());
         if (contains) {
             fail("Non static remove operation failed. It is possible that contains method used to check removal is misbehaving.");
         }
         System.out.println("instance remove: Successful");
+    }
+
+    @Test
+    public void testPKTypes() throws ValidationException, InstantiationException, IllegalAccessException {
+        DbAdminService service = new DbAdminService();
+        List<Class<? extends TestableCloudStorage>> tables = new ArrayList<Class<? extends TestableCloudStorage>>();
+        tables.add(IntTable.class);
+        tables.add(FloatTable.class);
+        tables.add(LongTable.class);
+        tables.add(DoubleTable.class);
+        tables.add(CharTable.class);
+        clearSecondaryTables(tables);
+        for (Class<? extends TestableCloudStorage> clazz : tables) {
+            TestableCloudStorage table = clazz.newInstance();
+            service.createTable("test", table.getStructure());
+            assertTrue("Insert failed for " + table.getTableName(), table.insert());
+            assertTrue("Load failed for " + table.getTableName(), table.load());
+        }
+        clearSecondaryTables(tables);
+        //TODO list pk
+    }
+
+    @Test
+    public void testChangeDataType() throws ValidationException, InstantiationException, IllegalAccessException {
+        List<Class<? extends TestableCloudStorage>> tables = new ArrayList<Class<? extends TestableCloudStorage>>();
+        tables.add(Table1.class);
+        tables.add(Table2.class);
+        clearSecondaryTables(tables);
+        DbAdminService service = new DbAdminService();
+        Table1 record1 = new Table1();
+        service.createTable("test", record1.getStructure());
+
+        record1.setEmail("test@blobcity.info");
+        record1.setName("5.46");
+        assertTrue(record1.insert());
+
+        Table1 record2 = new Table1();
+        record2.setEmail("test1@blobcity.info");
+        record2.setName("abcd");
+        assertTrue(record2.insert());
+
+        com.blobcity.adminpanel.db.bo.Column col = new Column();
+        col.setName("name");
+        col.setType(ColumnType.FLOAT);
+        assertTrue(service.alterColumn("test", Table1.TABLENAME, col));
+        assertTrue(service.renameTable("test", Table1.TABLENAME, Table2.TABLENAME));
+
+        List<Object> pks = Table2.selectAll(Table2.class);
+        for (Object pk : pks) {
+            String email = (String) pk;
+            Table2 instance = Table2.newLoadedInstance(Table2.class, email);
+            if (email.equals("test@blobcity.info")) {
+                assertEquals(instance.getName(), 5.46, 0.0001);
+            } else if (email.equals("test1@blobcity.info")) {
+                assertEquals(instance.getName(), 0, 0);
+            } else {
+                fail("Unexpected record in table: " + instance.toString());
+            }
+        }
+    }
+
+    @Test
+    public void testChangeCredentials() {
+        try {
+            Credentials.getInstance().init("test1", "test1");
+        } catch (Throwable t) {
+            assertTrue(t instanceof IllegalStateException);
+        }
+    }
+
+    @Test
+    public void testBadDataType() throws ValidationException, InstantiationException, IllegalAccessException {
+        //Create table with unsuported datatype
+        //insert
+        //what should the outcome be?
+        DbAdminService service = new DbAdminService();
+        List<Class<? extends TestableCloudStorage>> deleteList = new ArrayList<Class<? extends TestableCloudStorage>>();
+        deleteList.add(BadTable.class);
+        clearSecondaryTables(deleteList);
+        BadTable table = new BadTable();
+        service.createTable("test", table.getStructure());
+        table.setEmail("test@blobcity.info");
+        table.setName(BigDecimal.TEN);
+        table.insert(); //assertTrue?
+        table.load();
+        table.getName(); //?
     }
 }
