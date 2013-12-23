@@ -386,7 +386,7 @@ public abstract class CloudStorage {
             try {
                 setFieldValue(field, jsonObject.get(columnName));
             } catch (JSONException ex) {
-                throw new InternalDbException("Error in processing JSON", ex);
+                throw new InternalDbException("Error in processing JSON. Class: " + this.getClass() + " Request: " + jsonObject.toString(), ex);
             } catch (IllegalArgumentException ex) {
                 throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
             } catch (IllegalAccessException ex) {
@@ -431,7 +431,7 @@ public abstract class CloudStorage {
      * @throws IllegalAccessException
      */
     private void setFieldValue(Field field, Object value) throws IllegalAccessException {
-        
+
         try {
             PropertyDescriptor p = new PropertyDescriptor(field.getName(), this.getClass());
 
@@ -474,7 +474,7 @@ public abstract class CloudStorage {
                 p.getWriteMethod().invoke(this, value);
             }
         } catch (Exception ex) {
-            Logger.getLogger(CloudStorage.class.getName()).log(Level.SEVERE, "{0} couldn''t be set. Field Type was {1} but got {2}", new Object[]{field.getName(), field.getType(), value.getClass().getCanonicalName()});
+            Logger.getLogger(CloudStorage.class.getName()).log(Level.SEVERE, "[{3}|{4}]: {0} couldn''t be set. Field Type was {1} but got {2}", new Object[]{field.getName(), field.getType(), value.getClass().getCanonicalName(), this.getClass(), getPrimaryKeyValue()});
         }
     }
 }
