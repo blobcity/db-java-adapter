@@ -26,34 +26,37 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * This class provides the connection and query execution framework for performing operations on the BlobCity data
- * store. This class must be extended by any Model that represents a BlobCity Entity.
+ * This class provides the connection and query execution framework for performing operations on the BlobCity data store. This class must be extended by any
+ * Model that represents a BlobCity Entity.
  *
  * @author Sanket Sarang
  * @author Karishma
  * @version 1.0
  * @since 1.0
  */
-public abstract class CloudStorage<T extends CloudStorage> {
-    
+public abstract class CloudStorage {
+
     private String table = null;
-    
+
     public CloudStorage() {
         for (Annotation annotation : this.getClass().getAnnotations()) {
             if (annotation instanceof Entity) {
                 Entity blobCityEntity = (Entity) annotation;
                 table = blobCityEntity.table();
+                if (table == null || "".equals(table)) {
+                    table = this.getClass().getSimpleName();
+                }
                 break;
             }
         }
-        
+
         if (table == null) {
             table = this.getClass().getSimpleName();
         }
-        
+
         TableStore.getInstance().registerClass(table, this.getClass());
     }
-    
+
     public static <T extends CloudStorage> T newInstance(Class<T> clazz) {
         try {
             return clazz.newInstance();
@@ -63,8 +66,8 @@ public abstract class CloudStorage<T extends CloudStorage> {
             throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
         }
     }
-    
-    public static <T extends CloudStorage> T newInstance(Class<T> clazz, Object pk) throws DbOperationException {
+
+    public static <T extends CloudStorage> T newInstance(Class<T> clazz, Object pk) {
         try {
             T obj = clazz.newInstance();
             obj.setPk(pk);
@@ -75,7 +78,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
         }
     }
-    
+
     public static <T extends CloudStorage> T newLoadedInstance(Class<T> clazz, Object pk) {
         try {
             T obj = clazz.newInstance();
@@ -90,45 +93,49 @@ public abstract class CloudStorage<T extends CloudStorage> {
             throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
         }
     }
-    
+
     public static <T extends CloudStorage> List<Object> selectAll(Class<T> clazz) {
+        return selectAll(clazz, Object.class);
+    }
+
+    public static <T extends CloudStorage, P extends Object> List<P> selectAll(final Class<T> clazz, final Class<P> returnTypeClazz) {
         JSONObject responseJson = postStaticRequest(clazz, QueryType.SELECT_ALL);
         JSONArray jsonArray;
-        List<Object> list;
-        
+        List<P> list;
+
         try {
             if ("1".equals(responseJson.getString("ack"))) {
                 jsonArray = responseJson.getJSONArray("keys");
-                list = new ArrayList<Object>();
+                list = new ArrayList<P>();
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    list.add(jsonArray.get(i));
+                    list.add(dataTypeTransform((P) jsonArray.getString(i), returnTypeClazz));
                 }
                 return list;
             }
-            
+
             throw new DbOperationException(responseJson.getString("code"));
         } catch (JSONException ex) {
             throw new InternalDbException("Error in API JSON response", ex);
         }
     }
-    
+
     public static <T extends CloudStorage> boolean contains(Class<T> clazz, Object key) {
         JSONObject responseJson = postStaticRequest(clazz, QueryType.CONTAINS, key);
-        
+
         try {
             if ("1".equals(responseJson.getString("ack"))) {
                 return responseJson.getBoolean("contains");
             }
-            
+
             throw new DbOperationException(responseJson.getString("code"));
         } catch (JSONException ex) {
             throw new InternalDbException("Error in API JSON response", ex);
         }
     }
-    
+
     public static <T extends CloudStorage> void remove(Class<T> clazz, Object pk) {
         JSONObject responseJson = postStaticRequest(clazz, QueryType.REMOVE, pk);
-        
+
         try {
             if (responseJson.getString("ack").equals("0")) {
                 throw new DbOperationException(responseJson.getString("code"));
@@ -137,16 +144,16 @@ public abstract class CloudStorage<T extends CloudStorage> {
             throw new InternalDbException("Error in API JSON response", ex);
         }
     }
-    
+
     public static <T extends CloudStorage> List<Object> search(Class<T> clazz, SearchType searchType, SearchParams searchParams) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     public static <T extends CloudStorage> List<Object> filter(Class<T> clazz, String filterName) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
-    protected void setPk(Object pk) throws DbOperationException {
+
+    protected void setPk(Object pk) {
         Field primaryKeyField = TableStore.getInstance().getPkField(table);
         try {
             primaryKeyField.setAccessible(true);
@@ -158,7 +165,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
         }
     }
-    
+
     public boolean load() {
         JSONObject responseJson;
         JSONObject payloadJson;
@@ -173,7 +180,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
                     reportIfError(responseJson);
                 }
             }
-            
+
             payloadJson = responseJson.getJSONObject("p");
             fromJson(payloadJson);
             return true;
@@ -181,12 +188,12 @@ public abstract class CloudStorage<T extends CloudStorage> {
             throw new InternalDbException("Error in API JSON response", ex);
         }
     }
-    
+
     public void save() {
         JSONObject responseJson = postRequest(QueryType.SAVE);
         reportIfError(responseJson);
     }
-    
+
     public boolean insert() {
         JSONObject responseJson = postRequest(QueryType.INSERT);
         try {
@@ -204,33 +211,28 @@ public abstract class CloudStorage<T extends CloudStorage> {
         } catch (Exception ex) {
             reportIfError(responseJson);
         }
-        
+
         return false;
     }
-    
+
     public void remove() {
-        JSONObject responseJson;
-        responseJson = postRequest(QueryType.REMOVE);
+        final JSONObject responseJson = postRequest(QueryType.REMOVE);
         try {
 
             /* If ack:0 then check for error code and report accordingly */
-            if ("0".equals(responseJson.getString("ack"))) {
-                if (responseJson.getString("code").equals("DB200")) {
-                    return;
-                } else {
-                    reportIfError(responseJson);
-                }
+            if ("0".equals(responseJson.getString("ack")) && !responseJson.getString("code").equals("DB200")) {
+                reportIfError(responseJson);
             }
         } catch (JSONException ex) {
             throw new InternalDbException("Error in API JSON response", ex);
         }
     }
-    
+
     public List<Object> searchOr() {
         throw new UnsupportedOperationException("Not yet supported.");
     }
-    
-    public List<String> searchAnd() {
+
+    public List<Object> searchAnd() {
         throw new UnsupportedOperationException("Not yet supported.");
     }
 
@@ -243,7 +245,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             requestJson.put("key", Credentials.getInstance().getAppKey());
             requestJson.put("t", table);
             requestJson.put("q", queryType.getQueryCode());
-            
+
             switch (queryType) {
                 case LOAD:
                 case REMOVE:
@@ -256,7 +258,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
                 default:
                     throw new InternalDbException("Attempting to executed unknown or unidentifed query");
             }
-            
+
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             responseJson = new JSONObject(responseString);
             return responseJson;
@@ -268,7 +270,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
         }
     }
-    
+
     private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType) {
         JSONObject requestJson;
         JSONObject responseJson;
@@ -276,14 +278,15 @@ public abstract class CloudStorage<T extends CloudStorage> {
         if (entity == null) {
             throw new InternalDbException(clazz.getName() + " is not a valid entity class");
         }
-        
+
         requestJson = new JSONObject();
         try {
             requestJson.put("app", Credentials.getInstance().getAppId());
             requestJson.put("key", Credentials.getInstance().getAppKey());
-            requestJson.put("t", entity.table());
+            final String tableName = entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+            requestJson.put("t", tableName);
             requestJson.put("q", queryType.getQueryCode());
-            
+
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             responseJson = new JSONObject(responseString);
             return responseJson;
@@ -291,7 +294,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
             throw new InternalDbException("Error in processing request/response JSON", ex);
         }
     }
-    
+
     private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType, Object pk) {
         JSONObject requestJson;
         JSONObject responseJson;
@@ -299,15 +302,16 @@ public abstract class CloudStorage<T extends CloudStorage> {
         if (entity == null) {
             throw new InternalAdapterException(clazz.getName() + " is not a valid entity class");
         }
-        
+
         requestJson = new JSONObject();
         try {
             requestJson.put("app", Credentials.getInstance().getAppId());
             requestJson.put("key", Credentials.getInstance().getAppKey());
-            requestJson.put("t", entity.table());
+            final String tableName = entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+            requestJson.put("t", tableName);
             requestJson.put("q", queryType.getQueryCode());
             requestJson.put("pk", pk);
-            
+
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             responseJson = new JSONObject(responseString);
             return responseJson;
@@ -315,31 +319,31 @@ public abstract class CloudStorage<T extends CloudStorage> {
             throw new InternalDbException("Error in processing request/response JSON", ex);
         }
     }
-    
+
     private void reportIfError(JSONObject jsonObject) {
         try {
             if (!"1".equals(jsonObject.getString("ack"))) {
                 String cause = "";
                 String code = "";
-                
+
                 if (jsonObject.has("code")) {
                     code = jsonObject.getString("code");
                 }
-                
+
                 if (jsonObject.has("cause")) {
                     cause = jsonObject.getString("cause");
                 }
-                
+
                 throw new DbOperationException(code, cause);
             }
         } catch (JSONException ex) {
             throw new InternalDbException("Error in API JSON response", ex);
         }
     }
-    
+
     private Object getPrimaryKeyValue() throws IllegalArgumentException, IllegalAccessException {
         Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
-        
+
         for (String columnName : structureMap.keySet()) {
             Field field = structureMap.get(columnName);
             if (field.getAnnotation(Primary.class) != null) {
@@ -347,7 +351,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
                 return field.get(this);
             }
         }
-        
+
         return null;
     }
 
@@ -361,21 +365,21 @@ public abstract class CloudStorage<T extends CloudStorage> {
      */
     private JSONObject asJson() throws IllegalArgumentException, IllegalAccessException, JSONException {
         JSONObject jsonObject = new JSONObject();
-        
+
         Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
-        
+
         for (String columnName : structureMap.keySet()) {
             Field field = structureMap.get(columnName);
             field.setAccessible(true);
             jsonObject.put(columnName, field.get(this));
         }
-        
+
         return jsonObject;
     }
-    
+
     private void fromJson(JSONObject jsonObject) {
         Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
-        
+
         for (String columnName : structureMap.keySet()) {
             Field field = structureMap.get(columnName);
             field.setAccessible(true);
@@ -392,12 +396,42 @@ public abstract class CloudStorage<T extends CloudStorage> {
     }
 
     /**
+     * Transforms data type of a column dynamically leveraging Java Type Erasure. Currently supports all types that can be used as primary keys in tables.
+     *
+     * @param <P> Requested data format class parameter
+     * @param value value to be transformed
+     * @param returnTypeClazz Class object in who's image the {@code value} has to be transformed
+     * @return transformed data object to an appropriate type
+     */
+    private static <P extends Object> P dataTypeTransform(final P value, final Class<P> returnTypeClazz) {
+        if (returnTypeClazz == Integer.class) {
+            return (P) Integer.valueOf(value.toString());
+        }
+
+        if (returnTypeClazz == Float.class) {
+            return (P) Integer.valueOf(value.toString());
+        }
+
+        if (returnTypeClazz == Long.class) {
+            return (P) Integer.valueOf(value.toString());
+        }
+
+        if (returnTypeClazz == Double.class) {
+            return (P) Double.valueOf(value.toString());
+        }
+
+        // String
+        return value;
+    }
+
+    /**
      *
      * @param field
      * @param value
      * @throws IllegalAccessException
      */
     private void setFieldValue(Field field, Object value) throws IllegalAccessException {
+        
         try {
             PropertyDescriptor p = new PropertyDescriptor(field.getName(), this.getClass());
 
@@ -417,7 +451,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
                     Logger.getLogger(CloudStorage.class.getName()).log(Level.SEVERE, null, ex + "-Class not found: " + str);
                 }
             } /* Check of the value to be set is in the form of a JSONArray */ else if (value instanceof JSONArray) {
-                
+
                 JSONArray arr = (JSONArray) value;
                 ArrayList l = new ArrayList();
                 try {
@@ -428,7 +462,7 @@ public abstract class CloudStorage<T extends CloudStorage> {
                     Logger.getLogger(CloudStorage.class.getName()).log(Level.SEVERE, null, ex + "-" + field.getName());
                 }
                 p.getWriteMethod().invoke(this, l);
-                
+
             } else if (field.getType() == List.class && "".equals(value)) {
                 // Since the type required is List and the data is empty, value was an empty String a new ArrayList is to be given
                 p.getWriteMethod().invoke(this, new ArrayList());

@@ -14,5 +14,5 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Entity {
-    public String table();
+    public String table() default "";
 }
