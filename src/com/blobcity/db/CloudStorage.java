@@ -259,7 +259,6 @@ public abstract class CloudStorage {
                     throw new InternalDbException("Attempting to executed unknown or unidentifed query");
             }
 
-            System.out.println(">>>>>>> Request: " + requestJson);
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             responseJson = new JSONObject(responseString);
             return responseJson;
