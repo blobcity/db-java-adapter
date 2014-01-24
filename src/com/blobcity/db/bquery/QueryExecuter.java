@@ -28,14 +28,13 @@ public class QueryExecuter {
     private static final String JNDI_LOCAL_RESOURCE = "java:global/BlobCityDB/BQueryExecutorBean";
     private static final String JNDI_REMOTE_RESOURCE = "java:global/BlobCityDB/BQueryExecutorBean!com.blobcity.db.bquery.BQueryExecutorBeanRemote";
     private static BQueryExecutorBeanRemote bean;
-    private static InitialContext context;
 
     static {
         opmode:
         {
             /* Check for availability of local EJB */
             try {
-                context = new InitialContext();
+                final InitialContext context = new InitialContext();
                 context.lookup(JNDI_LOCAL_RESOURCE);
                 Logger.getLogger("BlobCity").log(Level.INFO, "Operation mode of no-query available in the current context. "
                         + "Please consider compiling your application on the BlobCity Cloud to leverage no-query capabilities");
@@ -45,7 +44,7 @@ public class QueryExecuter {
 
             /* Check for availability of remote EJB */
             try {
-                context = new InitialContext();
+                final InitialContext context = new InitialContext();
                 bean = (BQueryExecutorBeanRemote) context.lookup(JNDI_REMOTE_RESOURCE);
                 operationMode = OperationMode.REMOTE_EJB;
                 Logger.getLogger("BlobCity").log(Level.INFO, "Operation mode set to remote-ejb");
