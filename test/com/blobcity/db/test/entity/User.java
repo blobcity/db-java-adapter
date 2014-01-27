@@ -3,7 +3,6 @@
  */
 package com.blobcity.db.test.entity;
 
-import com.blobcity.db.classannotations.Entity;
 import com.blobcity.db.fieldannotations.Column;
 import com.blobcity.db.fieldannotations.Primary;
 import com.blobcity.db.CloudStorage;
@@ -13,7 +12,6 @@ import java.util.List;
  *
  * @author Sanket Sarang <sanket@blobcity.net>
  */
-@Entity(table = "User")
 public class User extends CloudStorage {
 
     @Primary

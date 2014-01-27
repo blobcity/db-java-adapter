@@ -275,15 +275,12 @@ public abstract class CloudStorage {
         JSONObject requestJson;
         JSONObject responseJson;
         Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        if (entity == null) {
-            throw new InternalDbException(clazz.getName() + " is not a valid entity class");
-        }
 
         requestJson = new JSONObject();
         try {
             requestJson.put("app", Credentials.getInstance().getAppId());
             requestJson.put("key", Credentials.getInstance().getAppKey());
-            final String tableName = entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+            final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
             requestJson.put("t", tableName);
             requestJson.put("q", queryType.getQueryCode());
 
@@ -298,16 +295,13 @@ public abstract class CloudStorage {
     private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType, Object pk) {
         JSONObject requestJson;
         JSONObject responseJson;
-        Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        if (entity == null) {
-            throw new InternalAdapterException(clazz.getName() + " is not a valid entity class");
-        }
+        final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
 
         requestJson = new JSONObject();
         try {
             requestJson.put("app", Credentials.getInstance().getAppId());
             requestJson.put("key", Credentials.getInstance().getAppKey());
-            final String tableName = entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+            final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
             requestJson.put("t", tableName);
             requestJson.put("q", queryType.getQueryCode());
             requestJson.put("pk", pk);
