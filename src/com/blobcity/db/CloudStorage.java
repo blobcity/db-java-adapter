@@ -153,6 +153,20 @@ public abstract class CloudStorage {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * Statically provides the table name for any instance/child of {@link CloudStorage} that is internally used by the adapter for querying. Note, this method
+     * is not used by the adapter internally but the logic here, should be kept in sync with the rest of the class to ensure table names are evaluated
+     * appropriately. This method can be used for logging purposes where the table name for a class is required.
+     *
+     * @param <T> Any class reference which extends {@link CloudStorage}
+     * @param clazz class reference who's table name is required
+     * @return Name of the table
+     */
+    public static <T extends CloudStorage> String getTableName(final Class<T> clazz) {
+        final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+        return entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+    }
+
     protected void setPk(Object pk) {
         Field primaryKeyField = TableStore.getInstance().getPkField(table);
         try {
