@@ -63,9 +63,9 @@ public abstract class CloudStorage {
         try {
             return clazz.newInstance();
         } catch (InstantiationException ex) {
-            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
-            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         }
     }
 
@@ -75,9 +75,9 @@ public abstract class CloudStorage {
             obj.setPk(pk);
             return obj;
         } catch (InstantiationException ex) {
-            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
-            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         }
     }
 
@@ -90,9 +90,9 @@ public abstract class CloudStorage {
             }
             return null;
         } catch (InstantiationException ex) {
-            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
-            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         }
     }
 
@@ -149,6 +149,7 @@ public abstract class CloudStorage {
 
     /**
      * Allows search queries to be performed as defined by http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH
+     * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
      *
      * @param <T> Any class reference which extends {@link CloudStorage}
      * @param clazz class reference who's data is to be searched
@@ -202,9 +203,9 @@ public abstract class CloudStorage {
                         } catch (JSONException ex) {
                             throw new InternalDbException("Error in processing JSON. Class: " + clazz + " Request: " + instanceData.toString(), ex);
                         } catch (IllegalArgumentException ex) {
-                            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+                            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
                         } catch (IllegalAccessException ex) {
-                            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+                            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
                         } finally {
                             field.setAccessible(oldAccessibilityValue);
                         }
@@ -245,9 +246,9 @@ public abstract class CloudStorage {
             primaryKeyField.set(this, pk);
             primaryKeyField.setAccessible(false);
         } catch (IllegalArgumentException ex) {
-            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
-            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         }
     }
 
@@ -316,27 +317,29 @@ public abstract class CloudStorage {
     /**
      * Meant to perform SEARCH-OR queries as defined by http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH-OR
      *
-     * @return results which match the parameters provided
      * @deprecated since this function signature is essentially not usable and the method not being static doesn't make sense, this method is being deprecated.
      * An alternative function signature will be implemented and once approved, this method will be removed. Recommended to use
      * {@link #search(java.lang.Class, com.blobcity.db.search.SearchParam)}
+     * @see #search(com.blobcity.db.search.Query)
+     * @return results which match the parameters provided
      */
     @Deprecated
-    public List<Object> searchOr() {
-        throw new UnsupportedOperationException("Not yet supported.");
+    public <T extends CloudStorage> List<T> searchOr() {
+        throw new UnsupportedOperationException("Operation not supported. Please use search(Class, SearchParam) instead.");
     }
 
     /**
      * Meant to perform SEARCH-AND queries as defined by http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH-AND
      *
-     * @return results which match the parameters provided
      * @deprecated since this function signature is essentially not usable and the method not being static doesn't make sense, this method is being deprecated.
      * An alternative function signature will be implemented and once approved, this method will be removed. Recommended to use
      * {@link #search(java.lang.Class, com.blobcity.db.search.SearchParam)}
+     * @see #search(com.blobcity.db.search.Query)
+     * @return results which match the parameters provided
      */
     @Deprecated
-    public List<Object> searchAnd() {
-        throw new UnsupportedOperationException("Not yet supported.");
+    public <T extends CloudStorage> List<T> searchAnd() {
+        throw new UnsupportedOperationException("Operation not supported. Please use search(Class, SearchParam) instead.");
     }
 
     /**
@@ -348,9 +351,9 @@ public abstract class CloudStorage {
         try {
             return toJson();
         } catch (IllegalArgumentException ex) {
-            throw new InternalAdapterException("", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
-            throw new InternalAdapterException("", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         }
     }
 
@@ -376,9 +379,9 @@ public abstract class CloudStorage {
             } catch (JSONException ex) {
                 throw new InternalDbException("Error in processing JSON. Class: " + this.getClass() + " Request: " + jsonObject.toString(), ex);
             } catch (IllegalArgumentException ex) {
-                throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
             } catch (IllegalAccessException ex) {
-                throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
             }
         }
     }
@@ -412,9 +415,9 @@ public abstract class CloudStorage {
         } catch (JSONException ex) {
             throw new InternalDbException("Error in processing request/response JSON", ex);
         } catch (IllegalArgumentException ex) {
-            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
-            throw new InternalAdapterException("This exception is thrown when an error occurs that is internal to the adapter's operation", ex);
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         }
     }
 
