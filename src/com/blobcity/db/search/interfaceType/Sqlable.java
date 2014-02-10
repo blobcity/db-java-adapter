@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, BlobCity iSolutions Pvt. Ltd.
+ * Copyright 2014, BlobCity iSolutions Pvt. Ltd.
  */
 package com.blobcity.db.search.interfaceType;
 
