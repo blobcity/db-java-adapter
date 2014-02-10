@@ -33,6 +33,7 @@ public class QueryExecuter {
         opmode:
         {
             /* Check for availability of local EJB */
+            // TODO: If glassfish is not present, it takes upto 60 seconds per failover delaying the first query by around 2 minutes. This needs to be fixed (probably with a quicker failover)
             try {
                 final InitialContext context = new InitialContext();
                 context.lookup(JNDI_LOCAL_RESOURCE);
@@ -82,9 +83,9 @@ public class QueryExecuter {
     private String executeHTTP(JSONObject jsonObject) {
         BufferedReader reader = null;
         try {
-            String urlString = "http://db.blobcity.com/rest/bquery?q=" + URLEncoder.encode(jsonObject.toString(), "UTF-8");
-            URL url = new URL(urlString);
-            URLConnection connection = url.openConnection();
+            final String urlString = "http://db.blobcity.com/rest/bquery?q=" + URLEncoder.encode(jsonObject.toString(), "UTF-8");
+            final URL url = new URL(urlString);
+            final URLConnection connection = url.openConnection();
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             return reader.readLine();
         } catch (MalformedURLException ex) {
