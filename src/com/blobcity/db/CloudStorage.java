@@ -148,7 +148,8 @@ public abstract class CloudStorage {
     }
 
     /**
-     * Allows search queries to be performed as defined by http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH
+     * Allows search queries to be performed as defined by {@link http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH}.
+     *
      * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
      *
      * @param <T> Any class reference which extends {@link CloudStorage}
@@ -626,7 +627,7 @@ public abstract class CloudStorage {
                     list.add(arr.opt(i));
                 }
                 return list;
-            } else if (value instanceof String && "".equals(value)) {
+            } else if ((value instanceof String && "".equals(value)) || value.getClass() == JSONObject.NULL.getClass()) {
                 return new ArrayList();
             }
 
