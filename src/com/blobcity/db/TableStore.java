@@ -65,7 +65,7 @@ class TableStore {
         Field primaryKeyField = null;
         for (Field field : fields) {
             String columnName = field.getName();
-            if(Modifier.isTransient(field.getModifiers())) {
+            if (Modifier.isTransient(field.getModifiers())) {
                 continue;
             }
 
