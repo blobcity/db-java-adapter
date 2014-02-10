@@ -232,7 +232,7 @@ public class CloudStorageTest {
         System.out.println("searchAnd");
         User user = CloudStorage.newInstance(User.class);
         user.setName("test@blobcity.info");
-        List<Object> list = user.searchAnd();
+        List<User> list = user.searchAnd();
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("searchAnd: Successful");
     }
@@ -242,7 +242,7 @@ public class CloudStorageTest {
         System.out.println("searchOr");
         User user = CloudStorage.newInstance(User.class);
         user.setName("test@blobcity.info");
-        List<Object> list = user.searchAnd();
+        List<User> list = user.searchAnd();
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("searchOr: Successful");
     }
