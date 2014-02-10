@@ -4,7 +4,14 @@
 package com.blobcity.db.search;
 
 import com.blobcity.db.exceptions.InternalAdapterException;
+import static com.blobcity.db.search.ParamOperator.BETWEEN;
+import static com.blobcity.db.search.ParamOperator.EQ;
+import static com.blobcity.db.search.ParamOperator.GT;
+import static com.blobcity.db.search.ParamOperator.GT_EQ;
 import static com.blobcity.db.search.ParamOperator.IN;
+import static com.blobcity.db.search.ParamOperator.LT;
+import static com.blobcity.db.search.ParamOperator.LT_EQ;
+import static com.blobcity.db.search.ParamOperator.NOT_EQ;
 import com.blobcity.db.search.interfaceType.Sqlable;
 import com.blobcity.db.search.interfaceType.ArrayJsonable;
 import java.util.ArrayList;
@@ -211,12 +218,9 @@ public class SearchParam implements ArrayJsonable, Sqlable {
     public String asSql() {
         final StringBuffer sb = new StringBuffer(paramName).append(" ").append(condition.asSql());
 
-        /**
-         * TODO: The following implementation is flawed because it doesn't quote escape {@link String}s and {@link Character}s. This needs to be fixed for
-         * proper SQL compliance.
-         */
         switch (condition) {
             case EQ:
+            case NOT_EQ:
             case LT:
             case LT_EQ:
             case GT:
@@ -262,8 +266,8 @@ public class SearchParam implements ArrayJsonable, Sqlable {
         final Map<String, Object> jsonMap = new HashMap<String, Object>();
         jsonMap.put("c", paramName);
         jsonMap.put("x", condition);
-        jsonMap.put("v", args);
-//        return "{\"c\":\"" + paramName + "\",\"x\":\"" + condition + "\",\"v\":" + args + "}";
+        jsonMap.put("v", padJsonArgs());
+//        return "{\"c\":\"" + paramName + "\",\"x\":\"" + condition + "\",\"v\":" + padJsonArgs() + "}";
         return new JSONObject(jsonMap);
     }
 
@@ -282,8 +286,34 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      */
     private SearchParam updateBaseParams() {
         baseParamMap.put("x", condition);
-        baseParamMap.put("v", args);
+        baseParamMap.put("v", padJsonArgs());
         return this;
+    }
+
+    /**
+     * Pads an argument for a JSON query
+     *
+     * @return if the operator only requires a single element, that element is returned, else a {@link JSONArray} is returned for the same.
+     */
+    private Object padJsonArgs() {
+        switch (condition) {
+            case EQ:
+            case NOT_EQ:
+            case LT:
+            case LT_EQ:
+            case GT:
+            case GT_EQ:
+                try {
+                    return args.get(0);
+                } catch (JSONException ex) {
+                    throw new InternalAdapterException("Operator \"" + condition + "\" expects 1 parameter", ex);
+                }
+            case BETWEEN:
+            case IN:
+                return args;
+            default:
+                throw new InternalAdapterException("Unknown condition applied. Value found was " + condition + " and is not (yet) supported. Please contact BlobCity Tech Support for more details.");
+        }
     }
 
     /**
