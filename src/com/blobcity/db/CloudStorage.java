@@ -631,7 +631,7 @@ public abstract class CloudStorage {
                 return new ArrayList();
             }
 
-            Logger.getLogger(CloudStorage.class.getName()).log(Level.WARNING, "Potential exception about to come. Class of type \"{0}\" has field with name \"{1}\" and data type \"{2}\" for value to be set was \"{3}\" has has a type of {4}. This will probably cause an exception.", new Object[]{parentClazz, field.getName(), type, value, value.getClass()});
+            Logger.getLogger(CloudStorage.class.getName()).log(Level.WARNING, "Class of type \"{0}\" has field with name \"{1}\" and data type \"{2}\" for value to be set was \"{3}\" has a type of {4}. This will probably cause an exception.", new Object[]{parentClazz, field.getName(), type, value, value.getClass()});
         }
         // The if for List check does not always return a value. Be sure before putting any code below here
 
