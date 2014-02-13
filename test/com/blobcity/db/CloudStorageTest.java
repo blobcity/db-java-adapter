@@ -9,8 +9,8 @@ import com.blobcity.adminpanel.db.service.DbAdminService;
 import com.blobcity.adminpanel.exceptions.ValidationException;
 import com.blobcity.db.test.entity.User;
 import com.blobcity.db.constants.Credentials;
-import com.blobcity.db.search.SearchParams;
-import com.blobcity.db.search.SearchType;
+import com.blobcity.db.search.Query;
+import com.blobcity.db.search.SearchParam;
 import com.blobcity.db.test.entity.pktests.CharTable;
 import com.blobcity.db.test.entity.pktests.DoubleTable;
 import com.blobcity.db.test.entity.pktests.FloatTable;
@@ -221,11 +221,9 @@ public class CloudStorageTest {
     @Test
     public void testSearch() {
         System.out.println("search static");
-        SearchParams searchParams = new SearchParams();
-        searchParams.add("name", "test@blobcity.info");
-        searchParams.add("name", "test2@blobcity.info");
-        List<Object> list = CloudStorage.search(User.class, SearchType.AND, searchParams);
-        assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
+        final Query query = Query.select("").from(User.class).where(SearchParam.create("name").eq("test@blobcity.info").or(SearchParam.create("name").eq("test2@blobcity.info")));
+        final List<User> list = CloudStorage.search(query);
+        assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray()); // TODO: these aren't correct test responses. Someone needs to fix this based on the data that the table has
         System.out.println("search static: Successful");
     }
 
@@ -234,7 +232,7 @@ public class CloudStorageTest {
         System.out.println("searchAnd");
         User user = CloudStorage.newInstance(User.class);
         user.setName("test@blobcity.info");
-        List<Object> list = user.searchAnd();
+        List<User> list = user.searchAnd();
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("searchAnd: Successful");
     }
@@ -244,7 +242,7 @@ public class CloudStorageTest {
         System.out.println("searchOr");
         User user = CloudStorage.newInstance(User.class);
         user.setName("test@blobcity.info");
-        List<Object> list = user.searchAnd();
+        List<User> list = user.searchAnd();
         assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
         System.out.println("searchOr: Successful");
     }

@@ -14,7 +14,8 @@ public enum QueryType {
     SAVE("save"),
     INSERT("insert"), 
     REMOVE("delete"),
-    SELECT_ALL("select-all"), 
+    SELECT_ALL("select-all"),
+    SEARCH("search"),
     SEARCH_AND("search-and"), 
     SEARCH_OR("search-or"),
     CONTAINS("contains");
