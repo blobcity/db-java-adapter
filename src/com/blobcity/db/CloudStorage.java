@@ -222,6 +222,20 @@ public abstract class CloudStorage {
         }
     }
 
+    /**
+     * Allows quick search queries on a single column. This method internally uses {@link #search(com.blobcity.db.search.Query) }
+     *
+     * @see #search(com.blobcity.db.search.Query)
+     * @param <T> Any class reference which extends {@link CloudStorage}
+     * @param clazz class reference who's data is to be searched
+     * @param columnName column to be searched
+     * @param values values to be used to filter data in column
+     * @return {@link List} of {@code T} that matches {@code searchParams}
+     */
+    public static <T extends CloudStorage> List<T> select(final Class<T> clazz, final String columnName, final Object... values) {
+        return search(Query.table(clazz).where(SearchParam.create(columnName).in(values)));
+    }
+
     public static <T extends CloudStorage> List<T> filter(Class<T> clazz, String filterName) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
