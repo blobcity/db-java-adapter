@@ -222,6 +222,20 @@ public abstract class CloudStorage {
         }
     }
 
+    /**
+     * Allows quick search queries on a single column. This method internally uses {@link #search(com.blobcity.db.search.Query) }
+     *
+     * @see #search(com.blobcity.db.search.Query)
+     * @param <T> Any class reference which extends {@link CloudStorage}
+     * @param clazz class reference who's data is to be searched
+     * @param columnName column to be searched
+     * @param values values to be used to filter data in column
+     * @return {@link List} of {@code T} that matches {@code searchParams}
+     */
+    public static <T extends CloudStorage> List<T> select(final Class<T> clazz, final String columnName, final Object... values) {
+        return search(Query.table(clazz).where(SearchParam.create(columnName).in(values)));
+    }
+
     public static <T extends CloudStorage> List<T> filter(Class<T> clazz, String filterName) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -313,34 +327,6 @@ public abstract class CloudStorage {
         } catch (JSONException ex) {
             throw new InternalDbException("Error in API JSON response", ex);
         }
-    }
-
-    /**
-     * Meant to perform SEARCH-OR queries as defined by http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH-OR
-     *
-     * @deprecated since this function signature is essentially not usable and the method not being static doesn't make sense, this method is being deprecated.
-     * An alternative function signature will be implemented and once approved, this method will be removed. Recommended to use
-     * {@link #search(java.lang.Class, com.blobcity.db.search.SearchParam)}
-     * @see #search(com.blobcity.db.search.Query)
-     * @return results which match the parameters provided
-     */
-    @Deprecated
-    public <T extends CloudStorage> List<T> searchOr() {
-        throw new UnsupportedOperationException("Operation not supported. Please use search(Class, SearchParam) instead.");
-    }
-
-    /**
-     * Meant to perform SEARCH-AND queries as defined by http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH-AND
-     *
-     * @deprecated since this function signature is essentially not usable and the method not being static doesn't make sense, this method is being deprecated.
-     * An alternative function signature will be implemented and once approved, this method will be removed. Recommended to use
-     * {@link #search(java.lang.Class, com.blobcity.db.search.SearchParam)}
-     * @see #search(com.blobcity.db.search.Query)
-     * @return results which match the parameters provided
-     */
-    @Deprecated
-    public <T extends CloudStorage> List<T> searchAnd() {
-        throw new UnsupportedOperationException("Operation not supported. Please use search(Class, SearchParam) instead.");
     }
 
     /**
