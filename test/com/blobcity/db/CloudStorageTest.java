@@ -227,26 +227,6 @@ public class CloudStorageTest {
         System.out.println("search static: Successful");
     }
 
-    @Test
-    public void testSearchAnd() {
-        System.out.println("searchAnd");
-        User user = CloudStorage.newInstance(User.class);
-        user.setName("test@blobcity.info");
-        List<User> list = user.searchAnd();
-        assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
-        System.out.println("searchAnd: Successful");
-    }
-
-    @Test
-    public void testSearchOr() {
-        System.out.println("searchOr");
-        User user = CloudStorage.newInstance(User.class);
-        user.setName("test@blobcity.info");
-        List<User> list = user.searchAnd();
-        assertArrayEquals(new Object[]{"me@blobcity.com"}, list.toArray());
-        System.out.println("searchOr: Successful");
-    }
-
     /**
      * Test of save method, of class CloudStorage.
      */

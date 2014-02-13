@@ -316,34 +316,6 @@ public abstract class CloudStorage {
     }
 
     /**
-     * Meant to perform SEARCH-OR queries as defined by http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH-OR
-     *
-     * @deprecated since this function signature is essentially not usable and the method not being static doesn't make sense, this method is being deprecated.
-     * An alternative function signature will be implemented and once approved, this method will be removed. Recommended to use
-     * {@link #search(java.lang.Class, com.blobcity.db.search.SearchParam)}
-     * @see #search(com.blobcity.db.search.Query)
-     * @return results which match the parameters provided
-     */
-    @Deprecated
-    public <T extends CloudStorage> List<T> searchOr() {
-        throw new UnsupportedOperationException("Operation not supported. Please use search(Class, SearchParam) instead.");
-    }
-
-    /**
-     * Meant to perform SEARCH-AND queries as defined by http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH-AND
-     *
-     * @deprecated since this function signature is essentially not usable and the method not being static doesn't make sense, this method is being deprecated.
-     * An alternative function signature will be implemented and once approved, this method will be removed. Recommended to use
-     * {@link #search(java.lang.Class, com.blobcity.db.search.SearchParam)}
-     * @see #search(com.blobcity.db.search.Query)
-     * @return results which match the parameters provided
-     */
-    @Deprecated
-    public <T extends CloudStorage> List<T> searchAnd() {
-        throw new UnsupportedOperationException("Operation not supported. Please use search(Class, SearchParam) instead.");
-    }
-
-    /**
      * Gets a JSON representation of the object. The column names are same as those loaded in {@link TableStore}
      *
      * @return {@link JSONObject} representing the entity class in its current state
