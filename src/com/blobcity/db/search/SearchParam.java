@@ -267,7 +267,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
         jsonMap.put("c", paramName);
         jsonMap.put("x", condition);
         jsonMap.put("v", padJsonArgs());
-//        return "{\"c\":\"" + paramName + "\",\"x\":\"" + condition + "\",\"v\":" + padJsonArgs() + "}";
+
         return new JSONObject(jsonMap);
     }
 
