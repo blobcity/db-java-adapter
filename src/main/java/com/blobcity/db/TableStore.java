@@ -16,14 +16,18 @@ import java.util.Map;
  * Caches table structures, so that annotations are not require to be processed on every operation.
  *
  * @author Sanket Sarang
+ * @author Karun AB <karun.ab@blobcity.net>
  */
 class TableStore {
 
-    private Map<String, Map<String, Field>> tableStructureMap = new HashMap<String, Map<String, Field>>();
-    private Map<String, Class<? extends CloudStorage>> tableClassMap = new HashMap<String, Class<? extends CloudStorage>>();
-    private Map<String, Field> tablePrimaryMap = new HashMap<String, Field>();
+    private final Map<String, Map<String, Field>> tableStructureMap;
+    private final Map<String, Class<? extends CloudStorage>> tableClassMap;
+    private final Map<String, Field> tablePrimaryMap;
 
     private TableStore() {
+        this.tablePrimaryMap = new HashMap<String, Field>();
+        this.tableClassMap = new HashMap<String, Class<? extends CloudStorage>>();
+        this.tableStructureMap = new HashMap<String, Map<String, Field>>();
     }
 
     public static TableStore getInstance() {
@@ -60,21 +64,25 @@ class TableStore {
             return;
         }
 
-        Field[] fields = tableClassMap.get(tableName).getDeclaredFields();
-        Map<String, Field> columnFieldMap = new HashMap<String, Field>();
+        final Field[] fields = tableClassMap.get(tableName).getDeclaredFields();
+        final Map<String, Field> columnFieldMap = new HashMap<String, Field>();
+        final Map<String, Field> allFieldMap = new HashMap<String, Field>();
         Field primaryKeyField = null;
-        for (Field field : fields) {
+
+        for (final Field field : fields) {
             String columnName = field.getName();
-            if (Modifier.isTransient(field.getModifiers())) {
+            if (Modifier.isTransient(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
 
             for (Annotation a : field.getAnnotations()) {
                 if (a instanceof Column) {
-                    Column column = (Column) a;
+                    final Column column = (Column) a;
                     if (column.name() != null && !"".equals(column.name())) {
                         columnName = column.name();
                     }
+
+                    columnFieldMap.put(columnName, field);
                 } else if (a instanceof Primary) {
                     if (primaryKeyField != null) {
                         throw new InternalAdapterException("Repetition of primary key annotation in table: " + tableName
@@ -84,10 +92,11 @@ class TableStore {
                     primaryKeyField = field;
                 }
             }
-            columnFieldMap.put(columnName, field);
+
+            allFieldMap.put(columnName, field);
         }
 
         tablePrimaryMap.put(tableName, primaryKeyField);
-        tableStructureMap.put(tableName, columnFieldMap);
+        tableStructureMap.put(tableName, columnFieldMap.isEmpty() ? allFieldMap : columnFieldMap);
     }
 }
