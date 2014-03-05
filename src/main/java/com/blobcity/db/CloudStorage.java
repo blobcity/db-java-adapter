@@ -305,15 +305,19 @@ public abstract class CloudStorage {
             } else if ("0".equals(responseJson.getString("ack"))) {
                 if ("DB201".equals(responseJson.getString("code"))) {
                     return false;
-                } else {
-                    reportIfError(responseJson);
                 }
+
+                /*
+                 * considering conditions before this and the code in {@link #reportIfError(JSONObject)}, this call will always result in an exception.
+                 */
+                reportIfError(responseJson);
             }
+
+            throw new InternalAdapterException("Unknown acknowledgement code from the database. Expected: [0, 1]. Actual: " + responseJson.getString("ack"));
         } catch (Exception ex) {
             reportIfError(responseJson);
+            throw new InternalAdapterException("Exception occurred in the adapter.", ex);
         }
-
-        return false;
     }
 
     public void remove() {
@@ -602,7 +606,6 @@ public abstract class CloudStorage {
 //        if (type == Long.TYPE || type == Long.class) { // should be unnecessary
 //            return new Long(value.toString());
 //        }
-
         if (type == List.class) { // doesn't always return inside this block, BEWARE!
             if (value instanceof JSONArray) {
                 final JSONArray arr = (JSONArray) value;
