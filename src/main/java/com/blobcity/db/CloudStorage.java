@@ -17,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -153,7 +154,6 @@ public abstract class CloudStorage {
      * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
      *
      * @param <T> Any class reference which extends {@link CloudStorage}
-     * @param clazz class reference who's data is to be searched
      * @param query {@link SearchParam}s which are to be used to search for data
      * @return {@link List} of {@code T} that matches {@code searchParams}
      */
@@ -252,6 +252,39 @@ public abstract class CloudStorage {
     public static <T extends CloudStorage> String getTableName(final Class<T> clazz) {
         final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
         return entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+    }
+
+    public static <T extends CloudStorage> Object invokeProc(final String storedProcedureName, final String... params) {
+        final JSONObject responseJson = postStaticProcRequest(QueryType.STORED_PROC, storedProcedureName, params);
+        try {
+
+            /* If ack:0 then check for error code and report accordingly */
+            if ("0".equals(responseJson.getString("ack"))) {
+                String cause = "";
+                String code = "";
+
+                if (responseJson.has("code")) {
+                    code = responseJson.getString("code");
+                }
+
+                if (responseJson.has("cause")) {
+                    cause = responseJson.getString("cause");
+                }
+
+                throw new DbOperationException(code, cause);
+            }
+
+            final Object payloadObj = responseJson.get("p");
+            if (payloadObj instanceof CloudStorage) {
+                return "1 obj";
+            } else if (payloadObj instanceof JSONArray) {
+                return ((JSONArray) payloadObj).length() + " objs";
+            }
+
+            return payloadObj;
+        } catch (JSONException ex) {
+            throw new InternalDbException("Error in API JSON response", ex);
+        }
     }
 
     protected void setPk(Object pk) {
@@ -443,12 +476,36 @@ public abstract class CloudStorage {
             requestJson.put("app", Credentials.getInstance().getAppId());
             requestJson.put("key", Credentials.getInstance().getAppKey());
             final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
-            requestJson.put("t", tableName);
             requestJson.put("q", queryType.getQueryCode());
             requestJson.put("pk", pk);
 
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             responseJson = new JSONObject(responseString);
+            return responseJson;
+        } catch (JSONException ex) {
+            throw new InternalDbException("Error in processing request/response JSON", ex);
+        }
+    }
+
+    private static <T extends CloudStorage> JSONObject postStaticProcRequest(final QueryType queryType, final String name, final String[] params) {
+        try {
+            final JSONObject requestJson = new JSONObject();
+            requestJson.put("app", Credentials.getInstance().getAppId());
+            requestJson.put("key", Credentials.getInstance().getAppKey());
+            requestJson.put("q", queryType.getQueryCode());
+
+            final JSONObject paramsJson = new JSONObject();
+            paramsJson.put("name", name);
+            if (params != null) {
+                paramsJson.put("params", new JSONArray(Arrays.asList(params)));
+            } else {
+                paramsJson.put("params", new JSONArray());
+            }
+
+            requestJson.put("p", paramsJson);
+
+            final String responseString = new QueryExecuter().executeQuery(requestJson);
+            JSONObject responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
             throw new InternalDbException("Error in processing request/response JSON", ex);
@@ -589,11 +646,15 @@ public abstract class CloudStorage {
         }
 
         if (type == Character.TYPE || type == Character.class) {
-            return new Character(value.toString().charAt(0));
+            return value.toString().charAt(0);
         }
 
         if (type == BigDecimal.class) {
             return new BigDecimal(value.toString());
+        }
+
+        if (type == Boolean.TYPE || type == Boolean.class) {
+            return Boolean.valueOf(value.toString());
         }
 
 //        Note: This code is unnecessary but is kept here to show that these values are supported and if tomorrow,
