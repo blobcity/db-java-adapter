@@ -589,7 +589,11 @@ public abstract class CloudStorage {
         }
 
         if (type == Character.TYPE || type == Character.class) {
-            return new Character(value.toString().charAt(0));
+            return value.toString().charAt(0);
+        }
+
+        if (type == Boolean.TYPE || type == Boolean.class) {
+            return Boolean.valueOf(value.toString());
         }
 
         if (type == BigDecimal.class) {
