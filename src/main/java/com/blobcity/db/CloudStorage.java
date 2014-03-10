@@ -153,7 +153,6 @@ public abstract class CloudStorage {
      * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
      *
      * @param <T> Any class reference which extends {@link CloudStorage}
-     * @param clazz class reference who's data is to be searched
      * @param query {@link SearchParam}s which are to be used to search for data
      * @return {@link List} of {@code T} that matches {@code searchParams}
      */
