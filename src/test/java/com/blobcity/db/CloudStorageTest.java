@@ -58,8 +58,7 @@ public class CloudStorageTest {
         for (Class<? extends TestableCloudStorage> clazz : tablesToDelete) {
             try {
                 service.dropTable("test", clazz.newInstance().getTableName());
-            }
-            catch (ValidationException ex) {
+            } catch (ValidationException ex) {
             }
         }
     }
@@ -350,8 +349,7 @@ public class CloudStorageTest {
     public void testChangeCredentials() {
         try {
             Credentials.getInstance().init("test1", "test1");
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             assertTrue(t instanceof IllegalStateException);
         }
     }

@@ -470,6 +470,11 @@ public abstract class CloudStorage {
         for (String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
             field.setAccessible(true);
+            if (field.getType().isEnum()) {
+                dataMap.put(columnName, field.get(this) != null ? field.get(this).toString() : null);
+                continue;
+            }
+
             dataMap.put(columnName, field.get(this));
         }
 
@@ -577,7 +582,7 @@ public abstract class CloudStorage {
         }
 
         if (type.isEnum()) {
-            return Enum.valueOf((Class<? extends Enum>) type, value.toString());
+            return "".equals(value.toString()) ? null : Enum.valueOf((Class<? extends Enum>) type, value.toString());
         }
 
         if (type == Double.TYPE || type == Double.class) {
