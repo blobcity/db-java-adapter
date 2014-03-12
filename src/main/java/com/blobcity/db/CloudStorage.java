@@ -153,7 +153,6 @@ public abstract class CloudStorage {
      * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
      *
      * @param <T> Any class reference which extends {@link CloudStorage}
-     * @param clazz class reference who's data is to be searched
      * @param query {@link SearchParam}s which are to be used to search for data
      * @return {@link List} of {@code T} that matches {@code searchParams}
      */
@@ -470,6 +469,11 @@ public abstract class CloudStorage {
         for (String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
             field.setAccessible(true);
+            if (field.getType().isEnum()) {
+                dataMap.put(columnName, field.get(this) != null ? field.get(this).toString() : null);
+                continue;
+            }
+
             dataMap.put(columnName, field.get(this));
         }
 
@@ -577,7 +581,7 @@ public abstract class CloudStorage {
         }
 
         if (type.isEnum()) {
-            return Enum.valueOf((Class<? extends Enum>) type, value.toString());
+            return "".equals(value.toString()) ? null : Enum.valueOf((Class<? extends Enum>) type, value.toString());
         }
 
         if (type == Double.TYPE || type == Double.class) {
@@ -589,7 +593,11 @@ public abstract class CloudStorage {
         }
 
         if (type == Character.TYPE || type == Character.class) {
-            return new Character(value.toString().charAt(0));
+            return value.toString().charAt(0);
+        }
+
+        if (type == Boolean.TYPE || type == Boolean.class) {
+            return Boolean.valueOf(value.toString());
         }
 
         if (type == BigDecimal.class) {
