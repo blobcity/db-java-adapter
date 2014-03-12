@@ -4,7 +4,7 @@
 
     <groupId>com.blobcity.lib</groupId>
     <artifactId>db-java-adapter</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.4-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>DB Adapter [Java]</name>
@@ -21,7 +21,7 @@
             <version>RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>com.blobcity.ejb</groupId>
+            <groupId>com.blobcity.lib</groupId>
             <artifactId>core-commons</artifactId>
             <version>RELEASE</version>
         </dependency>
