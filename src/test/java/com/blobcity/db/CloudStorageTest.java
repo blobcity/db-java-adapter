@@ -29,12 +29,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  *
  * @author Sanket Sarang <sanket@blobcity.net>
  * @author Akshay Dewan <akshay.dewan@blobcity.net>
  */
+@Ignore
 public class CloudStorageTest {
 
     public CloudStorageTest() {
