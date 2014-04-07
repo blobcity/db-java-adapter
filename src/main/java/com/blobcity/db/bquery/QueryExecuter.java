@@ -5,12 +5,16 @@ package com.blobcity.db.bquery;
 
 import com.blobcity.db.exceptions.InternalAdapterException;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
@@ -69,6 +73,10 @@ public class QueryExecuter {
         }
     }
 
+    public String executeSql(final JSONObject queryJson) {
+        return executeSqlHttp(queryJson);
+    }
+
     private String executeLocalEJB(JSONObject jsonObject) {
         throw new UnsupportedOperationException("No-Query operation mode not supported in downloaded adapters. "
                 + "Feature only available to applications compiled on the BlobCity Cloud. If you have arrived at this "
@@ -98,6 +106,63 @@ public class QueryExecuter {
                     reader.close();
                 } catch (IOException ex) {
                     //do nothing
+                }
+            }
+        }
+    }
+
+    private String executeSqlHttp(final JSONObject jsonObject) {
+        BufferedReader in = null;
+        DataOutputStream wr = null;
+
+        try {
+            final URL url = new URL("http://db.blobcity.com/rest/sql");
+            final HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            final String appId = jsonObject.getString("app");
+            final String query = jsonObject.getString("p");
+
+            //add reuqest header
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Accept-Language", "en-US,en-GB;q=0.8, en;q=0.5");
+
+            String urlParameters = MessageFormat.format("app={0}&q={1}", appId, query);
+
+            // Send post request
+            con.setDoOutput(true);
+            wr = new DataOutputStream(con.getOutputStream());
+            wr.writeBytes(urlParameters);
+            wr.flush();
+
+            con.getResponseCode();
+
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            final StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+
+            return response.toString();
+        } catch (MalformedURLException ex) {
+            throw new InternalAdapterException(ex); // TODO: improve 
+        } catch (ProtocolException ex) {
+            throw new InternalAdapterException(ex); // TODO: improve 
+        } catch (IOException ex) {
+            throw new InternalAdapterException(ex); // TODO: improve 
+        } finally {
+            if (wr != null) {
+                try {
+                    wr.close();
+                } catch (IOException ex) {
+                    // ignore exception
+                }
+            }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    // ignore exception
                 }
             }
         }
