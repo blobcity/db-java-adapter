@@ -166,10 +166,9 @@ public abstract class CloudStorage {
         final Map<String, Object> requestMap = new HashMap<String, Object>();
         requestMap.put("app", Credentials.getInstance().getAppId());
         requestMap.put("key", Credentials.getInstance().getAppKey());
-        requestMap.put("q", QueryType.SEARCH.getQueryCode());
-        requestMap.put("p", query.asJson());
+        requestMap.put("p", query.asSql());
 
-        final String responseString = new QueryExecuter().executeQuery(new JSONObject(requestMap));
+        final String responseString = new QueryExecuter().executeSql(new JSONObject(requestMap));
 
         final JSONObject responseJson;
         try {
