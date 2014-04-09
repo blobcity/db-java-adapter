@@ -145,11 +145,11 @@ public class QueryExecuter {
 
             return response.toString();
         } catch (MalformedURLException ex) {
-            throw new InternalAdapterException(ex); // TODO: improve 
+            throw new InternalAdapterException("Invalid database endpoint address format", ex);
         } catch (ProtocolException ex) {
-            throw new InternalAdapterException(ex); // TODO: improve 
+            throw new InternalAdapterException("Invalid communication protocol with the database endpoint", ex);
         } catch (IOException ex) {
-            throw new InternalAdapterException(ex); // TODO: improve 
+            throw new InternalAdapterException("Unable to communicate with the database at this time", ex);
         } finally {
             if (wr != null) {
                 try {
