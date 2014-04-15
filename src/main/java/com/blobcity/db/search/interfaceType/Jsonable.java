@@ -13,6 +13,7 @@ import org.json.JSONObject;
  *
  * Usually goes along with {@link Sqlable}
  *
+ * @param <T> Class on which the query is being performed
  * @see ArrayJsonable
  * @see ObjectJsonable
  * @see Sqlable
