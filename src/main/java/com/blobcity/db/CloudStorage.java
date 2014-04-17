@@ -166,10 +166,9 @@ public abstract class CloudStorage {
         final Map<String, Object> requestMap = new HashMap<String, Object>();
         requestMap.put("app", Credentials.getInstance().getAppId());
         requestMap.put("key", Credentials.getInstance().getAppKey());
-        requestMap.put("q", QueryType.SEARCH.getQueryCode());
-        requestMap.put("p", query.asJson());
+        requestMap.put("p", query.asSql());
 
-        final String responseString = new QueryExecuter().executeQuery(new JSONObject(requestMap));
+        final String responseString = new QueryExecuter().executeSql(new JSONObject(requestMap));
 
         final JSONObject responseJson;
         try {
@@ -472,6 +471,12 @@ public abstract class CloudStorage {
             if (field.getType().isEnum()) {
                 dataMap.put(columnName, field.get(this) != null ? field.get(this).toString() : null);
                 continue;
+            } else if (field.getType() == java.util.Date.class) {
+                dataMap.put(columnName, field.get(this) != null ? ((java.util.Date) field.get(this)).getTime() : null);
+                continue;
+            } else if (field.getType() == java.sql.Date.class) {
+                dataMap.put(columnName, field.get(this) != null ? ((java.sql.Date) field.get(this)).getTime() : null);
+                continue;
             }
 
             dataMap.put(columnName, field.get(this));
@@ -602,6 +607,14 @@ public abstract class CloudStorage {
 
         if (type == BigDecimal.class) {
             return new BigDecimal(value.toString());
+        }
+
+        if (type == java.util.Date.class) {
+            return new java.util.Date(Long.valueOf(value.toString()));
+        }
+
+        if (type == java.sql.Date.class) {
+            return new java.sql.Date(Long.valueOf(value.toString()));
         }
 
 //        Note: This code is unnecessary but is kept here to show that these values are supported and if tomorrow,

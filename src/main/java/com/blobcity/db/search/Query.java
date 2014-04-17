@@ -21,13 +21,14 @@ import org.json.JSONObject;
 /**
  * Query builder interface for the adapter to support querying mechanism for search functionality
  *
+ * @param <T> Class on which the query is being performed
  * @see CloudStorage#search(java.lang.Class, com.blobcity.db.search.SearchParam)
  * @author Karun AB <karun.ab@blobcity.net>
  */
 public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
 
     private final List<String> selectColumnNames;
-    private List<Class<T>> fromTables;
+    private final List<Class<T>> fromTables;
     private SearchParam whereParam;
     private List<String> filterNames;
     private List<OrderElement> orderByList;
@@ -158,7 +159,7 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     @Override
     public String asSql() {
         final StringBuffer sb = new StringBuffer();
-        sb.append("SELECT ").append(StringUtil.join(selectColumnNames, ", ", "*"));
+        sb.append("SELECT ").append(StringUtil.join(selectColumnNames, ", ", "*", "`"));
 
         if (fromTables == null || fromTables.isEmpty()) {
             throw new InternalAdapterException("No table name set. Table name is a mandatory field queries.");
@@ -167,12 +168,13 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
         sb.append(" FROM ");
         final int fromTableCount = fromTables.size();
         for (int i = 0; i < fromTableCount; i++) {
-            sb.append(CloudStorage.getTableName(fromTables.get(i)));
+            sb.append('`').append(CloudStorage.getTableName(fromTables.get(i)));
 
             if (i < fromTableCount - 1) {
-                sb.append(", ");
+                sb.append("`, `");
             }
         }
+        sb.append('`');
 
         if (whereParam != null) {
             sb.append(" WHERE ").append(whereParam.asSql());

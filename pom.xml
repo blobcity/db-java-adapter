@@ -4,11 +4,11 @@
 
     <groupId>com.blobcity.lib</groupId>
     <artifactId>db-java-adapter</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <packaging>jar</packaging>
 
     <name>DB Adapter [Java]</name>
-    <url>http://boron.blobcity.net:7990/projects/DBADAPT/repos/java-adapter/browse</url>
+    <url>http://stash.blobcity.net/projects/DBADAPT/repos/java-adapter/browse</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,19 +16,24 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.blobcity.lib</groupId>
+            <artifactId>core-commons</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.blobcity.lib</groupId>
+            <artifactId>database-remote</artifactId>
+            <version>0.3</version>
+        </dependency>
+        <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20140107</version>
         </dependency>
         <dependency>
-            <groupId>com.blobcity.lib</groupId>
-            <artifactId>core-commons</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.3</version>
+            <version>3.3.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -40,13 +45,13 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.3.2</version>
+            <version>4.3.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>fluent-hc</artifactId>
-            <version>4.3.2</version>
+            <version>4.3.3</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -99,12 +104,12 @@
         <snapshotRepository>
             <id>snapshots</id>
             <name>BlobFactory-snapshots</name>
-            <url>http://boron.blobcity.net:8081/artifactory/libs-snapshot-local</url>
+            <url>http://mvn.blobcity.net/artifactory/libs-snapshot-local</url>
         </snapshotRepository>
         <repository>
             <id>central</id>
             <name>BlobFactory-release</name>
-            <url>http://boron.blobcity.net:8081/artifactory/libs-release-local</url>
+            <url>http://mvn.blobcity.net/artifactory/libs-release-local</url>
         </repository>
     </distributionManagement>
 </project>
