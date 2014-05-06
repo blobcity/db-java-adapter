@@ -253,15 +253,22 @@ public abstract class CloudStorage {
     }
 
     protected void setPk(Object pk) {
-        Field primaryKeyField = TableStore.getInstance().getPkField(table);
+        final Field primaryKeyField = TableStore.getInstance().getPkField(table);
+        final boolean isAccessible = primaryKeyField.isAccessible();
         try {
-            primaryKeyField.setAccessible(true);
+            if (!isAccessible) {
+                primaryKeyField.setAccessible(true);
+            }
+
             primaryKeyField.set(this, pk);
-            primaryKeyField.setAccessible(false);
         } catch (IllegalArgumentException ex) {
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+        } finally {
+            if (!isAccessible) {
+                primaryKeyField.setAccessible(false);
+            }
         }
     }
 
@@ -362,7 +369,7 @@ public abstract class CloudStorage {
 
         for (final String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
-            field.setAccessible(true);
+
             try {
                 setFieldValue(field, jsonObject.get(columnName));
             } catch (JSONException ex) {
@@ -560,8 +567,11 @@ public abstract class CloudStorage {
     private void setFieldValue(final Field field, final Object value) throws IllegalAccessException {
         final boolean oldAccessibilityValue = field.isAccessible();
         field.setAccessible(true);
-        field.set(this, getCastedValue(field, value, this.getClass()));
-        field.setAccessible(oldAccessibilityValue);
+        try {
+            field.set(this, getCastedValue(field, value, this.getClass()));
+        } finally {
+            field.setAccessible(oldAccessibilityValue);
+        }
     }
 
     /**
