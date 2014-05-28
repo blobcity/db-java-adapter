@@ -29,12 +29,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  *
  * @author Sanket Sarang <sanket@blobcity.net>
  * @author Akshay Dewan <akshay.dewan@blobcity.net>
  */
+@Ignore
 public class CloudStorageTest {
 
     public CloudStorageTest() {
@@ -58,8 +60,7 @@ public class CloudStorageTest {
         for (Class<? extends TestableCloudStorage> clazz : tablesToDelete) {
             try {
                 service.dropTable("test", clazz.newInstance().getTableName());
-            }
-            catch (ValidationException ex) {
+            } catch (ValidationException ex) {
             }
         }
     }
@@ -350,8 +351,7 @@ public class CloudStorageTest {
     public void testChangeCredentials() {
         try {
             Credentials.getInstance().init("test1", "test1");
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             assertTrue(t instanceof IllegalStateException);
         }
     }

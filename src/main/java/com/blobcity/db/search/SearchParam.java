@@ -34,8 +34,8 @@ public class SearchParam implements ArrayJsonable, Sqlable {
     private ParamOperator condition;
     private JSONArray args;
     private final Map<String, Object> baseParamMap;
-    private List<SearchOperator> operators;
-    private List<SearchParam> conditions;
+    private final List<SearchOperator> operators;
+    private final List<SearchParam> conditions;
 
     /**
      * Private initializer for the class. Use {@link #create(java.lang.String)} for creating an object
@@ -216,7 +216,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
 
     @Override
     public String asSql() {
-        final StringBuffer sb = new StringBuffer(paramName).append(" ").append(condition.asSql());
+        final StringBuffer sb = new StringBuffer("`").append(paramName).append("` ").append(condition.asSql());
 
         switch (condition) {
             case EQ:
@@ -344,9 +344,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      * @return SQL compliant form of the argument ready for consumption by a query
      */
     private String padSqlArg(final Object obj) {
-        if (obj instanceof String) {
-            return "\"" + obj + "\"";
-        } else if (obj instanceof Character) {
+        if (obj instanceof String || obj instanceof Character) {
             return "'" + obj + "'";
         }
 
