@@ -4,11 +4,9 @@
 package com.blobcity.db;
 
 import com.blobcity.db.search.SearchParam;
-import com.blobcity.db.bquery.QueryExecuter;
-import com.blobcity.db.classannotations.Entity;
-import com.blobcity.db.constants.Credentials;
-import com.blobcity.db.fieldannotations.Primary;
-import com.blobcity.db.constants.QueryType;
+import com.blobcity.db.annotations.Entity;
+import com.blobcity.db.config.Credentials;
+import com.blobcity.db.annotations.Primary;
 import com.blobcity.db.exceptions.DbOperationException;
 import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.exceptions.InternalDbException;
@@ -34,6 +32,7 @@ import org.json.JSONObject;
  *
  * @author Sanket Sarang
  * @author Karishma
+ * @author Karun AB <karun.ab@blobcity.net>
  * @version 1.0
  * @since 1.0
  */
@@ -44,7 +43,7 @@ public abstract class CloudStorage {
     public CloudStorage() {
         for (Annotation annotation : this.getClass().getAnnotations()) {
             if (annotation instanceof Entity) {
-                Entity blobCityEntity = (Entity) annotation;
+                final Entity blobCityEntity = (Entity) annotation;
                 table = blobCityEntity.table();
                 if (table == null || "".equals(table)) {
                     table = this.getClass().getSimpleName();
@@ -107,7 +106,7 @@ public abstract class CloudStorage {
         List<P> list;
 
         try {
-            if ("1".equals(responseJson.getString("ack"))) {
+            if ("1".equals(responseJson.getString(QueryConstants.ACK))) {
                 jsonArray = responseJson.getJSONArray("keys");
                 list = new ArrayList<P>();
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -126,7 +125,7 @@ public abstract class CloudStorage {
         JSONObject responseJson = postStaticRequest(clazz, QueryType.CONTAINS, key);
 
         try {
-            if ("1".equals(responseJson.getString("ack"))) {
+            if ("1".equals(responseJson.getString(QueryConstants.ACK))) {
                 return responseJson.getBoolean("contains");
             }
 
@@ -140,7 +139,7 @@ public abstract class CloudStorage {
         JSONObject responseJson = postStaticRequest(clazz, QueryType.REMOVE, pk);
 
         try {
-            if (responseJson.getString("ack").equals("0")) {
+            if ("0".equals(responseJson.getString(QueryConstants.ACK))) {
                 throw new DbOperationException(responseJson.getString("code"));
             }
         } catch (JSONException ex) {
@@ -165,9 +164,10 @@ public abstract class CloudStorage {
         final Class<T> clazz = query.getFromTables().get(0);
 
         final Map<String, Object> requestMap = new HashMap<String, Object>();
-        requestMap.put("app", Credentials.getInstance().getAppId());
-        requestMap.put("key", Credentials.getInstance().getAppKey());
-        requestMap.put("p", query.asSql());
+        requestMap.put(QueryConstants.USERNAME, Credentials.getInstance().getUsername());
+        requestMap.put(QueryConstants.PASSWORD, Credentials.getInstance().getPassword());
+        requestMap.put(QueryConstants.DB, Credentials.getInstance().getDb());
+        requestMap.put(QueryConstants.PAYLOAD, query.asSql());
 
         final String responseString = new QueryExecuter().executeSql(new JSONObject(requestMap));
 
@@ -179,8 +179,8 @@ public abstract class CloudStorage {
         }
 
         try {
-            if ("1".equals(responseJson.getString("ack"))) {
-                final JSONArray resultJsonArray = responseJson.getJSONArray("p");
+            if ("1".equals(responseJson.getString(QueryConstants.ACK))) {
+                final JSONArray resultJsonArray = responseJson.getJSONArray(QueryConstants.PAYLOAD);
                 final int resultCount = resultJsonArray.length();
                 final List<T> responseList = new ArrayList<T>();
                 final String tableName = CloudStorage.getTableName(clazz);
@@ -253,27 +253,20 @@ public abstract class CloudStorage {
         return entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
     }
 
+    // TODO: Complete method implementation This method is clearly not complete.
     public static <T extends CloudStorage> Object invokeProc(final String storedProcedureName, final String... params) {
         final JSONObject responseJson = postStaticProcRequest(QueryType.STORED_PROC, storedProcedureName, params);
         try {
 
             /* If ack:0 then check for error code and report accordingly */
-            if ("0".equals(responseJson.getString("ack"))) {
-                String cause = "";
-                String code = "";
-
-                if (responseJson.has("code")) {
-                    code = responseJson.getString("code");
-                }
-
-                if (responseJson.has("cause")) {
-                    cause = responseJson.getString("cause");
-                }
+            if ("0".equals(responseJson.getString(QueryConstants.ACK))) {
+                final String cause = responseJson.optString(QueryConstants.CAUSE, "");
+                final String code = responseJson.optString("code", "");
 
                 throw new DbOperationException(code, cause);
             }
 
-            final Object payloadObj = responseJson.get("p");
+            final Object payloadObj = responseJson.get(QueryConstants.PAYLOAD);
             if (payloadObj instanceof CloudStorage) {
                 return "1 obj";
             } else if (payloadObj instanceof JSONArray) {
@@ -306,7 +299,7 @@ public abstract class CloudStorage {
         try {
 
             /* If ack:0 then check for error code and report accordingly */
-            if ("0".equals(responseJson.getString("ack"))) {
+            if ("0".equals(responseJson.getString(QueryConstants.ACK))) {
                 if ("DB200".equals(responseJson.getString("code"))) {
                     return false;
                 } else {
@@ -314,7 +307,7 @@ public abstract class CloudStorage {
                 }
             }
 
-            payloadJson = responseJson.getJSONObject("p");
+            payloadJson = responseJson.getJSONObject(QueryConstants.PAYLOAD);
             fromJson(payloadJson);
             return true;
         } catch (JSONException ex) {
@@ -330,11 +323,11 @@ public abstract class CloudStorage {
     public boolean insert() {
         JSONObject responseJson = postRequest(QueryType.INSERT);
         try {
-            if ("1".equals(responseJson.getString("ack"))) {
-                final JSONObject payloadJson = responseJson.getJSONObject("p");
+            if ("1".equals(responseJson.getString(QueryConstants.ACK))) {
+                final JSONObject payloadJson = responseJson.getJSONObject(QueryConstants.PAYLOAD);
                 fromJson(payloadJson);
                 return true;
-            } else if ("0".equals(responseJson.getString("ack"))) {
+            } else if ("0".equals(responseJson.getString(QueryConstants.ACK))) {
                 if ("DB201".equals(responseJson.getString("code"))) {
                     return false;
                 }
@@ -345,7 +338,7 @@ public abstract class CloudStorage {
                 reportIfError(responseJson);
             }
 
-            throw new InternalAdapterException("Unknown acknowledgement code from the database. Expected: [0, 1]. Actual: " + responseJson.getString("ack"));
+            throw new InternalAdapterException("Unknown acknowledgement code from the database. Expected: [0, 1]. Actual: " + responseJson.getString(QueryConstants.ACK));
         } catch (Exception ex) {
             reportIfError(responseJson);
             throw new InternalAdapterException("Exception occurred in the adapter.", ex);
@@ -357,7 +350,7 @@ public abstract class CloudStorage {
         try {
 
             /* If ack:0 then check for error code and report accordingly */
-            if ("0".equals(responseJson.getString("ack")) && !responseJson.getString("code").equals("DB200")) {
+            if ("0".equals(responseJson.getString(QueryConstants.ACK)) && !responseJson.getString("code").equals("DB200")) {
                 reportIfError(responseJson);
             }
         } catch (JSONException ex) {
@@ -414,19 +407,20 @@ public abstract class CloudStorage {
         JSONObject responseJson;
         try {
             requestJson = new JSONObject();
-            requestJson.put("app", Credentials.getInstance().getAppId());
-            requestJson.put("key", Credentials.getInstance().getAppKey());
-            requestJson.put("t", table);
-            requestJson.put("q", queryType.getQueryCode());
+            requestJson.put(QueryConstants.USERNAME, Credentials.getInstance().getUsername());
+            requestJson.put(QueryConstants.PASSWORD, Credentials.getInstance().getPassword());
+            requestJson.put(QueryConstants.DB, Credentials.getInstance().getDb());
+            requestJson.put(QueryConstants.TABLE, table);
+            requestJson.put(QueryConstants.QUERYTYPE, queryType.getQueryCode());
 
             switch (queryType) {
                 case LOAD:
                 case REMOVE:
-                    requestJson.put("pk", getPrimaryKeyValue());
+                    requestJson.put(QueryConstants.PRIMARY_KEY, getPrimaryKeyValue());
                     break;
                 case INSERT:
                 case SAVE:
-                    requestJson.put("p", toJson());
+                    requestJson.put(QueryConstants.PAYLOAD, toJson());
                     break;
                 default:
                     throw new InternalDbException("Attempting to executed unknown or unidentifed query");
@@ -451,11 +445,13 @@ public abstract class CloudStorage {
 
         requestJson = new JSONObject();
         try {
-            requestJson.put("app", Credentials.getInstance().getAppId());
-            requestJson.put("key", Credentials.getInstance().getAppKey());
+            requestJson.put(QueryConstants.USERNAME, Credentials.getInstance().getUsername());
+            requestJson.put(QueryConstants.PASSWORD, Credentials.getInstance().getPassword());
+            requestJson.put(QueryConstants.DB, Credentials.getInstance().getDb());
+
             final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
-            requestJson.put("t", tableName);
-            requestJson.put("q", queryType.getQueryCode());
+            requestJson.put(QueryConstants.TABLE, tableName);
+            requestJson.put(QueryConstants.QUERYTYPE, queryType.getQueryCode());
 
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             responseJson = new JSONObject(responseString);
@@ -468,15 +464,15 @@ public abstract class CloudStorage {
     private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType, Object pk) {
         JSONObject requestJson;
         JSONObject responseJson;
-        final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
 
         requestJson = new JSONObject();
         try {
-            requestJson.put("app", Credentials.getInstance().getAppId());
-            requestJson.put("key", Credentials.getInstance().getAppKey());
-            final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
-            requestJson.put("q", queryType.getQueryCode());
-            requestJson.put("pk", pk);
+            requestJson.put(QueryConstants.USERNAME, Credentials.getInstance().getUsername());
+            requestJson.put(QueryConstants.PASSWORD, Credentials.getInstance().getPassword());
+            requestJson.put(QueryConstants.DB, Credentials.getInstance().getDb());
+
+            requestJson.put(QueryConstants.QUERYTYPE, queryType.getQueryCode());
+            requestJson.put(QueryConstants.PRIMARY_KEY, pk);
 
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             responseJson = new JSONObject(responseString);
@@ -489,9 +485,10 @@ public abstract class CloudStorage {
     private static <T extends CloudStorage> JSONObject postStaticProcRequest(final QueryType queryType, final String name, final String[] params) {
         try {
             final JSONObject requestJson = new JSONObject();
-            requestJson.put("app", Credentials.getInstance().getAppId());
-            requestJson.put("key", Credentials.getInstance().getAppKey());
-            requestJson.put("q", queryType.getQueryCode());
+            requestJson.put(QueryConstants.USERNAME, Credentials.getInstance().getUsername());
+            requestJson.put(QueryConstants.PASSWORD, Credentials.getInstance().getPassword());
+            requestJson.put(QueryConstants.DB, Credentials.getInstance().getDb());
+            requestJson.put(QueryConstants.QUERYTYPE, queryType.getQueryCode());
 
             final JSONObject paramsJson = new JSONObject();
             paramsJson.put("name", name);
@@ -501,7 +498,7 @@ public abstract class CloudStorage {
                 paramsJson.put("params", new JSONArray());
             }
 
-            requestJson.put("p", paramsJson);
+            requestJson.put(QueryConstants.PAYLOAD, paramsJson);
 
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             JSONObject responseJson = new JSONObject(responseString);
@@ -545,7 +542,7 @@ public abstract class CloudStorage {
 
     private void reportIfError(JSONObject jsonObject) {
         try {
-            if (!"1".equals(jsonObject.getString("ack"))) {
+            if (!"1".equals(jsonObject.getString(QueryConstants.ACK))) {
                 String cause = "";
                 String code = "";
 
@@ -553,8 +550,8 @@ public abstract class CloudStorage {
                     code = jsonObject.getString("code");
                 }
 
-                if (jsonObject.has("cause")) {
-                    cause = jsonObject.getString("cause");
+                if (jsonObject.has(QueryConstants.CAUSE)) {
+                    cause = jsonObject.getString(QueryConstants.CAUSE);
                 }
 
                 throw new DbOperationException(code, cause);

@@ -8,7 +8,7 @@ import com.blobcity.adminpanel.db.bo.ColumnType;
 import com.blobcity.adminpanel.db.service.DbAdminService;
 import com.blobcity.adminpanel.exceptions.ValidationException;
 import com.blobcity.db.test.entity.User;
-import com.blobcity.db.constants.Credentials;
+import com.blobcity.db.config.Credentials;
 import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.test.entity.pktests.CharTable;
 import com.blobcity.db.test.entity.pktests.DoubleTable;
@@ -44,7 +44,7 @@ public class CloudStorageTest {
 
     @BeforeClass
     public static void setUpClass() {
-        Credentials.getInstance().init("test", "test");
+//        Credentials.init("username", "password", "dbname");
         clearTable();
     }
 
@@ -350,7 +350,7 @@ public class CloudStorageTest {
     @Test
     public void testChangeCredentials() {
         try {
-            Credentials.getInstance().init("test1", "test1");
+            Credentials.init("new_username", "new_password", "new_dbname");
         } catch (Throwable t) {
             assertTrue(t instanceof IllegalStateException);
         }

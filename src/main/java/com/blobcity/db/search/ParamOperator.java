@@ -4,7 +4,6 @@
 package com.blobcity.db.search;
 
 import com.blobcity.db.exceptions.InternalDbException;
-import com.blobcity.db.search.interfaceType.Sqlable;
 
 /**
  * Enumeration of operators that can be applied inside search criteria defined by {@link SearchParam}

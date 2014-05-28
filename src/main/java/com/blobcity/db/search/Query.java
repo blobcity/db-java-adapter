@@ -6,9 +6,6 @@ package com.blobcity.db.search;
 import com.blobcity.db.CloudStorage;
 import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.exceptions.InternalDbException;
-import com.blobcity.db.search.interfaceType.Sqlable;
-import com.blobcity.db.search.interfaceType.ObjectJsonable;
-import com.blobcity.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +22,7 @@ import org.json.JSONObject;
  * @see CloudStorage#search(java.lang.Class, com.blobcity.db.search.SearchParam)
  * @author Karun AB <karun.ab@blobcity.net>
  */
-public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
+class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
 
     private final List<String> selectColumnNames;
     private final List<Class<T>> fromTables;

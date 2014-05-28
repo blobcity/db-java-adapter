@@ -1,7 +1,7 @@
 /*
  * Copyright 2014, BlobCity iSolutions Pvt. Ltd.
  */
-package com.blobcity.db.search.interfaceType;
+package com.blobcity.db.search;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,7 +11,9 @@ import org.json.JSONObject;
  * {@link JSONArray} or {@link JSONObject} based on the usage (since they do not have common parentage). Specific implementations like {@link ArrayJsonable} and
  * {@link ObjectJsonable} provide specific implementations for ease of consumption.
  *
- * Usually goes along with {@link Sqlable}
+ * Usually goes along with {@link Sqlable}.
+ *
+ * This interface has default visibility since its visibility is to be restricted to its package.
  *
  * @param <T> Class on which the query is being performed
  * @see ArrayJsonable
@@ -19,7 +21,7 @@ import org.json.JSONObject;
  * @see Sqlable
  * @author Karun AB <karun.ab@blobcity.net>
  */
-public interface Jsonable<T> {
+interface Jsonable<T> {
 
     /**
      * Provides a legal JSON form of the implementing class

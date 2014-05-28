@@ -1,12 +1,14 @@
 /*
  * Copyright 2014, BlobCity iSolutions Pvt. Ltd.
  */
-package com.blobcity.util;
+package com.blobcity.db.search;
 
 import java.util.List;
 
 /**
- * Utility class to perform operations on {@link String}
+ * Utility class to perform operations on {@link String}.
+ *
+ * This class is default to ensure projects that include this class do not see this class.
  *
  * @author Karun AB <karun.ab@blobcity.net>
  */

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 - 2013, BlobCity iSolutions Pvt. Ltd.
  */
-package com.blobcity.db.constants;
+package com.blobcity.db;
 
 /**
  *
  * @author Karishma
  * @author Sanket Sarang
  */
-public enum QueryType {
+enum QueryType {
 
     LOAD("select"),
     SAVE("save"),

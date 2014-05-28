@@ -1,7 +1,7 @@
 /**
  * Copyright 2013, BlobCity iSolutions Pvt. Ltd.
  */
-package com.blobcity.db.bquery;
+package com.blobcity.db;
 
 import com.blobcity.db.exceptions.InternalAdapterException;
 import java.io.BufferedReader;
@@ -15,10 +15,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import org.json.JSONObject;
 
 /**
@@ -26,66 +22,14 @@ import org.json.JSONObject;
  *
  * @author Sanket Sarang
  */
-public class QueryExecuter {
-
-    private static OperationMode operationMode;
-    private static final String JNDI_LOCAL_RESOURCE = "java:global/BlobCityDB/BQueryExecutorBean";
-    private static final String JNDI_REMOTE_RESOURCE = "java:global/BlobCityDB/BQueryExecutorBean!com.blobcity.db.bquery.BQueryExecutorBeanRemote";
-    private static BQueryExecutorBeanRemote bean;
-
-    static {
-        opmode:
-        {
-            /* Check for availability of local EJB */
-            // TODO: If glassfish is not present, it takes upto 60 seconds per failover delaying the first query by around 2 minutes. This needs to be fixed (probably with a quicker failover)
-            try {
-                final InitialContext context = new InitialContext();
-                context.lookup(JNDI_LOCAL_RESOURCE);
-                Logger.getLogger("BlobCity").log(Level.INFO, "Operation mode of no-query available in the current context. "
-                        + "Please consider compiling your application on the BlobCity Cloud to leverage no-query capabilities");
-            } catch (NamingException ex) {
-                //do nothing
-            }
-
-            /* Check for availability of remote EJB */
-            try {
-                final InitialContext context = new InitialContext();
-                bean = (BQueryExecutorBeanRemote) context.lookup(JNDI_REMOTE_RESOURCE);
-                operationMode = OperationMode.REMOTE_EJB;
-                Logger.getLogger("BlobCity").log(Level.INFO, "Operation mode set to remote-ejb");
-                break opmode;
-            } catch (NamingException ex) {
-                //do nothing
-            }
-
-            /* Use default operation mode of HTTP */
-            operationMode = OperationMode.HTTP;
-            Logger.getLogger("BlobCity").log(Level.INFO, "Using default operation mode of http");
-        }
-    }
+class QueryExecuter {
 
     public String executeQuery(JSONObject queryJson) {
-        switch (operationMode) {
-            case REMOTE_EJB:
-                return executeRemoteEJB(queryJson);
-            default:
-                return executeHTTP(queryJson);
-        }
+        return executeHTTP(queryJson);
     }
 
     public String executeSql(final JSONObject queryJson) {
         return executeSqlHttp(queryJson);
-    }
-
-    private String executeLocalEJB(JSONObject jsonObject) {
-        throw new UnsupportedOperationException("No-Query operation mode not supported in downloaded adapters. "
-                + "Feature only available to applications compiled on the BlobCity Cloud. If you have arrived at this "
-                + "operating mode it is very likely that you are hosting on BlobCity Cloud but did not compile your "
-                + "application on the BlobCity Cloud.");
-    }
-
-    private String executeRemoteEJB(JSONObject jsonObject) {
-        return bean.runQuery(jsonObject.toString());
     }
 
     private String executeHTTP(JSONObject jsonObject) {
@@ -118,14 +62,16 @@ public class QueryExecuter {
         try {
             final URL url = new URL("http://db.blobcity.com/rest/sql");
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            final String appId = jsonObject.getString("app");
-            final String query = jsonObject.getString("p");
+            final String username = jsonObject.getString(QueryConstants.USERNAME);
+            final String password = jsonObject.getString(QueryConstants.PASSWORD);
+            final String db = jsonObject.getString(QueryConstants.DB);
+            final String query = jsonObject.getString(QueryConstants.PAYLOAD);
 
-            //add reuqest header
+            //add request header
             con.setRequestMethod("POST");
             con.setRequestProperty("Accept-Language", "en-US,en-GB;q=0.8, en;q=0.5");
 
-            String urlParameters = MessageFormat.format("app={0}&q={1}", appId, query);
+            final String urlParameters = MessageFormat.format("username={0}&password={1}&db={2}&q={3}", username, password, db, query);
 
             // Send post request
             con.setDoOutput(true);
@@ -149,7 +95,7 @@ public class QueryExecuter {
         } catch (ProtocolException ex) {
             throw new InternalAdapterException("Invalid communication protocol with the database endpoint", ex);
         } catch (IOException ex) {
-            throw new InternalAdapterException("Unable to communicate with the database at this time", ex);
+            throw new InternalAdapterException("Unable to communicate with the database at this time", ex.getCause());
         } finally {
             if (wr != null) {
                 try {
