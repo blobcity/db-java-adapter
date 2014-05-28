@@ -16,7 +16,8 @@ public enum QueryType {
     REMOVE("delete"),
     SELECT_ALL("select-all"),
     SEARCH("search"),
-    CONTAINS("contains");
+    CONTAINS("contains"),
+    STORED_PROC("sp");
     
     private final String queryCode;
     

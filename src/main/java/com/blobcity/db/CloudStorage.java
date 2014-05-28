@@ -17,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -252,6 +253,39 @@ public abstract class CloudStorage {
         return entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
     }
 
+    public static <T extends CloudStorage> Object invokeProc(final String storedProcedureName, final String... params) {
+        final JSONObject responseJson = postStaticProcRequest(QueryType.STORED_PROC, storedProcedureName, params);
+        try {
+
+            /* If ack:0 then check for error code and report accordingly */
+            if ("0".equals(responseJson.getString("ack"))) {
+                String cause = "";
+                String code = "";
+
+                if (responseJson.has("code")) {
+                    code = responseJson.getString("code");
+                }
+
+                if (responseJson.has("cause")) {
+                    cause = responseJson.getString("cause");
+                }
+
+                throw new DbOperationException(code, cause);
+            }
+
+            final Object payloadObj = responseJson.get("p");
+            if (payloadObj instanceof CloudStorage) {
+                return "1 obj";
+            } else if (payloadObj instanceof JSONArray) {
+                return ((JSONArray) payloadObj).length() + " objs";
+            }
+
+            return payloadObj;
+        } catch (JSONException ex) {
+            throw new InternalDbException("Error in API JSON response", ex);
+        }
+    }
+
     protected void setPk(Object pk) {
         Field primaryKeyField = TableStore.getInstance().getPkField(table);
         try {
@@ -441,12 +475,36 @@ public abstract class CloudStorage {
             requestJson.put("app", Credentials.getInstance().getAppId());
             requestJson.put("key", Credentials.getInstance().getAppKey());
             final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
-            requestJson.put("t", tableName);
             requestJson.put("q", queryType.getQueryCode());
             requestJson.put("pk", pk);
 
             final String responseString = new QueryExecuter().executeQuery(requestJson);
             responseJson = new JSONObject(responseString);
+            return responseJson;
+        } catch (JSONException ex) {
+            throw new InternalDbException("Error in processing request/response JSON", ex);
+        }
+    }
+
+    private static <T extends CloudStorage> JSONObject postStaticProcRequest(final QueryType queryType, final String name, final String[] params) {
+        try {
+            final JSONObject requestJson = new JSONObject();
+            requestJson.put("app", Credentials.getInstance().getAppId());
+            requestJson.put("key", Credentials.getInstance().getAppKey());
+            requestJson.put("q", queryType.getQueryCode());
+
+            final JSONObject paramsJson = new JSONObject();
+            paramsJson.put("name", name);
+            if (params != null) {
+                paramsJson.put("params", new JSONArray(Arrays.asList(params)));
+            } else {
+                paramsJson.put("params", new JSONArray());
+            }
+
+            requestJson.put("p", paramsJson);
+
+            final String responseString = new QueryExecuter().executeQuery(requestJson);
+            JSONObject responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
             throw new InternalDbException("Error in processing request/response JSON", ex);
