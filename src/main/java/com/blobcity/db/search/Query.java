@@ -22,7 +22,7 @@ import org.json.JSONObject;
  * @see CloudStorage#search(java.lang.Class, com.blobcity.db.search.SearchParam)
  * @author Karun AB <karun.ab@blobcity.net>
  */
-class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
+public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
 
     private final List<String> selectColumnNames;
     private final List<Class<T>> fromTables;
