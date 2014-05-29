@@ -106,7 +106,7 @@ public abstract class CloudStorage {
         List<P> list;
 
         try {
-            if ("1".equals(responseJson.getString(QueryConstants.ACK))) {
+            if (responseJson.getInt(QueryConstants.ACK) == 1) {
                 jsonArray = responseJson.getJSONArray("keys");
                 list = new ArrayList<P>();
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -161,15 +161,12 @@ public abstract class CloudStorage {
             throw new InternalAdapterException("No table name set. Table name is a mandatory field queries.");
         }
 
-        final Class<T> clazz = query.getFromTables().get(0);
+        final String username = Credentials.getInstance().getUsername();
+        final String password = Credentials.getInstance().getPassword();
+        final String db = Credentials.getInstance().getDb();
+        final String queryStr = query.asSql();
 
-        final Map<String, Object> requestMap = new HashMap<String, Object>();
-        requestMap.put(QueryConstants.USERNAME, Credentials.getInstance().getUsername());
-        requestMap.put(QueryConstants.PASSWORD, Credentials.getInstance().getPassword());
-        requestMap.put(QueryConstants.DB, Credentials.getInstance().getDb());
-        requestMap.put(QueryConstants.PAYLOAD, query.asSql());
-
-        final String responseString = new QueryExecuter().executeSql(new JSONObject(requestMap));
+        final String responseString = new QueryExecuter().executeSql(DbQueryRequest.create(username, password, db, queryStr));
 
         final JSONObject responseJson;
         try {
@@ -179,6 +176,8 @@ public abstract class CloudStorage {
         }
 
         try {
+            final Class<T> clazz = query.getFromTables().get(0);
+
             if ("1".equals(responseJson.getString(QueryConstants.ACK))) {
                 final JSONArray resultJsonArray = responseJson.getJSONArray(QueryConstants.PAYLOAD);
                 final int resultCount = resultJsonArray.length();
@@ -403,30 +402,33 @@ public abstract class CloudStorage {
     }
 
     private JSONObject postRequest(QueryType queryType) {
-        JSONObject requestJson;
         JSONObject responseJson;
         try {
-            requestJson = new JSONObject();
-            requestJson.put(QueryConstants.USERNAME, Credentials.getInstance().getUsername());
-            requestJson.put(QueryConstants.PASSWORD, Credentials.getInstance().getPassword());
-            requestJson.put(QueryConstants.DB, Credentials.getInstance().getDb());
-            requestJson.put(QueryConstants.TABLE, table);
-            requestJson.put(QueryConstants.QUERYTYPE, queryType.getQueryCode());
+
+            final String username = Credentials.getInstance().getUsername();
+            final String password = Credentials.getInstance().getPassword();
+            final String db = Credentials.getInstance().getDb();
+
+            final Map<String, Object> queryParamMap = new HashMap<String, Object>();
+            queryParamMap.put(QueryConstants.TABLE, table);
+            queryParamMap.put(QueryConstants.QUERY, queryType.getQueryCode());
 
             switch (queryType) {
                 case LOAD:
                 case REMOVE:
-                    requestJson.put(QueryConstants.PRIMARY_KEY, getPrimaryKeyValue());
+                    queryParamMap.put(QueryConstants.PRIMARY_KEY, getPrimaryKeyValue());
                     break;
                 case INSERT:
                 case SAVE:
-                    requestJson.put(QueryConstants.PAYLOAD, toJson());
+                    queryParamMap.put(QueryConstants.PAYLOAD, toJson());
                     break;
                 default:
                     throw new InternalDbException("Attempting to executed unknown or unidentifed query");
             }
 
-            final String responseString = new QueryExecuter().executeQuery(requestJson);
+            final String queryStr = new JSONObject(queryParamMap).toString();
+
+            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
             responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
@@ -439,22 +441,21 @@ public abstract class CloudStorage {
     }
 
     private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType) {
-        JSONObject requestJson;
-        JSONObject responseJson;
-        Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+        final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
 
-        requestJson = new JSONObject();
+        final String username = Credentials.getInstance().getUsername();
+        final String password = Credentials.getInstance().getPassword();
+        final String db = Credentials.getInstance().getDb();
+
+        final Map<String, Object> requestMap = new HashMap<String, Object>();
+        final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+        requestMap.put(QueryConstants.TABLE, tableName);
+        requestMap.put(QueryConstants.QUERY, queryType.getQueryCode());
+        final String queryStr = new JSONObject(requestMap).toString();
+
         try {
-            requestJson.put(QueryConstants.USERNAME, Credentials.getInstance().getUsername());
-            requestJson.put(QueryConstants.PASSWORD, Credentials.getInstance().getPassword());
-            requestJson.put(QueryConstants.DB, Credentials.getInstance().getDb());
-
-            final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
-            requestJson.put(QueryConstants.TABLE, tableName);
-            requestJson.put(QueryConstants.QUERYTYPE, queryType.getQueryCode());
-
-            final String responseString = new QueryExecuter().executeQuery(requestJson);
-            responseJson = new JSONObject(responseString);
+            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
+            final JSONObject responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
             throw new InternalDbException("Error in processing request/response JSON", ex);
@@ -462,20 +463,18 @@ public abstract class CloudStorage {
     }
 
     private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType, Object pk) {
-        JSONObject requestJson;
-        JSONObject responseJson;
-
-        requestJson = new JSONObject();
         try {
-            requestJson.put(QueryConstants.USERNAME, Credentials.getInstance().getUsername());
-            requestJson.put(QueryConstants.PASSWORD, Credentials.getInstance().getPassword());
-            requestJson.put(QueryConstants.DB, Credentials.getInstance().getDb());
+            final String username = Credentials.getInstance().getUsername();
+            final String password = Credentials.getInstance().getPassword();
+            final String db = Credentials.getInstance().getDb();
 
-            requestJson.put(QueryConstants.QUERYTYPE, queryType.getQueryCode());
-            requestJson.put(QueryConstants.PRIMARY_KEY, pk);
+            final Map<String, Object> queryMap = new HashMap<String, Object>();
+            queryMap.put(QueryConstants.QUERY, queryType.getQueryCode());
+            queryMap.put(QueryConstants.PRIMARY_KEY, pk);
+            final String queryStr = new JSONObject(queryMap).toString();
 
-            final String responseString = new QueryExecuter().executeQuery(requestJson);
-            responseJson = new JSONObject(responseString);
+            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
+            final JSONObject responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
             throw new InternalDbException("Error in processing request/response JSON", ex);
@@ -483,25 +482,22 @@ public abstract class CloudStorage {
     }
 
     private static <T extends CloudStorage> JSONObject postStaticProcRequest(final QueryType queryType, final String name, final String[] params) {
+        final String username = Credentials.getInstance().getUsername();
+        final String password = Credentials.getInstance().getPassword();
+        final String db = Credentials.getInstance().getDb();
+
+        final Map<String, Object> queryParamMap = new HashMap<String, Object>();
+        queryParamMap.put(QueryConstants.QUERY, queryType.getQueryCode());
+
+        final Map<String, Object> paramsMap = new HashMap<String, Object>();
+        paramsMap.put("name", name);
+        paramsMap.put("params", new JSONArray(params != null ? Arrays.asList(params) : null));
+
+        queryParamMap.put(QueryConstants.PAYLOAD, new JSONObject(paramsMap));
+
+        final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, new JSONObject(queryParamMap).toString()));
         try {
-            final JSONObject requestJson = new JSONObject();
-            requestJson.put(QueryConstants.USERNAME, Credentials.getInstance().getUsername());
-            requestJson.put(QueryConstants.PASSWORD, Credentials.getInstance().getPassword());
-            requestJson.put(QueryConstants.DB, Credentials.getInstance().getDb());
-            requestJson.put(QueryConstants.QUERYTYPE, queryType.getQueryCode());
-
-            final JSONObject paramsJson = new JSONObject();
-            paramsJson.put("name", name);
-            if (params != null) {
-                paramsJson.put("params", new JSONArray(Arrays.asList(params)));
-            } else {
-                paramsJson.put("params", new JSONArray());
-            }
-
-            requestJson.put(QueryConstants.PAYLOAD, paramsJson);
-
-            final String responseString = new QueryExecuter().executeQuery(requestJson);
-            JSONObject responseJson = new JSONObject(responseString);
+            final JSONObject responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
             throw new InternalDbException("Error in processing request/response JSON", ex);
