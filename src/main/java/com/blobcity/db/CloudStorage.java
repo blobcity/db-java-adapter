@@ -59,6 +59,7 @@ public abstract class CloudStorage {
         TableStore.getInstance().registerClass(table, this.getClass());
     }
 
+    // Public static methods
     public static <T extends CloudStorage> T newInstance(Class<T> clazz) {
         try {
             return clazz.newInstance();
@@ -121,8 +122,8 @@ public abstract class CloudStorage {
         }
     }
 
-    public static <T extends CloudStorage> boolean contains(Class<T> clazz, Object key) {
-        JSONObject responseJson = postStaticRequest(clazz, QueryType.CONTAINS, key);
+    public static <T extends CloudStorage> boolean contains(final Object key) {
+        JSONObject responseJson = postStaticRequest(QueryType.CONTAINS, key);
 
         try {
             if ("1".equals(responseJson.getString(QueryConstants.ACK))) {
@@ -135,8 +136,8 @@ public abstract class CloudStorage {
         }
     }
 
-    public static <T extends CloudStorage> void remove(Class<T> clazz, Object pk) {
-        JSONObject responseJson = postStaticRequest(clazz, QueryType.REMOVE, pk);
+    public static <T extends CloudStorage> void remove(final Object pk) {
+        JSONObject responseJson = postStaticRequest(QueryType.REMOVE, pk);
 
         try {
             if ("0".equals(responseJson.getString(QueryConstants.ACK))) {
@@ -278,19 +279,7 @@ public abstract class CloudStorage {
         }
     }
 
-    protected void setPk(Object pk) {
-        Field primaryKeyField = TableStore.getInstance().getPkField(table);
-        try {
-            primaryKeyField.setAccessible(true);
-            primaryKeyField.set(this, pk);
-            primaryKeyField.setAccessible(false);
-        } catch (IllegalArgumentException ex) {
-            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
-        } catch (IllegalAccessException ex) {
-            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
-        }
-    }
-
+    // Public instance methods
     public boolean load() {
         JSONObject responseJson;
         JSONObject payloadJson;
@@ -372,67 +361,13 @@ public abstract class CloudStorage {
         }
     }
 
-    /**
-     * Instantiates current object with data from the provided {@link JSONObject}.
-     *
-     * Every column mentioned in the {@link CloudStorage} instance (as maintained by {@link TableStore}) will be loaded with data. If any of these column name
-     * IDs do not exist in the provided {@link JSONObject}, an {@link InternalDbException} will be thrown. If there are any issues whilst reflecting the data
-     * into the instance, an {@link InternalAdapterException} will be thrown.
-     *
-     * If any data already exists the calling object in any field mapped as a column, the data will be overwritten and lost.
-     *
-     * @param jsonObject input {@link JSONObject} from which the data for the current instance are to be loaded.
-     */
-    private void fromJson(final JSONObject jsonObject) {
-        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
-
-        for (final String columnName : structureMap.keySet()) {
-            final Field field = structureMap.get(columnName);
-            field.setAccessible(true);
-            try {
-                setFieldValue(field, jsonObject.get(columnName));
-            } catch (JSONException ex) {
-                throw new InternalDbException("Error in processing JSON. Class: " + this.getClass() + " Request: " + jsonObject.toString(), ex);
-            } catch (IllegalArgumentException ex) {
-                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
-            } catch (IllegalAccessException ex) {
-                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
-            }
-        }
-    }
-
-    private JSONObject postRequest(QueryType queryType) {
-        JSONObject responseJson;
+    // Protected instance methods
+    protected void setPk(Object pk) {
+        final Field primaryKeyField = TableStore.getInstance().getPkField(table);
         try {
-
-            final String username = Credentials.getInstance().getUsername();
-            final String password = Credentials.getInstance().getPassword();
-            final String db = Credentials.getInstance().getDb();
-
-            final Map<String, Object> queryParamMap = new HashMap<String, Object>();
-            queryParamMap.put(QueryConstants.TABLE, table);
-            queryParamMap.put(QueryConstants.QUERY, queryType.getQueryCode());
-
-            switch (queryType) {
-                case LOAD:
-                case REMOVE:
-                    queryParamMap.put(QueryConstants.PRIMARY_KEY, getPrimaryKeyValue());
-                    break;
-                case INSERT:
-                case SAVE:
-                    queryParamMap.put(QueryConstants.PAYLOAD, toJson());
-                    break;
-                default:
-                    throw new InternalDbException("Attempting to executed unknown or unidentifed query");
-            }
-
-            final String queryStr = new JSONObject(queryParamMap).toString();
-
-            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
-            responseJson = new JSONObject(responseString);
-            return responseJson;
-        } catch (JSONException ex) {
-            throw new InternalDbException("Error in processing request/response JSON", ex);
+            primaryKeyField.setAccessible(true);
+            primaryKeyField.set(this, pk);
+            primaryKeyField.setAccessible(false);
         } catch (IllegalArgumentException ex) {
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
@@ -440,47 +375,7 @@ public abstract class CloudStorage {
         }
     }
 
-    private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType) {
-        final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-
-        final String username = Credentials.getInstance().getUsername();
-        final String password = Credentials.getInstance().getPassword();
-        final String db = Credentials.getInstance().getDb();
-
-        final Map<String, Object> requestMap = new HashMap<String, Object>();
-        final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
-        requestMap.put(QueryConstants.TABLE, tableName);
-        requestMap.put(QueryConstants.QUERY, queryType.getQueryCode());
-        final String queryStr = new JSONObject(requestMap).toString();
-
-        try {
-            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
-            final JSONObject responseJson = new JSONObject(responseString);
-            return responseJson;
-        } catch (JSONException ex) {
-            throw new InternalDbException("Error in processing request/response JSON", ex);
-        }
-    }
-
-    private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType, Object pk) {
-        try {
-            final String username = Credentials.getInstance().getUsername();
-            final String password = Credentials.getInstance().getPassword();
-            final String db = Credentials.getInstance().getDb();
-
-            final Map<String, Object> queryMap = new HashMap<String, Object>();
-            queryMap.put(QueryConstants.QUERY, queryType.getQueryCode());
-            queryMap.put(QueryConstants.PRIMARY_KEY, pk);
-            final String queryStr = new JSONObject(queryMap).toString();
-
-            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
-            final JSONObject responseJson = new JSONObject(responseString);
-            return responseJson;
-        } catch (JSONException ex) {
-            throw new InternalDbException("Error in processing request/response JSON", ex);
-        }
-    }
-
+    // Private static methods
     private static <T extends CloudStorage> JSONObject postStaticProcRequest(final QueryType queryType, final String name, final String[] params) {
         final String username = Credentials.getInstance().getUsername();
         final String password = Credentials.getInstance().getPassword();
@@ -502,73 +397,6 @@ public abstract class CloudStorage {
         } catch (JSONException ex) {
             throw new InternalDbException("Error in processing request/response JSON", ex);
         }
-    }
-
-    /**
-     * Gets a JSON representation of the object. The column names are same as those loaded in {@link TableStore}
-     *
-     * @return {@link JSONObject} representing the entity class in its current state
-     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or
-     * implementor thereof).
-     * @throws IllegalAccessException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
-     */
-    private JSONObject toJson() throws IllegalArgumentException, IllegalAccessException {
-        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
-        final Map<String, Object> dataMap = new HashMap<String, Object>();
-
-        for (String columnName : structureMap.keySet()) {
-            final Field field = structureMap.get(columnName);
-            field.setAccessible(true);
-            if (field.getType().isEnum()) {
-                dataMap.put(columnName, field.get(this) != null ? field.get(this).toString() : null);
-                continue;
-            } else if (field.getType() == java.util.Date.class) {
-                dataMap.put(columnName, field.get(this) != null ? ((java.util.Date) field.get(this)).getTime() : null);
-                continue;
-            } else if (field.getType() == java.sql.Date.class) {
-                dataMap.put(columnName, field.get(this) != null ? ((java.sql.Date) field.get(this)).getTime() : null);
-                continue;
-            }
-
-            dataMap.put(columnName, field.get(this));
-        }
-
-        return new JSONObject(dataMap);
-    }
-
-    private void reportIfError(JSONObject jsonObject) {
-        try {
-            if (!"1".equals(jsonObject.getString(QueryConstants.ACK))) {
-                String cause = "";
-                String code = "";
-
-                if (jsonObject.has("code")) {
-                    code = jsonObject.getString("code");
-                }
-
-                if (jsonObject.has(QueryConstants.CAUSE)) {
-                    cause = jsonObject.getString(QueryConstants.CAUSE);
-                }
-
-                throw new DbOperationException(code, cause);
-            }
-        } catch (JSONException ex) {
-            throw new InternalDbException("Error in API JSON response", ex);
-        }
-    }
-
-    private Object getPrimaryKeyValue() throws IllegalArgumentException, IllegalAccessException {
-        Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
-
-        for (String columnName : structureMap.keySet()) {
-            Field field = structureMap.get(columnName);
-            if (field.getAnnotation(Primary.class) != null) {
-                field.setAccessible(true);
-                return field.get(this);
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -598,21 +426,6 @@ public abstract class CloudStorage {
 
         // String
         return value;
-    }
-
-    /**
-     * Sets field level values by ensuring appropriate conversion between the input type (JSON) and Java's inherent data types.
-     *
-     * @see #getCastedValue(java.lang.reflect.Field, java.lang.Object)
-     * @param field field in current {@link Object} that needs to be updated
-     * @param value value to be set for the field
-     * @throws IllegalAccessException if the underlying field being changed is final
-     */
-    private void setFieldValue(final Field field, final Object value) throws IllegalAccessException {
-        final boolean oldAccessibilityValue = field.isAccessible();
-        field.setAccessible(true);
-        field.set(this, getCastedValue(field, value, this.getClass()));
-        field.setAccessible(oldAccessibilityValue);
     }
 
     /**
@@ -698,5 +511,197 @@ public abstract class CloudStorage {
 
         // String & any other weird type
         return value;
+    }
+
+    private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType) {
+        final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+
+        final String username = Credentials.getInstance().getUsername();
+        final String password = Credentials.getInstance().getPassword();
+        final String db = Credentials.getInstance().getDb();
+
+        final Map<String, Object> requestMap = new HashMap<String, Object>();
+        final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+        requestMap.put(QueryConstants.TABLE, tableName);
+        requestMap.put(QueryConstants.QUERY, queryType.getQueryCode());
+        final String queryStr = new JSONObject(requestMap).toString();
+
+        try {
+            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
+            final JSONObject responseJson = new JSONObject(responseString);
+            return responseJson;
+        } catch (JSONException ex) {
+            throw new InternalDbException("Error in processing request/response JSON", ex);
+        }
+    }
+
+    private static <T extends CloudStorage> JSONObject postStaticRequest(final QueryType queryType, final Object pk) {
+        try {
+            final String username = Credentials.getInstance().getUsername();
+            final String password = Credentials.getInstance().getPassword();
+            final String db = Credentials.getInstance().getDb();
+
+            final Map<String, Object> queryMap = new HashMap<String, Object>();
+            queryMap.put(QueryConstants.QUERY, queryType.getQueryCode());
+            queryMap.put(QueryConstants.PRIMARY_KEY, pk);
+            final String queryStr = new JSONObject(queryMap).toString();
+
+            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
+            final JSONObject responseJson = new JSONObject(responseString);
+            return responseJson;
+        } catch (JSONException ex) {
+            throw new InternalDbException("Error in processing request/response JSON", ex);
+        }
+    }
+
+    // Private instance methods
+    /**
+     * Instantiates current object with data from the provided {@link JSONObject}.
+     *
+     * Every column mentioned in the {@link CloudStorage} instance (as maintained by {@link TableStore}) will be loaded with data. If any of these column name
+     * IDs do not exist in the provided {@link JSONObject}, an {@link InternalDbException} will be thrown. If there are any issues whilst reflecting the data
+     * into the instance, an {@link InternalAdapterException} will be thrown.
+     *
+     * If any data already exists the calling object in any field mapped as a column, the data will be overwritten and lost.
+     *
+     * @param jsonObject input {@link JSONObject} from which the data for the current instance are to be loaded.
+     */
+    private void fromJson(final JSONObject jsonObject) {
+        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
+
+        for (final String columnName : structureMap.keySet()) {
+            final Field field = structureMap.get(columnName);
+            field.setAccessible(true);
+            try {
+                setFieldValue(field, jsonObject.get(columnName));
+            } catch (JSONException ex) {
+                throw new InternalDbException("Error in processing JSON. Class: " + this.getClass() + " Request: " + jsonObject.toString(), ex);
+            } catch (IllegalArgumentException ex) {
+                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+            } catch (IllegalAccessException ex) {
+                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+            }
+        }
+    }
+
+    private JSONObject postRequest(QueryType queryType) {
+        JSONObject responseJson;
+        try {
+
+            final String username = Credentials.getInstance().getUsername();
+            final String password = Credentials.getInstance().getPassword();
+            final String db = Credentials.getInstance().getDb();
+
+            final Map<String, Object> queryParamMap = new HashMap<String, Object>();
+            queryParamMap.put(QueryConstants.TABLE, table);
+            queryParamMap.put(QueryConstants.QUERY, queryType.getQueryCode());
+
+            switch (queryType) {
+                case LOAD:
+                case REMOVE:
+                    queryParamMap.put(QueryConstants.PRIMARY_KEY, getPrimaryKeyValue());
+                    break;
+                case INSERT:
+                case SAVE:
+                    queryParamMap.put(QueryConstants.PAYLOAD, toJson());
+                    break;
+                default:
+                    throw new InternalDbException("Attempting to executed unknown or unidentifed query");
+            }
+
+            final String queryStr = new JSONObject(queryParamMap).toString();
+
+            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
+            responseJson = new JSONObject(responseString);
+            return responseJson;
+        } catch (JSONException ex) {
+            throw new InternalDbException("Error in processing request/response JSON", ex);
+        } catch (IllegalArgumentException ex) {
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+        } catch (IllegalAccessException ex) {
+            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+        }
+    }
+
+    /**
+     * Gets a JSON representation of the object. The column names are same as those loaded in {@link TableStore}
+     *
+     * @return {@link JSONObject} representing the entity class in its current state
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or
+     * implementor thereof).
+     * @throws IllegalAccessException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
+     */
+    private JSONObject toJson() throws IllegalArgumentException, IllegalAccessException {
+        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
+        final Map<String, Object> dataMap = new HashMap<String, Object>();
+
+        for (String columnName : structureMap.keySet()) {
+            final Field field = structureMap.get(columnName);
+            field.setAccessible(true);
+            if (field.getType().isEnum()) {
+                dataMap.put(columnName, field.get(this) != null ? field.get(this).toString() : null);
+                continue;
+            } else if (field.getType() == java.util.Date.class) {
+                dataMap.put(columnName, field.get(this) != null ? ((java.util.Date) field.get(this)).getTime() : null);
+                continue;
+            } else if (field.getType() == java.sql.Date.class) {
+                dataMap.put(columnName, field.get(this) != null ? ((java.sql.Date) field.get(this)).getTime() : null);
+                continue;
+            }
+
+            dataMap.put(columnName, field.get(this));
+        }
+
+        return new JSONObject(dataMap);
+    }
+
+    private void reportIfError(JSONObject jsonObject) {
+        try {
+            if (!"1".equals(jsonObject.getString(QueryConstants.ACK))) {
+                String cause = "";
+                String code = "";
+
+                if (jsonObject.has("code")) {
+                    code = jsonObject.getString("code");
+                }
+
+                if (jsonObject.has(QueryConstants.CAUSE)) {
+                    cause = jsonObject.getString(QueryConstants.CAUSE);
+                }
+
+                throw new DbOperationException(code, cause);
+            }
+        } catch (JSONException ex) {
+            throw new InternalDbException("Error in API JSON response", ex);
+        }
+    }
+
+    private Object getPrimaryKeyValue() throws IllegalArgumentException, IllegalAccessException {
+        Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
+
+        for (String columnName : structureMap.keySet()) {
+            Field field = structureMap.get(columnName);
+            if (field.getAnnotation(Primary.class) != null) {
+                field.setAccessible(true);
+                return field.get(this);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets field level values by ensuring appropriate conversion between the input type (JSON) and Java's inherent data types.
+     *
+     * @see #getCastedValue(java.lang.reflect.Field, java.lang.Object)
+     * @param field field in current {@link Object} that needs to be updated
+     * @param value value to be set for the field
+     * @throws IllegalAccessException if the underlying field being changed is final
+     */
+    private void setFieldValue(final Field field, final Object value) throws IllegalAccessException {
+        final boolean oldAccessibilityValue = field.isAccessible();
+        field.setAccessible(true);
+        field.set(this, getCastedValue(field, value, this.getClass()));
+        field.setAccessible(oldAccessibilityValue);
     }
 }
