@@ -1,6 +1,6 @@
 package com.blobcity.db.config;
 
-import com.blobcity.db.CloudStorage;
+import com.blobcity.db.exceptions.InternalAdapterException;
 
 /**
  * Holds the default credentials for the application. If you require to set run time credentials that are different from the default for the application, this
@@ -24,6 +24,10 @@ public class Credentials {
     }
 
     public static Credentials getInstance() {
+        if (instance == null) {
+            throw new InternalAdapterException("Credentials have not been setup before a request was made.");
+        }
+
         return instance;
     }
 
