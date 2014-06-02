@@ -22,18 +22,19 @@ import java.text.MessageFormat;
  */
 class QueryExecuter {
 
-    private static final String BQL_SERVICE_URL = MessageFormat.format("http://{0}/rest/bquery", Credentials.getInstance().getServiceAddress());
-    private static final String SQL_SERVICE_URL = MessageFormat.format("http://{0}/rest/sql", Credentials.getInstance().getServiceAddress());
-
-    public String executeBql(final DbQueryRequest queryRequest) {
-        return executeQuery(BQL_SERVICE_URL, queryRequest.createPostParam());
+    private QueryExecuter() {
+        // do nothing
     }
 
-    public String executeSql(final DbQueryRequest queryRequest) {
-        return executeQuery(SQL_SERVICE_URL, queryRequest.createPostParam());
+    public static String executeBql(final Credentials credentials, final DbQueryRequest queryRequest) {
+        return executeQuery(getBqlServiceUrl(credentials), queryRequest.createPostParam());
     }
 
-    private String executeQuery(final String serviceUrl, final String postParams) {
+    public static String executeSql(final Credentials credentials, final DbQueryRequest queryRequest) {
+        return executeQuery(getSqlServiceUrl(credentials), queryRequest.createPostParam());
+    }
+
+    private static String executeQuery(final String serviceUrl, final String postParams) {
         BufferedReader in = null;
         DataOutputStream wr = null;
 
@@ -84,5 +85,13 @@ class QueryExecuter {
                 }
             }
         }
+    }
+
+    private static String getBqlServiceUrl(final Credentials credentials) {
+        return MessageFormat.format("http://{0}/rest/bquery", credentials.getServiceAddress());
+    }
+
+    private static String getSqlServiceUrl(final Credentials credentials) {
+        return MessageFormat.format("http://{0}/rest/sql", credentials.getServiceAddress());
     }
 }

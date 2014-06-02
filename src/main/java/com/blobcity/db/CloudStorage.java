@@ -193,7 +193,7 @@ public abstract class CloudStorage {
         final String db = credentials.getDb();
         final String queryStr = query.asSql();
 
-        final String responseString = new QueryExecuter().executeSql(DbQueryRequest.create(username, password, db, queryStr));
+        final String responseString = QueryExecuter.executeSql(credentials, DbQueryRequest.create(username, password, db, queryStr));
 
         final JSONObject responseJson;
         try {
@@ -370,7 +370,7 @@ public abstract class CloudStorage {
 
         queryParamMap.put(QueryConstants.PAYLOAD, new JSONObject(paramsMap));
 
-        final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, new JSONObject(queryParamMap).toString()));
+        final String responseString = QueryExecuter.executeBql(credentials, DbQueryRequest.create(username, password, db, new JSONObject(queryParamMap).toString()));
         try {
             final JSONObject responseJson = new JSONObject(responseString);
             return responseJson;
@@ -507,7 +507,7 @@ public abstract class CloudStorage {
         final String queryStr = new JSONObject(requestMap).toString();
 
         try {
-            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
+            final String responseString = QueryExecuter.executeBql(credentials, DbQueryRequest.create(username, password, db, queryStr));
             final JSONObject responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
@@ -526,7 +526,7 @@ public abstract class CloudStorage {
             queryMap.put(QueryConstants.PRIMARY_KEY, pk);
             final String queryStr = new JSONObject(queryMap).toString();
 
-            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
+            final String responseString = QueryExecuter.executeBql(credentials, DbQueryRequest.create(username, password, db, queryStr));
             final JSONObject responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
@@ -657,7 +657,7 @@ public abstract class CloudStorage {
 
             final String queryStr = new JSONObject(queryParamMap).toString();
 
-            final String responseString = new QueryExecuter().executeBql(DbQueryRequest.create(username, password, db, queryStr));
+            final String responseString = QueryExecuter.executeBql(credentials, DbQueryRequest.create(username, password, db, queryStr));
             responseJson = new JSONObject(responseString);
             return responseJson;
         } catch (JSONException ex) {
