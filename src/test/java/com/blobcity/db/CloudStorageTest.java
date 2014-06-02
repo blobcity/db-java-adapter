@@ -51,7 +51,7 @@ public class CloudStorageTest {
     private static void clearTable() {
         List<Object> keys = CloudStorage.selectAll(User.class);
         for (Object key : keys) {
-            CloudStorage.remove(User.class, key);
+            CloudStorage.remove(key);
         }
     }
 
@@ -182,9 +182,9 @@ public class CloudStorageTest {
         System.out.println("contains");
         User insertedUser = createSample();
         insertedUser.insert();
-        boolean outcome1 = CloudStorage.contains(User.class, insertedUser.getEmail());//existent record
+        boolean outcome1 = CloudStorage.contains(insertedUser.getEmail());//existent record
         assertEquals(true, outcome1);
-        boolean outcome2 = CloudStorage.contains(User.class, "foo");//in-existent record
+        boolean outcome2 = CloudStorage.contains("foo");//in-existent record
         assertEquals(false, outcome2);
         System.out.println("contains: Successful");
     }
@@ -261,8 +261,8 @@ public class CloudStorageTest {
         System.out.println("static remove");
         User sample = createSample();
         sample.insert();
-        CloudStorage.remove(User.class, sample.getEmail());
-        if (CloudStorage.contains(User.class, sample.getEmail())) {
+        CloudStorage.remove(sample.getEmail());
+        if (CloudStorage.contains(sample.getEmail())) {
             fail("Remove operation failed. It is possible that contains method to check presence of record "
                     + "is misbehaving.");
         }
@@ -280,7 +280,7 @@ public class CloudStorageTest {
         user = CloudStorage.newLoadedInstance(User.class, user.getEmail());
         assertNotNull(user);
         user.remove();
-        boolean contains = CloudStorage.contains(User.class, user.getEmail());
+        boolean contains = CloudStorage.contains(user.getEmail());
         if (contains) {
             fail("Non static remove operation failed. It is possible that contains method used to check removal is misbehaving.");
         }

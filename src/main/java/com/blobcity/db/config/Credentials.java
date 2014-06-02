@@ -15,6 +15,7 @@ public class Credentials {
     private final String password;
     private final String db;
     private static Credentials instance;
+    private static final String DEFAULT_SERVER_ADDRESS = "db.blobcity.com";
 
     private Credentials(final String serverAddress, final String username, final String password, final String db) {
         this.serverAddress = serverAddress;
@@ -31,14 +32,25 @@ public class Credentials {
         return instance;
     }
 
+    public static Credentials init(final String username, final String password, final String db) {
+        return init(DEFAULT_SERVER_ADDRESS, username, password, db);
+    }
+
     public static Credentials init(final String serverAddress, final String username, final String password, final String db) {
         if (instance != null) {
             throw new IllegalStateException("Attempting to change application credentails. "
                     + "Application credentails cannot be changed once set.");
         }
 
-        instance = new Credentials(serverAddress, username, password, db);
-        return instance;
+        return instance = create(serverAddress, username, password, db);
+    }
+
+    public static Credentials create(final String username, final String password, final String db) {
+        return create(DEFAULT_SERVER_ADDRESS, username, password, db);
+    }
+
+    public static Credentials create(final String serverAddress, final String username, final String password, final String db) {
+        return new Credentials(serverAddress, username, password, db);
     }
 
     public String getServiceAddress() {

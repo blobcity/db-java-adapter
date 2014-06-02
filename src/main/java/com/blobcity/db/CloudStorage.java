@@ -102,7 +102,7 @@ public abstract class CloudStorage {
     }
 
     public static <T extends CloudStorage, P extends Object> List<P> selectAll(final Class<T> clazz, final Class<P> returnTypeClazz) {
-        JSONObject responseJson = postStaticRequest(clazz, QueryType.SELECT_ALL);
+        JSONObject responseJson = postStaticRequest(Credentials.getInstance(), clazz, QueryType.SELECT_ALL);
         JSONArray jsonArray;
         List<P> list;
 
@@ -123,7 +123,11 @@ public abstract class CloudStorage {
     }
 
     public static <T extends CloudStorage> boolean contains(final Object key) {
-        JSONObject responseJson = postStaticRequest(QueryType.CONTAINS, key);
+        return contains(Credentials.getInstance(), key);
+    }
+
+    public static <T extends CloudStorage> boolean contains(final Credentials credentials, final Object key) {
+        JSONObject responseJson = postStaticRequest(credentials, QueryType.CONTAINS, key);
 
         try {
             if ("1".equals(responseJson.getString(QueryConstants.ACK))) {
@@ -137,7 +141,11 @@ public abstract class CloudStorage {
     }
 
     public static <T extends CloudStorage> void remove(final Object pk) {
-        JSONObject responseJson = postStaticRequest(QueryType.REMOVE, pk);
+        remove(Credentials.getInstance(), pk);
+    }
+
+    public static <T extends CloudStorage> void remove(final Credentials credentials, final Object pk) {
+        JSONObject responseJson = postStaticRequest(credentials, QueryType.REMOVE, pk);
 
         try {
             if ("0".equals(responseJson.getString(QueryConstants.ACK))) {
@@ -149,22 +157,40 @@ public abstract class CloudStorage {
     }
 
     /**
+     * Allows search queries to be performed as defined by {@link http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH}. This method
+     * internally calls {@link #search(com.blobcity.db.config.Credentials, com.blobcity.db.search.Query)} with default credentials from
+     * {@link Credentials#getInstance()}
+     *
+     * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
+     *
+     * @see #search(com.blobcity.db.config.Credentials, com.blobcity.db.search.Query)
+     * @see Credentials#getInstance()
+     * @param <T> Any class reference which extends {@link CloudStorage}
+     * @param query {@link SearchParam}s which are to be used to search for data
+     * @return {@link List} of {@code T} that matches {@code searchParams}
+     */
+    public static <T extends CloudStorage> List<T> search(final Query<T> query) {
+        return search(Credentials.getInstance(), query);
+    }
+
+    /**
      * Allows search queries to be performed as defined by {@link http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH}.
      *
      * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
      *
      * @param <T> Any class reference which extends {@link CloudStorage}
+     * @param credentials Credentials to be used for communicating with the database
      * @param query {@link SearchParam}s which are to be used to search for data
      * @return {@link List} of {@code T} that matches {@code searchParams}
      */
-    public static <T extends CloudStorage> List<T> search(Query<T> query) {
+    public static <T extends CloudStorage> List<T> search(final Credentials credentials, final Query<T> query) {
         if (query.getFromTables() == null && query.getFromTables().isEmpty()) {
             throw new InternalAdapterException("No table name set. Table name is a mandatory field queries.");
         }
 
-        final String username = Credentials.getInstance().getUsername();
-        final String password = Credentials.getInstance().getPassword();
-        final String db = Credentials.getInstance().getDb();
+        final String username = credentials.getUsername();
+        final String password = credentials.getPassword();
+        final String db = credentials.getDb();
         final String queryStr = query.asSql();
 
         final String responseString = new QueryExecuter().executeSql(DbQueryRequest.create(username, password, db, queryStr));
@@ -253,9 +279,13 @@ public abstract class CloudStorage {
         return entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
     }
 
-    // TODO: Complete method implementation This method is clearly not complete.
     public static <T extends CloudStorage> Object invokeProc(final String storedProcedureName, final String... params) {
-        final JSONObject responseJson = postStaticProcRequest(QueryType.STORED_PROC, storedProcedureName, params);
+        return invokeProc(Credentials.getInstance(), storedProcedureName, params);
+    }
+
+    // TODO: Complete method implementation This method is clearly not complete.
+    public static <T extends CloudStorage> Object invokeProc(final Credentials credentials, final String storedProcedureName, final String... params) {
+        final JSONObject responseJson = postStaticProcRequest(credentials, QueryType.STORED_PROC, storedProcedureName, params);
         try {
 
             /* If ack:0 then check for error code and report accordingly */
@@ -281,69 +311,19 @@ public abstract class CloudStorage {
 
     // Public instance methods
     public boolean load() {
-        JSONObject responseJson;
-        JSONObject payloadJson;
-        responseJson = postRequest(QueryType.LOAD);
-        try {
-
-            /* If ack:0 then check for error code and report accordingly */
-            if ("0".equals(responseJson.getString(QueryConstants.ACK))) {
-                if ("DB200".equals(responseJson.getString("code"))) {
-                    return false;
-                } else {
-                    reportIfError(responseJson);
-                }
-            }
-
-            payloadJson = responseJson.getJSONObject(QueryConstants.PAYLOAD);
-            fromJson(payloadJson);
-            return true;
-        } catch (JSONException ex) {
-            throw new InternalDbException("Error in API JSON response", ex);
-        }
+        return load(Credentials.getInstance());
     }
 
     public void save() {
-        JSONObject responseJson = postRequest(QueryType.SAVE);
-        reportIfError(responseJson);
+        save(Credentials.getInstance());
     }
 
     public boolean insert() {
-        JSONObject responseJson = postRequest(QueryType.INSERT);
-        try {
-            if ("1".equals(responseJson.getString(QueryConstants.ACK))) {
-                final JSONObject payloadJson = responseJson.getJSONObject(QueryConstants.PAYLOAD);
-                fromJson(payloadJson);
-                return true;
-            } else if ("0".equals(responseJson.getString(QueryConstants.ACK))) {
-                if ("DB201".equals(responseJson.getString("code"))) {
-                    return false;
-                }
-
-                /*
-                 * considering conditions before this and the code in {@link #reportIfError(JSONObject)}, this call will always result in an exception.
-                 */
-                reportIfError(responseJson);
-            }
-
-            throw new InternalAdapterException("Unknown acknowledgement code from the database. Expected: [0, 1]. Actual: " + responseJson.getString(QueryConstants.ACK));
-        } catch (Exception ex) {
-            reportIfError(responseJson);
-            throw new InternalAdapterException("Exception occurred in the adapter.", ex);
-        }
+        return insert(Credentials.getInstance());
     }
 
     public void remove() {
-        final JSONObject responseJson = postRequest(QueryType.REMOVE);
-        try {
-
-            /* If ack:0 then check for error code and report accordingly */
-            if ("0".equals(responseJson.getString(QueryConstants.ACK)) && !responseJson.getString("code").equals("DB200")) {
-                reportIfError(responseJson);
-            }
-        } catch (JSONException ex) {
-            throw new InternalDbException("Error in API JSON response", ex);
-        }
+        remove(Credentials.getInstance());
     }
 
     /**
@@ -376,10 +356,10 @@ public abstract class CloudStorage {
     }
 
     // Private static methods
-    private static <T extends CloudStorage> JSONObject postStaticProcRequest(final QueryType queryType, final String name, final String[] params) {
-        final String username = Credentials.getInstance().getUsername();
-        final String password = Credentials.getInstance().getPassword();
-        final String db = Credentials.getInstance().getDb();
+    private static <T extends CloudStorage> JSONObject postStaticProcRequest(final Credentials credentials, final QueryType queryType, final String name, final String[] params) {
+        final String username = credentials.getUsername();
+        final String password = credentials.getPassword();
+        final String db = credentials.getDb();
 
         final Map<String, Object> queryParamMap = new HashMap<String, Object>();
         queryParamMap.put(QueryConstants.QUERY, queryType.getQueryCode());
@@ -513,12 +493,12 @@ public abstract class CloudStorage {
         return value;
     }
 
-    private static <T extends CloudStorage> JSONObject postStaticRequest(Class<T> clazz, QueryType queryType) {
+    private static <T extends CloudStorage> JSONObject postStaticRequest(final Credentials credentials, final Class<T> clazz, final QueryType queryType) {
         final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
 
-        final String username = Credentials.getInstance().getUsername();
-        final String password = Credentials.getInstance().getPassword();
-        final String db = Credentials.getInstance().getDb();
+        final String username = credentials.getUsername();
+        final String password = credentials.getPassword();
+        final String db = credentials.getDb();
 
         final Map<String, Object> requestMap = new HashMap<String, Object>();
         final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
@@ -535,11 +515,11 @@ public abstract class CloudStorage {
         }
     }
 
-    private static <T extends CloudStorage> JSONObject postStaticRequest(final QueryType queryType, final Object pk) {
+    private static <T extends CloudStorage> JSONObject postStaticRequest(final Credentials credentials, final QueryType queryType, final Object pk) {
         try {
-            final String username = Credentials.getInstance().getUsername();
-            final String password = Credentials.getInstance().getPassword();
-            final String db = Credentials.getInstance().getDb();
+            final String username = credentials.getUsername();
+            final String password = credentials.getPassword();
+            final String db = credentials.getDb();
 
             final Map<String, Object> queryMap = new HashMap<String, Object>();
             queryMap.put(QueryConstants.QUERY, queryType.getQueryCode());
@@ -555,6 +535,72 @@ public abstract class CloudStorage {
     }
 
     // Private instance methods
+    private boolean load(final Credentials credentials) {
+        JSONObject responseJson;
+        JSONObject payloadJson;
+        responseJson = postRequest(credentials, QueryType.LOAD);
+        try {
+
+            /* If ack:0 then check for error code and report accordingly */
+            if ("0".equals(responseJson.getString(QueryConstants.ACK))) {
+                if ("DB200".equals(responseJson.getString("code"))) {
+                    return false;
+                } else {
+                    reportIfError(responseJson);
+                }
+            }
+
+            payloadJson = responseJson.getJSONObject(QueryConstants.PAYLOAD);
+            fromJson(payloadJson);
+            return true;
+        } catch (JSONException ex) {
+            throw new InternalDbException("Error in API JSON response", ex);
+        }
+    }
+
+    private void save(final Credentials credentials) {
+        JSONObject responseJson = postRequest(credentials, QueryType.SAVE);
+        reportIfError(responseJson);
+    }
+
+    private boolean insert(final Credentials credentials) {
+        JSONObject responseJson = postRequest(credentials, QueryType.INSERT);
+        try {
+            if ("1".equals(responseJson.getString(QueryConstants.ACK))) {
+                final JSONObject payloadJson = responseJson.getJSONObject(QueryConstants.PAYLOAD);
+                fromJson(payloadJson);
+                return true;
+            } else if ("0".equals(responseJson.getString(QueryConstants.ACK))) {
+                if ("DB201".equals(responseJson.getString("code"))) {
+                    return false;
+                }
+
+                /*
+                 * considering conditions before this and the code in {@link #reportIfError(JSONObject)}, this call will always result in an exception.
+                 */
+                reportIfError(responseJson);
+            }
+
+            throw new InternalAdapterException("Unknown acknowledgement code from the database. Expected: [0, 1]. Actual: " + responseJson.getString(QueryConstants.ACK));
+        } catch (Exception ex) {
+            reportIfError(responseJson);
+            throw new InternalAdapterException("Exception occurred in the adapter.", ex);
+        }
+    }
+
+    private void remove(final Credentials credentials) {
+        final JSONObject responseJson = postRequest(credentials, QueryType.REMOVE);
+        try {
+
+            /* If ack:0 then check for error code and report accordingly */
+            if ("0".equals(responseJson.getString(QueryConstants.ACK)) && !responseJson.getString("code").equals("DB200")) {
+                reportIfError(responseJson);
+            }
+        } catch (JSONException ex) {
+            throw new InternalDbException("Error in API JSON response", ex);
+        }
+    }
+
     /**
      * Instantiates current object with data from the provided {@link JSONObject}.
      *
@@ -584,13 +630,13 @@ public abstract class CloudStorage {
         }
     }
 
-    private JSONObject postRequest(QueryType queryType) {
+    private JSONObject postRequest(final Credentials credentials, QueryType queryType) {
         JSONObject responseJson;
         try {
 
-            final String username = Credentials.getInstance().getUsername();
-            final String password = Credentials.getInstance().getPassword();
-            final String db = Credentials.getInstance().getDb();
+            final String username = credentials.getUsername();
+            final String password = credentials.getPassword();
+            final String db = credentials.getDb();
 
             final Map<String, Object> queryParamMap = new HashMap<String, Object>();
             queryParamMap.put(QueryConstants.TABLE, table);
