@@ -1,5 +1,7 @@
 package com.blobcity.db.config;
 
+import com.blobcity.db.CloudStorage;
+
 /**
  * Holds the default credentials for the application. If you require to set run time credentials that are different from the default for the application, this
  * class is not for you. Please look for appropriate {@link CloudStorage} methods
@@ -8,12 +10,14 @@ package com.blobcity.db.config;
  */
 public class Credentials {
 
+    private final String serverAddress;
     private final String username;
     private final String password;
     private final String db;
     private static Credentials instance;
 
-    private Credentials(final String username, final String password, final String db) {
+    private Credentials(final String serverAddress, final String username, final String password, final String db) {
+        this.serverAddress = serverAddress;
         this.username = username;
         this.password = password;
         this.db = db;
@@ -23,14 +27,18 @@ public class Credentials {
         return instance;
     }
 
-    public static Credentials init(final String username, final String password, final String db) {
+    public static Credentials init(final String serverAddress, final String username, final String password, final String db) {
         if (instance != null) {
             throw new IllegalStateException("Attempting to change application credentails. "
                     + "Application credentails cannot be changed once set.");
         }
 
-        instance = new Credentials(username, password, db);
+        instance = new Credentials(serverAddress, username, password, db);
         return instance;
+    }
+
+    public String getServiceAddress() {
+        return serverAddress;
     }
 
     public String getUsername() {

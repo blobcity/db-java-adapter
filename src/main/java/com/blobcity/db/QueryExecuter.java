@@ -3,6 +3,7 @@
  */
 package com.blobcity.db;
 
+import com.blobcity.db.config.Credentials;
 import com.blobcity.db.exceptions.InternalAdapterException;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -12,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.MessageFormat;
 
 /**
  * Handles execution of different types of queries
@@ -20,8 +22,8 @@ import java.net.URL;
  */
 class QueryExecuter {
 
-    private static final String BQL_SERVICE_URL = "http://db.blobcity.com/rest/bquery";
-    private static final String SQL_SERVICE_URL = "http://db.blobcity.com/rest/sql";
+    private static final String BQL_SERVICE_URL = MessageFormat.format("http://{0}/rest/bquery", Credentials.getInstance().getServiceAddress());
+    private static final String SQL_SERVICE_URL = MessageFormat.format("http://{0}/rest/sql", Credentials.getInstance().getServiceAddress());
 
     public String executeBql(final DbQueryRequest queryRequest) {
         return executeQuery(BQL_SERVICE_URL, queryRequest.createPostParam());

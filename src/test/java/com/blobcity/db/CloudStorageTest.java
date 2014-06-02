@@ -44,7 +44,7 @@ public class CloudStorageTest {
 
     @BeforeClass
     public static void setUpClass() {
-//        Credentials.init("username", "password", "dbname");
+//        Credentials.init("db.blobcity.com", "username", "password", "dbname");
         clearTable();
     }
 
@@ -350,7 +350,7 @@ public class CloudStorageTest {
     @Test
     public void testChangeCredentials() {
         try {
-            Credentials.init("new_username", "new_password", "new_dbname");
+            Credentials.init("dbnew.blobcity.com", "new_username", "new_password", "new_dbname");
         } catch (Throwable t) {
             assertTrue(t instanceof IllegalStateException);
         }
