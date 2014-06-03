@@ -5,8 +5,8 @@
 package com.blobcity.db.model;
 
 import com.blobcity.db.CloudStorage;
-import com.blobcity.db.classannotations.Entity;
-import com.blobcity.db.fieldannotations.Primary;
+import com.blobcity.db.annotations.Entity;
+import com.blobcity.db.annotations.Primary;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;

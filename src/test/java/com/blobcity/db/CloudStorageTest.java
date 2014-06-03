@@ -8,7 +8,7 @@ import com.blobcity.adminpanel.db.bo.ColumnType;
 import com.blobcity.adminpanel.db.service.DbAdminService;
 import com.blobcity.adminpanel.exceptions.ValidationException;
 import com.blobcity.db.test.entity.User;
-import com.blobcity.db.constants.Credentials;
+import com.blobcity.db.config.Credentials;
 import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.test.entity.pktests.CharTable;
 import com.blobcity.db.test.entity.pktests.DoubleTable;
@@ -44,14 +44,14 @@ public class CloudStorageTest {
 
     @BeforeClass
     public static void setUpClass() {
-        Credentials.getInstance().init("test", "test");
+//        Credentials.init("db.blobcity.com", "username", "password", "dbname");
         clearTable();
     }
 
     private static void clearTable() {
         List<Object> keys = CloudStorage.selectAll(User.class);
         for (Object key : keys) {
-            CloudStorage.remove(User.class, key);
+            CloudStorage.remove(key);
         }
     }
 
@@ -182,9 +182,9 @@ public class CloudStorageTest {
         System.out.println("contains");
         User insertedUser = createSample();
         insertedUser.insert();
-        boolean outcome1 = CloudStorage.contains(User.class, insertedUser.getEmail());//existent record
+        boolean outcome1 = CloudStorage.contains(insertedUser.getEmail());//existent record
         assertEquals(true, outcome1);
-        boolean outcome2 = CloudStorage.contains(User.class, "foo");//in-existent record
+        boolean outcome2 = CloudStorage.contains("foo");//in-existent record
         assertEquals(false, outcome2);
         System.out.println("contains: Successful");
     }
@@ -261,8 +261,8 @@ public class CloudStorageTest {
         System.out.println("static remove");
         User sample = createSample();
         sample.insert();
-        CloudStorage.remove(User.class, sample.getEmail());
-        if (CloudStorage.contains(User.class, sample.getEmail())) {
+        CloudStorage.remove(sample.getEmail());
+        if (CloudStorage.contains(sample.getEmail())) {
             fail("Remove operation failed. It is possible that contains method to check presence of record "
                     + "is misbehaving.");
         }
@@ -280,7 +280,7 @@ public class CloudStorageTest {
         user = CloudStorage.newLoadedInstance(User.class, user.getEmail());
         assertNotNull(user);
         user.remove();
-        boolean contains = CloudStorage.contains(User.class, user.getEmail());
+        boolean contains = CloudStorage.contains(user.getEmail());
         if (contains) {
             fail("Non static remove operation failed. It is possible that contains method used to check removal is misbehaving.");
         }
@@ -350,7 +350,7 @@ public class CloudStorageTest {
     @Test
     public void testChangeCredentials() {
         try {
-            Credentials.getInstance().init("test1", "test1");
+            Credentials.init("dbnew.blobcity.com", "new_username", "new_password", "new_dbname");
         } catch (Throwable t) {
             assertTrue(t instanceof IllegalStateException);
         }

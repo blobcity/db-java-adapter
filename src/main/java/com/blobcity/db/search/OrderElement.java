@@ -3,8 +3,6 @@
  */
 package com.blobcity.db.search;
 
-import com.blobcity.db.search.interfaceType.Sqlable;
-import com.blobcity.db.search.interfaceType.ObjectJsonable;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;

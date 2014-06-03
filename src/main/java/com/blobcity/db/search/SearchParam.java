@@ -12,8 +12,6 @@ import static com.blobcity.db.search.ParamOperator.IN;
 import static com.blobcity.db.search.ParamOperator.LT;
 import static com.blobcity.db.search.ParamOperator.LT_EQ;
 import static com.blobcity.db.search.ParamOperator.NOT_EQ;
-import com.blobcity.db.search.interfaceType.Sqlable;
-import com.blobcity.db.search.interfaceType.ArrayJsonable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

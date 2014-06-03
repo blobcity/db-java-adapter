@@ -4,9 +4,9 @@
 
 package com.blobcity.db.test.entity;
 
-import com.blobcity.db.classannotations.Entity;
-import com.blobcity.db.fieldannotations.Column;
-import com.blobcity.db.fieldannotations.Primary;
+import com.blobcity.db.annotations.Entity;
+import com.blobcity.db.annotations.Column;
+import com.blobcity.db.annotations.Primary;
 
 /**
  *

@@ -5,9 +5,9 @@ package com.blobcity.db.test.entity.datatype;
 
 import com.blobcity.adminpanel.db.bo.ColumnType;
 import com.blobcity.adminpanel.db.bo.Table;
-import com.blobcity.db.classannotations.Entity;
-import com.blobcity.db.fieldannotations.Column;
-import com.blobcity.db.fieldannotations.Primary;
+import com.blobcity.db.annotations.Entity;
+import com.blobcity.db.annotations.Column;
+import com.blobcity.db.annotations.Primary;
 import com.blobcity.db.test.entity.TestableCloudStorage;
 
 /**
