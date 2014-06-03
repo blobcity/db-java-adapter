@@ -122,7 +122,7 @@ public abstract class CloudStorage {
                 return list;
             }
 
-            throw new DbOperationException(responseJson.getString(QueryConstants.CODE));
+            throw new DbOperationException(responseJson.getString(QueryConstants.CODE), responseJson.optString(QueryConstants.CAUSE));
         } catch (JSONException ex) {
             throw new InternalDbException("Error in API JSON response", ex);
         }
@@ -140,7 +140,7 @@ public abstract class CloudStorage {
                 return responseJson.getBoolean("contains");
             }
 
-            throw new DbOperationException(responseJson.getString(QueryConstants.CODE));
+            throw new DbOperationException(responseJson.getString(QueryConstants.CODE), responseJson.optString(QueryConstants.CAUSE));
         } catch (JSONException ex) {
             throw new InternalDbException("Error in API JSON response", ex);
         }
@@ -279,7 +279,21 @@ public abstract class CloudStorage {
      */
     public static <T extends CloudStorage> String getTableName(final Class<T> clazz) {
         final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        return entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+        return entity != null && !StringUtil.isEmpty(entity.table()) ? entity.table() : clazz.getSimpleName();
+    }
+
+    /**
+     * Statically provides the db name for any instance/child of {@link CloudStorage} that is internally used by the adapter for querying. Note, this method is
+     * used by the adapter internally for SQL queries and the logic here should be kept in sync with the rest of the class to ensure db names are evaluated
+     * appropriately. This method can be used for logging purposes where the db name for a class is required.
+     *
+     * @param <T> Any class reference which extends {@link CloudStorage}
+     * @param clazz class reference who's db name is required
+     * @return Name of the DB
+     */
+    public static <T extends CloudStorage> String getDbName(final Class<T> clazz) {
+        final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+        return entity != null && !StringUtil.isEmpty(entity.db()) ? entity.db() : Credentials.getInstance().getDb();
     }
 
     public static <T extends CloudStorage> Object invokeProc(final String storedProcedureName, final String... params) {
@@ -589,7 +603,7 @@ public abstract class CloudStorage {
         try {
 
             /* If ack:0 then check for error code and report accordingly */
-            if ("0".equals(responseJson.getString(QueryConstants.ACK)) && !responseJson.getString(QueryConstants.CODE).equals("DB200")) {
+            if ("0".equals(responseJson.getString(QueryConstants.ACK)) && !"DB200".equals(responseJson.getString(QueryConstants.CODE))) {
                 reportIfError(responseJson);
             }
         } catch (JSONException ex) {
