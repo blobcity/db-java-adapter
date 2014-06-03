@@ -360,9 +360,11 @@ public abstract class CloudStorage {
 
     // Protected instance methods
     protected void setPk(Object pk) {
-        Field primaryKeyField = TableStore.getInstance().getPkField(table);
+        final Field primaryKeyField = TableStore.getInstance().getPkField(table);
+        final boolean accessible = primaryKeyField.isAccessible();
+
         try {
-            if (!isAccessible) {
+            if (!accessible) {
                 primaryKeyField.setAccessible(true);
             }
 
@@ -372,7 +374,7 @@ public abstract class CloudStorage {
         } catch (IllegalAccessException ex) {
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } finally {
-            if (!isAccessible) {
+            if (!accessible) {
                 primaryKeyField.setAccessible(false);
             }
         }
@@ -696,19 +698,28 @@ public abstract class CloudStorage {
 
         for (String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
-            field.setAccessible(true);
-            if (field.getType().isEnum()) {
-                dataMap.put(columnName, field.get(this) != null ? field.get(this).toString() : null);
-                continue;
-            } else if (field.getType() == java.util.Date.class) {
-                dataMap.put(columnName, field.get(this) != null ? ((java.util.Date) field.get(this)).getTime() : null);
-                continue;
-            } else if (field.getType() == java.sql.Date.class) {
-                dataMap.put(columnName, field.get(this) != null ? ((java.sql.Date) field.get(this)).getTime() : null);
-                continue;
-            }
+            final boolean accessible = field.isAccessible();
 
-            dataMap.put(columnName, field.get(this));
+            field.setAccessible(true);
+
+            try {
+                if (field.getType().isEnum()) {
+                    dataMap.put(columnName, field.get(this) != null ? field.get(this).toString() : null);
+                    continue;
+                } else if (field.getType() == java.util.Date.class) {
+                    dataMap.put(columnName, field.get(this) != null ? ((java.util.Date) field.get(this)).getTime() : null);
+                    continue;
+                } else if (field.getType() == java.sql.Date.class) {
+                    dataMap.put(columnName, field.get(this) != null ? ((java.sql.Date) field.get(this)).getTime() : null);
+                    continue;
+                }
+
+                dataMap.put(columnName, field.get(this));
+            } catch (IllegalAccessException iae) {
+                throw iae;
+            } finally {
+                field.setAccessible(accessible);
+            }
         }
 
         return new JSONObject(dataMap);
@@ -733,8 +744,17 @@ public abstract class CloudStorage {
         for (String columnName : structureMap.keySet()) {
             Field field = structureMap.get(columnName);
             if (field.getAnnotation(Primary.class) != null) {
+                final boolean accessible = field.isAccessible();
+
                 field.setAccessible(true);
-                return field.get(this);
+                try {
+                    final Object value = field.get(this);
+                    return value;
+                } catch (IllegalAccessException iae) {
+                    throw iae;
+                } finally {
+                    field.setAccessible(accessible);
+                }
             }
         }
 
@@ -752,7 +772,12 @@ public abstract class CloudStorage {
     private void setFieldValue(final Field field, final Object value) throws IllegalAccessException {
         final boolean oldAccessibilityValue = field.isAccessible();
         field.setAccessible(true);
-        field.set(this, getCastedValue(field, value, this.getClass()));
-        field.setAccessible(oldAccessibilityValue);
+        try {
+            field.set(this, getCastedValue(field, value, this.getClass()));
+        } catch (IllegalAccessException iae) {
+            throw iae;
+        } finally {
+            field.setAccessible(oldAccessibilityValue);
+        }
     }
 }
