@@ -3,8 +3,8 @@
  */
 package com.blobcity.db.test.entity;
 
-import com.blobcity.db.fieldannotations.Column;
-import com.blobcity.db.fieldannotations.Primary;
+import com.blobcity.db.annotations.Column;
+import com.blobcity.db.annotations.Primary;
 import com.blobcity.db.CloudStorage;
 import java.util.List;
 

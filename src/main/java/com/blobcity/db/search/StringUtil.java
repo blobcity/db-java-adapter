@@ -1,12 +1,14 @@
 /*
  * Copyright 2014, BlobCity iSolutions Pvt. Ltd.
  */
-package com.blobcity.util;
+package com.blobcity.db.search;
 
 import java.util.List;
 
 /**
- * Utility class to perform operations on {@link String}
+ * Utility class to perform operations on {@link String}.
+ *
+ * This class is default to ensure projects that include this class do not see this class.
  *
  * @author Karun AB <karun.ab@blobcity.net>
  */
@@ -82,5 +84,16 @@ public class StringUtil {
             }
         }
         return sb.append(escapeChar).toString();
+    }
+
+    /**
+     * Checks if the {@link String} is empty ({@code null} or empty by definition of {@link String#isEmpty()}
+     *
+     * @see String#isEmpty()
+     * @param str {@link String} to be validated
+     * @return {@code true} if value is {@code null} or empty by the definition of {@link String#isEmpty()}
+     */
+    public static boolean isEmpty(final String str) {
+        return str == null || str.isEmpty();
     }
 }

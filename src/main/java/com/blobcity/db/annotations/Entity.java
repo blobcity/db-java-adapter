@@ -1,5 +1,4 @@
-
-package com.blobcity.db.classannotations;
+package com.blobcity.db.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,8 +10,10 @@ import java.lang.annotation.RetentionPolicy;
  * @since 1.0
  * @version 1.0
  */
-
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Entity {
+
     public String table() default "";
+
+    public String db() default "";
 }

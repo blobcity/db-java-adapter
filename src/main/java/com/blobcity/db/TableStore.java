@@ -4,8 +4,8 @@
 package com.blobcity.db;
 
 import com.blobcity.db.exceptions.InternalAdapterException;
-import com.blobcity.db.fieldannotations.Column;
-import com.blobcity.db.fieldannotations.Primary;
+import com.blobcity.db.annotations.Column;
+import com.blobcity.db.annotations.Primary;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

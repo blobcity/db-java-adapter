@@ -4,12 +4,14 @@
 package com.blobcity.db.exceptions;
 
 /**
- * Represents any exception that occurs on the database along with the appropriate error code for the exception. More
- * details on possible error codes can be found at http://docs.blobcity.com/display/DB/Error+Codes
+ * Represents any exception that occurs on the database along with the appropriate error code for the exception. More details on possible error codes can be
+ * found at http://docs.blobcity.com/display/DB/Error+Codes
  *
  * @author Sanket Sarang
  */
 public class DbOperationException extends RuntimeException {
+
+    private static final long serialVersionUID = -7783116773042144796L;
 
     private String errorCode = "";
 
