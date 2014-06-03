@@ -123,7 +123,7 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
             }
             final List<String> tableNameList = new ArrayList<String>();
             for (Class<T> tableClazz : fromTables) {
-                tableNameList.add(CloudStorage.getTableName(tableClazz));
+                tableNameList.add(CloudStorage.getDbName(tableClazz) + "." + CloudStorage.getTableName(tableClazz));
             }
             query.put("t", tableNameList);
 
@@ -165,7 +165,7 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
         sb.append(" FROM ");
         final int fromTableCount = fromTables.size();
         for (int i = 0; i < fromTableCount; i++) {
-            sb.append('`').append(CloudStorage.getTableName(fromTables.get(i)));
+            sb.append('`').append(CloudStorage.getDbName(fromTables.get(i))).append("`.`").append(CloudStorage.getTableName(fromTables.get(i)));
 
             if (i < fromTableCount - 1) {
                 sb.append("`, `");
