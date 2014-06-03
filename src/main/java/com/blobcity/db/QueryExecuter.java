@@ -26,12 +26,12 @@ class QueryExecuter {
         // do nothing
     }
 
-    public static String executeBql(final Credentials credentials, final DbQueryRequest queryRequest) {
-        return executeQuery(getBqlServiceUrl(credentials), queryRequest.createPostParam());
+    public static String executeBql(final DbQueryRequest queryRequest) {
+        return executeQuery(getBqlServiceUrl(queryRequest.getCredentials()), queryRequest.createPostParam());
     }
 
-    public static String executeSql(final Credentials credentials, final DbQueryRequest queryRequest) {
-        return executeQuery(getSqlServiceUrl(credentials), queryRequest.createPostParam());
+    public static String executeSql(final DbQueryRequest queryRequest) {
+        return executeQuery(getSqlServiceUrl(queryRequest.getCredentials()), queryRequest.createPostParam());
     }
 
     private static String executeQuery(final String serviceUrl, final String postParams) {

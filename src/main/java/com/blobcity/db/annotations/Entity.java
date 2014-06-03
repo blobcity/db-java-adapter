@@ -14,4 +14,6 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Entity {
 
     public String table() default "";
+
+    public String db() default "";
 }

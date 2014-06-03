@@ -1,6 +1,8 @@
 package com.blobcity.db.config;
 
+import com.blobcity.db.CloudStorage;
 import com.blobcity.db.exceptions.InternalAdapterException;
+import com.blobcity.db.search.StringUtil;
 
 /**
  * Holds the default credentials for the application. If you require to set run time credentials that are different from the default for the application, this
@@ -51,6 +53,14 @@ public class Credentials {
 
     public static Credentials create(final String serverAddress, final String username, final String password, final String db) {
         return new Credentials(serverAddress, username, password, db);
+    }
+
+    public static Credentials create(final Credentials credentials, final String serverAddress, final String username, final String password, final String db) {
+        return new Credentials(
+                StringUtil.isEmpty(serverAddress) ? credentials.getServiceAddress() : serverAddress,
+                StringUtil.isEmpty(username) ? credentials.getUsername() : username,
+                StringUtil.isEmpty(password) ? credentials.getPassword() : password,
+                StringUtil.isEmpty(db) ? credentials.getDb() : db);
     }
 
     public String getServiceAddress() {

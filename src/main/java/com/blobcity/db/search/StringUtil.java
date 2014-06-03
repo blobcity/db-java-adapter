@@ -85,4 +85,15 @@ public class StringUtil {
         }
         return sb.append(escapeChar).toString();
     }
+
+    /**
+     * Checks if the {@link String} is empty ({@code null} or empty by definition of {@link String#isEmpty()}
+     *
+     * @see String#isEmpty()
+     * @param str {@link String} to be validated
+     * @return {@code true} if value is {@code null} or empty by the definition of {@link String#isEmpty()}
+     */
+    public static boolean isEmpty(final String str) {
+        return str == null || str.isEmpty();
+    }
 }

@@ -18,5 +18,7 @@ class QueryConstants {
     /* Response data keys */
     public static final String PAYLOAD = "p";
     public static final String ACK = "ack"; // 1=success; 0=failure
+    public static final String CODE = "code";
     public static final String CAUSE = "cause";
+    public static final String KEYS = "keys";
 }

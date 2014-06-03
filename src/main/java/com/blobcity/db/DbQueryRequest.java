@@ -3,6 +3,7 @@
  */
 package com.blobcity.db;
 
+import com.blobcity.db.config.Credentials;
 import java.text.MessageFormat;
 
 /**
@@ -12,32 +13,20 @@ import java.text.MessageFormat;
  */
 class DbQueryRequest {
 
-    private final String username;
-    private final String password;
-    private final String db;
+    private final Credentials credentials;
     private final String query;
 
-    private DbQueryRequest(final String username, final String password, final String db, final String query) {
-        this.username = username;
-        this.password = password;
-        this.db = db;
+    private DbQueryRequest(final Credentials credentials, final String query) {
+        this.credentials = credentials;
         this.query = query;
     }
 
-    public static DbQueryRequest create(final String username, final String password, final String db, final String query) {
-        return new DbQueryRequest(username, password, db, query);
+    public static DbQueryRequest create(final Credentials credentials, final String query) {
+        return new DbQueryRequest(credentials, query);
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getDb() {
-        return db;
+    public Credentials getCredentials() {
+        return credentials;
     }
 
     public String getQuery() {
@@ -45,6 +34,6 @@ class DbQueryRequest {
     }
 
     public String createPostParam() {
-        return MessageFormat.format("username={0}&password={1}&db={2}&q={3}", username, password, db, query);
+        return MessageFormat.format("username={0}&password={1}&db={2}&q={3}", credentials.getUsername(), credentials.getPassword(), credentials.getDb(), query);
     }
 }
