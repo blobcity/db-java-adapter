@@ -360,15 +360,21 @@ public abstract class CloudStorage {
 
     // Protected instance methods
     protected void setPk(Object pk) {
-        final Field primaryKeyField = TableStore.getInstance().getPkField(table);
+        Field primaryKeyField = TableStore.getInstance().getPkField(table);
         try {
-            primaryKeyField.setAccessible(true);
+            if (!isAccessible) {
+                primaryKeyField.setAccessible(true);
+            }
+
             primaryKeyField.set(this, pk);
-            primaryKeyField.setAccessible(false);
         } catch (IllegalArgumentException ex) {
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+        } finally {
+            if (!isAccessible) {
+                primaryKeyField.setAccessible(false);
+            }
         }
     }
 
@@ -627,7 +633,7 @@ public abstract class CloudStorage {
 
         for (final String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
-            field.setAccessible(true);
+
             try {
                 setFieldValue(field, jsonObject.get(columnName));
             } catch (JSONException ex) {
