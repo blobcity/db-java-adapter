@@ -48,6 +48,7 @@ public enum ParamOperator implements Sqlable {
     private String sqlText;
 
     private ParamOperator() {
+        // do nothing
     }
 
     private ParamOperator(final String sqlText) {
@@ -56,9 +57,6 @@ public enum ParamOperator implements Sqlable {
 
     @Override
     public String asSql() {
-        if (sqlText == null) {
-            return name();
-        }
-        return sqlText;
+        return sqlText == null ? name() : sqlText;
     }
 }

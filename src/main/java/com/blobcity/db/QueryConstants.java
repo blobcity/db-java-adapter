@@ -21,4 +21,5 @@ class QueryConstants {
     public static final String CODE = "code";
     public static final String CAUSE = "cause";
     public static final String KEYS = "keys";
+    public static final String CONTAINS = "contains";
 }

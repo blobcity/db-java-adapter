@@ -12,14 +12,14 @@ import static com.blobcity.db.search.ParamOperator.IN;
 import static com.blobcity.db.search.ParamOperator.LT;
 import static com.blobcity.db.search.ParamOperator.LT_EQ;
 import static com.blobcity.db.search.ParamOperator.NOT_EQ;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Class to create Search parameters to be used as the WHERE clause in a query which helps in filtering result sets.
@@ -30,7 +30,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
 
     private final String paramName;
     private ParamOperator condition;
-    private JSONArray args;
+    private JsonArray args;
     private final Map<String, Object> baseParamMap;
     private final List<SearchOperator> operators;
     private final List<SearchParam> conditions;
@@ -68,7 +68,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      */
     public SearchParam in(final Object... args) {
         this.condition = ParamOperator.IN;
-        this.args = new JSONArray(Arrays.asList(args));
+        addArgs(args);
         return updateBaseParams();
     }
 
@@ -82,7 +82,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      */
     public SearchParam eq(final Object arg) {
         this.condition = ParamOperator.EQ;
-        this.args = new JSONArray(Arrays.asList(arg));
+        addArgs(arg);
         return updateBaseParams();
     }
 
@@ -96,7 +96,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      */
     public SearchParam noteq(final Object arg) {
         this.condition = ParamOperator.NOT_EQ;
-        this.args = new JSONArray(Arrays.asList(arg));
+        addArgs(arg);
         return updateBaseParams();
     }
 
@@ -110,7 +110,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      */
     public SearchParam gt(final Object arg) {
         this.condition = ParamOperator.GT;
-        this.args = new JSONArray(Arrays.asList(arg));
+        addArgs(arg);
         return updateBaseParams();
     }
 
@@ -124,7 +124,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      */
     public SearchParam lt(final Object arg) {
         this.condition = ParamOperator.LT;
-        this.args = new JSONArray(Arrays.asList(arg));
+        addArgs(arg);
         return updateBaseParams();
     }
 
@@ -138,7 +138,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      */
     public SearchParam gteq(final Object arg) {
         this.condition = ParamOperator.GT_EQ;
-        this.args = new JSONArray(Arrays.asList(arg));
+        addArgs(arg);
         return updateBaseParams();
     }
 
@@ -152,7 +152,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      */
     public SearchParam lteq(final Object arg) {
         this.condition = ParamOperator.LT_EQ;
-        this.args = new JSONArray(Arrays.asList(arg));
+        addArgs(arg);
         return updateBaseParams();
     }
 
@@ -167,7 +167,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      */
     public SearchParam between(final Object arg1, final Object arg2) {
         this.condition = ParamOperator.BETWEEN;
-        this.args = new JSONArray(Arrays.asList(arg1, arg2));
+        addArgs(arg1, arg2);
         return updateBaseParams();
     }
 
@@ -198,15 +198,22 @@ public class SearchParam implements ArrayJsonable, Sqlable {
     }
 
     @Override
-    public JSONArray asJson() {
-        final JSONArray jsonArray = new JSONArray();
-        jsonArray.put(getBaseJson());
+    public JsonArray asJson() {
+        final JsonArray jsonArray = new JsonArray();
+
+        final JsonObject baseJson = new JsonObject();
+        baseJson.addProperty("c", paramName);
+        baseJson.addProperty("x", condition.toString());
+        baseJson.add("v", getJsonPrimitive(padJsonArgs()));
+
+        jsonArray.add(baseJson);
 
         if (!operators.isEmpty()) {
             final int operatorCount = operators.size();
             final int conditionCount = conditions.size();
             for (int i = 0; i < operatorCount && i < conditionCount; i++) {
-                jsonArray.put(operators.get(i)).put(conditions.get(i).asJson());
+                jsonArray.add(new JsonPrimitive(operators.get(i).toString()));
+                jsonArray.add(conditions.get(i).asJson());
             }
         }
         return jsonArray;
@@ -223,18 +230,10 @@ public class SearchParam implements ArrayJsonable, Sqlable {
             case LT_EQ:
             case GT:
             case GT_EQ:
-                try {
-                    sb.append(" ").append(padSqlArg(args.get(0)));
-                } catch (JSONException ex) {
-                    throw new InternalAdapterException("Operator \"" + condition + "\" expects 1 parameter", ex);
-                }
+                sb.append(" ").append(padSqlArg(args.get(0)));
                 break;
             case BETWEEN:
-                try {
-                    sb.append(" (").append(padSqlArg(args.get(0))).append(",").append(padSqlArg(args.get(1))).append(") ");
-                } catch (JSONException ex) {
-                    throw new InternalAdapterException("Operator \"" + condition + "\" expects 2 parameters", ex);
-                }
+                sb.append(" (").append(padSqlArg(args.get(0))).append(",").append(padSqlArg(args.get(1))).append(") ");
                 break;
             case IN:
                 sb.append(" (").append(padSqlArgs(args)).append(")");
@@ -252,21 +251,6 @@ public class SearchParam implements ArrayJsonable, Sqlable {
         }
 
         return sb.toString();
-    }
-
-    /**
-     * Provides the basic JSON for the element which contains the {@link #paramName}, {@link #condition} and {@link #args}. Other {@link SearchParam}s attached
-     * to this one will be appended later.
-     *
-     * @return {@link JSONObject} representing the {@link #paramName}, {@link #condition} and {@link #args}
-     */
-    private JSONObject getBaseJson() {
-        final Map<String, Object> jsonMap = new HashMap<String, Object>();
-        jsonMap.put("c", paramName);
-        jsonMap.put("x", condition);
-        jsonMap.put("v", padJsonArgs());
-
-        return new JSONObject(jsonMap);
     }
 
     /**
@@ -301,11 +285,7 @@ public class SearchParam implements ArrayJsonable, Sqlable {
             case LT_EQ:
             case GT:
             case GT_EQ:
-                try {
-                    return args.get(0);
-                } catch (JSONException ex) {
-                    throw new InternalAdapterException("Operator \"" + condition + "\" expects 1 parameter", ex);
-                }
+                return args.get(0);
             case BETWEEN:
             case IN:
                 return args;
@@ -322,11 +302,11 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      * @return SQL compliant form for the arguments
      * @throws JSONException th
      */
-    private String padSqlArgs(final JSONArray jsonArr) {
+    private String padSqlArgs(final JsonArray jsonArr) {
         final StringBuffer sb = new StringBuffer();
-        final int length = jsonArr.length();
+        final int length = jsonArr.size();
         for (int i = 0; i < length; i++) {
-            sb.append(padSqlArg(jsonArr.opt(i)));
+            sb.append(padSqlArg(jsonArr.get(i)));
             if (i < length - 1) {
                 sb.append(",");
             }
@@ -341,11 +321,60 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      * @param obj Object to the quote escaped (if required)
      * @return SQL compliant form of the argument ready for consumption by a query
      */
-    private String padSqlArg(final Object obj) {
-        if (obj instanceof String || obj instanceof Character) {
-            return "'" + obj + "'";
+    private String padSqlArg(final JsonElement obj) {
+        if (obj.getAsJsonPrimitive().isString()) { // Strings and chars
+            return "'" + obj.getAsJsonPrimitive().getAsString() + "'";
         }
 
-        return obj.toString();
+        return obj.getAsString();
+    }
+
+    private void addArgs(final Object... objs) {
+        args = new JsonArray();
+        for (final Object obj : objs) {
+            args.add(getJsonPrimitive(obj));
+        }
+    }
+
+    private JsonPrimitive getJsonPrimitive(final Object obj) {
+        final Class clazz = obj.getClass();
+
+        if (obj instanceof String) {
+            return new JsonPrimitive((String) obj);
+        }
+
+        if (clazz == int.class || clazz == Integer.class) {
+            return new JsonPrimitive((Integer) obj);
+        }
+
+        if (clazz == long.class || clazz == Long.class) {
+            return new JsonPrimitive((Long) obj);
+        }
+
+        if (clazz == short.class || clazz == Short.class) {
+            return new JsonPrimitive((Short) obj);
+        }
+
+        if (clazz == float.class || clazz == Float.class) {
+            return new JsonPrimitive((Float) obj);
+        }
+
+        if (clazz == double.class || clazz == Double.class) {
+            return new JsonPrimitive((Double) obj);
+        }
+
+        if (clazz == byte.class || clazz == Byte.class) {
+            return new JsonPrimitive((Byte) obj);
+        }
+
+        if (clazz == boolean.class || clazz == Boolean.class) {
+            return new JsonPrimitive((Boolean) obj);
+        }
+
+        if (clazz == char.class || clazz == Character.class) {
+            return new JsonPrimitive((Character) obj);
+        }
+
+        return new JsonPrimitive(obj.toString());
     }
 }
