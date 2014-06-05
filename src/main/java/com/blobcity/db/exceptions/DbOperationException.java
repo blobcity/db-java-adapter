@@ -23,7 +23,7 @@ public class DbOperationException extends RuntimeException {
         super(message);
         this.errorCode = errorCode;
     }
-
+    
     public String getErrorCode() {
         return errorCode;
     }

@@ -6,14 +6,15 @@ package com.blobcity.db.search;
 import com.blobcity.db.CloudStorage;
 import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.exceptions.InternalDbException;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Query builder interface for the adapter to support querying mechanism for search functionality
@@ -109,45 +110,51 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     }
 
     @Override
-    public JSONObject asJson() {
-        final JSONObject query = new JSONObject();
-        try {
-            // Select
-            if (selectColumnNames != null && !selectColumnNames.isEmpty()) {
-                query.put("select", selectColumnNames);
+    public JsonObject asJson() {
+        final JsonObject query = new JsonObject();
+        // Select
+        if (selectColumnNames != null && !selectColumnNames.isEmpty()) {
+            final JsonArray selectColumns = new JsonArray();
+            for (final String selectColumn : selectColumnNames) {
+                selectColumns.add(new JsonPrimitive(selectColumn));
+            }
+            query.add("select", selectColumns);
+        }
+
+        // From
+        if (fromTables == null && fromTables.isEmpty()) {
+            throw new InternalAdapterException("No table name set. Table name is a mandatory field queries.");
+        }
+        final JsonArray tableNames = new JsonArray();
+        for (Class<T> tableClazz : fromTables) {
+            final String tableName = CloudStorage.getDbName(tableClazz) + "." + CloudStorage.getTableName(tableClazz);
+
+            tableNames.add(new JsonPrimitive(tableName));
+        }
+        query.add("t", tableNames);
+
+        // Where
+        if (whereParam != null) {
+            query.add("where", whereParam.asJson());
+        }
+
+        // Filter
+        if (filterNames != null && !filterNames.isEmpty()) {
+            final JsonArray filterElements = new JsonArray();
+            for (final String filterName : filterNames) {
+                filterElements.add(new JsonPrimitive(filterName));
+            }
+            query.add("filter", filterElements);
+        }
+
+        // Order By
+        if (orderByList != null && !orderByList.isEmpty()) {
+            final JsonArray orderByElements = new JsonArray();
+            for (final OrderElement orderElem : orderByList) {
+                orderByElements.add(orderElem.asJson());
             }
 
-            // From
-            if (fromTables == null && fromTables.isEmpty()) {
-                throw new InternalAdapterException("No table name set. Table name is a mandatory field queries.");
-            }
-            final List<String> tableNameList = new ArrayList<String>();
-            for (Class<T> tableClazz : fromTables) {
-                tableNameList.add(CloudStorage.getDbName(tableClazz) + "." + CloudStorage.getTableName(tableClazz));
-            }
-            query.put("t", tableNameList);
-
-            // Where
-            if (whereParam != null) {
-                query.put("where", whereParam.asJson());
-            }
-
-            // Filter
-            if (filterNames != null && !filterNames.isEmpty()) {
-                query.put("filter", filterNames);
-            }
-
-            // Order By
-            if (orderByList != null && !orderByList.isEmpty()) {
-                final List<JSONObject> orderByJsonList = new ArrayList<JSONObject>();
-                for (final OrderElement orderElem : orderByList) {
-                    orderByJsonList.add(orderElem.asJson());
-                }
-
-                query.put("order-by", orderByJsonList);
-            }
-        } catch (JSONException ex) {
-            Logger.getLogger(Query.class.getName()).log(Level.SEVERE, null, ex);
+            query.add("order-by", orderByElements);
         }
 
         return query;

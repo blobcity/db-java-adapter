@@ -26,15 +26,15 @@ class QueryExecuter {
         // do nothing
     }
 
-    public static String executeBql(final DbQueryRequest queryRequest) {
+    public static DbQueryResponse executeBql(final DbQueryRequest queryRequest) {
         return executeQuery(getBqlServiceUrl(queryRequest.getCredentials()), queryRequest.createPostParam());
     }
 
-    public static String executeSql(final DbQueryRequest queryRequest) {
+    public static DbQueryResponse executeSql(final DbQueryRequest queryRequest) {
         return executeQuery(getSqlServiceUrl(queryRequest.getCredentials()), queryRequest.createPostParam());
     }
 
-    private static String executeQuery(final String serviceUrl, final String postParams) {
+    private static DbQueryResponse executeQuery(final String serviceUrl, final String postParams) {
         BufferedReader in = null;
         DataOutputStream wr = null;
 
@@ -62,7 +62,7 @@ class QueryExecuter {
                 response.append(inputLine);
             }
 
-            return response.toString();
+            return new DbQueryResponse(response.toString());
         } catch (MalformedURLException ex) {
             throw new InternalAdapterException("Invalid database endpoint address format", ex);
         } catch (ProtocolException ex) {

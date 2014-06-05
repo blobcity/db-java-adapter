@@ -3,9 +3,7 @@
  */
 package com.blobcity.db.search;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
 
 /**
  * Class to handle order by clauses for results of queries. Instances of this class are immutable. Allows cloning if required.
@@ -41,10 +39,10 @@ public class OrderElement implements ObjectJsonable, Sqlable, Cloneable {
     }
 
     @Override
-    public JSONObject asJson() {
-        final Map<String, String> map = new HashMap<String, String>();
-        map.put(columnName, order.name());
-        return new JSONObject(map);
+    public JsonObject asJson() {
+        final JsonObject orderData = new JsonObject();
+        orderData.addProperty(columnName, order.name());
+        return orderData;
     }
 
     @Override

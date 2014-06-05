@@ -3,12 +3,12 @@
  */
 package com.blobcity.db.search;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  * A interface denoting the implementer is ready to provide output for a {@link Query} or any of it's sub elements in JSON format. {@code T} represents
- * {@link JSONArray} or {@link JSONObject} based on the usage (since they do not have common parentage). Specific implementations like {@link ArrayJsonable} and
+ * {@link JsonArray} or {@link JsonObject} based on the usage (since they do not have common parentage). Specific implementations like {@link ArrayJsonable} and
  * {@link ObjectJsonable} provide specific implementations for ease of consumption.
  *
  * Usually goes along with {@link Sqlable}.
