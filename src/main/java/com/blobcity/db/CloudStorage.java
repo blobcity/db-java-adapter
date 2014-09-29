@@ -30,8 +30,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class provides the connection and query execution framework for performing operations on the BlobCity data store. This class must be extended by any
- * Model that represents a BlobCity Entity.
+ * This class provides the connection and query execution framework for performing operations on the BlobCity data
+ * store. This class must be extended by any Model that represents a BlobCity Entity.
  *
  * @author Sanket Sarang
  * @author Karishma
@@ -146,9 +146,10 @@ public abstract class CloudStorage {
     }
 
     /**
-     * Allows search queries to be performed as defined by {@link http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH}. This method
-     * internally calls {@link #search(com.blobcity.db.config.Credentials, com.blobcity.db.search.Query)} with default credentials from
-     * {@link Credentials#getInstance()}
+     * Allows search queries to be performed as defined by
+     * {@link http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH}. This method internally
+     * calls {@link #search(com.blobcity.db.config.Credentials, com.blobcity.db.search.Query)} with default credentials
+     * from {@link Credentials#getInstance()}
      *
      * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
      *
@@ -163,7 +164,8 @@ public abstract class CloudStorage {
     }
 
     /**
-     * Allows search queries to be performed as defined by {@link http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH}.
+     * Allows search queries to be performed as defined by
+     * {@link http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH}.
      *
      * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
      *
@@ -223,7 +225,8 @@ public abstract class CloudStorage {
     }
 
     /**
-     * Allows quick search queries on a single column. This method internally uses {@link #search(com.blobcity.db.search.Query) }
+     * Allows quick search queries on a single column. This method internally uses {@link #search(com.blobcity.db.search.Query)
+     * }
      *
      * @see #search(com.blobcity.db.search.Query)
      * @param <T> Any class reference which extends {@link CloudStorage}
@@ -241,9 +244,10 @@ public abstract class CloudStorage {
     }
 
     /**
-     * Statically provides the table name for any instance/child of {@link CloudStorage} that is internally used by the adapter for querying. Note, this method
-     * is not used by the adapter internally but the logic here, should be kept in sync with the rest of the class to ensure table names are evaluated
-     * appropriately. This method can be used for logging purposes where the table name for a class is required.
+     * Statically provides the table name for any instance/child of {@link CloudStorage} that is internally used by the
+     * adapter for querying. Note, this method is not used by the adapter internally but the logic here, should be kept
+     * in sync with the rest of the class to ensure table names are evaluated appropriately. This method can be used for
+     * logging purposes where the table name for a class is required.
      *
      * @param <T> Any class reference which extends {@link CloudStorage}
      * @param clazz class reference who's table name is required
@@ -255,9 +259,10 @@ public abstract class CloudStorage {
     }
 
     /**
-     * Statically provides the db name for any instance/child of {@link CloudStorage} that is internally used by the adapter for querying. Note, this method is
-     * used by the adapter internally for SQL queries and the logic here should be kept in sync with the rest of the class to ensure db names are evaluated
-     * appropriately. This method can be used for logging purposes where the db name for a class is required.
+     * Statically provides the db name for any instance/child of {@link CloudStorage} that is internally used by the
+     * adapter for querying. Note, this method is used by the adapter internally for SQL queries and the logic here
+     * should be kept in sync with the rest of the class to ensure db names are evaluated appropriately. This method can
+     * be used for logging purposes where the db name for a class is required.
      *
      * @param <T> Any class reference which extends {@link CloudStorage}
      * @param clazz class reference who's db name is required
@@ -345,7 +350,8 @@ public abstract class CloudStorage {
     }
 
     /**
-     * Transforms data type of a column dynamically leveraging Java Type Erasure. Currently supports all types that can be used as primary keys in tables.
+     * Transforms data type of a column dynamically leveraging Java Type Erasure. Currently supports all types that can
+     * be used as primary keys in tables.
      *
      * @param <P> Requested data format class parameter
      * @param value value to be transformed
@@ -374,13 +380,13 @@ public abstract class CloudStorage {
     }
 
     /**
-     * Provides a standard service to cast input types from JSON's format ({@link Integer}, {@link String}, {@link JSONArray} etc.) to Java's internal data
-     * types.
+     * Provides a standard service to cast input types from JSON's format
+     * ({@link Integer}, {@link String}, {@link JSONArray} etc.) to Java's internal data types.
      *
      * @param field field in current {@link Object} that needs to be updated
      * @param value value to be set for the field
-     * @param parentClazz {@link Class} value of the parent object for which the casted field is being requested. This field is only required for proper error
-     * logging in case of exceptions
+     * @param parentClazz {@link Class} value of the parent object for which the casted field is being requested. This
+     * field is only required for proper error logging in case of exceptions
      * @return appropriately casted value
      */
     private static Object getCastedValue(final Field field, final JsonElement value, final Class<?> parentClazz) {
@@ -530,11 +536,13 @@ public abstract class CloudStorage {
     /**
      * Instantiates current object with data from the provided {@link JSONObject}.
      *
-     * Every column mentioned in the {@link CloudStorage} instance (as maintained by {@link TableStore}) will be loaded with data. If any of these column name
-     * IDs do not exist in the provided {@link JSONObject}, an {@link InternalDbException} will be thrown. If there are any issues whilst reflecting the data
-     * into the instance, an {@link InternalAdapterException} will be thrown.
+     * Every column mentioned in the {@link CloudStorage} instance (as maintained by {@link TableStore}) will be loaded
+     * with data. If any of these column name IDs do not exist in the provided {@link JSONObject}, an
+     * {@link InternalDbException} will be thrown. If there are any issues whilst reflecting the data into the instance,
+     * an {@link InternalAdapterException} will be thrown.
      *
-     * If any data already exists the calling object in any field mapped as a column, the data will be overwritten and lost.
+     * If any data already exists the calling object in any field mapped as a column, the data will be overwritten and
+     * lost.
      *
      * @param payload input {@link JSONObject} from which the data for the current instance are to be loaded.
      */
@@ -588,9 +596,10 @@ public abstract class CloudStorage {
      * Gets a JSON representation of the object. The column names are same as those loaded in {@link TableStore}
      *
      * @return {@link JSONObject} representing the entity class in its current state
-     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or
-     * implementor thereof).
-     * @throws IllegalAccessException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
+     * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
+     * the underlying field (or a subclass or implementor thereof).
+     * @throws IllegalAccessException if this {@code Field} object is enforcing Java language access control and the
+     * underlying field is inaccessible.
      */
     private JsonObject toJson() throws IllegalArgumentException, IllegalAccessException {
         final Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
@@ -652,7 +661,8 @@ public abstract class CloudStorage {
     }
 
     /**
-     * Sets field level values by ensuring appropriate conversion between the input type (JSON) and Java's inherent data types.
+     * Sets field level values by ensuring appropriate conversion between the input type (JSON) and Java's inherent data
+     * types.
      *
      * @see #getCastedValue(java.lang.reflect.Field, java.lang.Object)
      * @param field field in current {@link Object} that needs to be updated
@@ -660,14 +670,16 @@ public abstract class CloudStorage {
      * @throws IllegalAccessException if the underlying field being changed is final
      */
     private void setFieldValue(final Field field, final JsonElement value) throws IllegalAccessException {
-        final boolean oldAccessibilityValue = field.isAccessible();
-        field.setAccessible(true);
-        try {
-            field.set(this, getCastedValue(field, value, this.getClass()));
-        } catch (IllegalAccessException iae) {
-            throw iae;
-        } finally {
-            field.setAccessible(oldAccessibilityValue);
+        synchronized (field) {
+            final boolean oldAccessibilityValue = field.isAccessible();
+            field.setAccessible(true);
+            try {
+                field.set(this, getCastedValue(field, value, this.getClass()));
+            } catch (IllegalAccessException iae) {
+                throw iae;
+            } finally {
+                field.setAccessible(oldAccessibilityValue);
+            }
         }
     }
 }
