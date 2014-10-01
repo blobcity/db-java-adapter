@@ -468,6 +468,7 @@ public abstract class CloudStorage {
         final Credentials dbSpecificCredentials = entityContainsDbName ? Credentials.create(credentials, null, null, null, db) : credentials;
 
         final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty(QueryConstants.DB, db);
         jsonObject.addProperty(QueryConstants.TABLE, tableName);
         jsonObject.addProperty(QueryConstants.QUERY, queryType.getQueryCode());
         final String queryStr = jsonObject.toString();
