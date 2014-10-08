@@ -570,7 +570,8 @@ public abstract class CloudStorage {
             queryJson.addProperty(QueryConstants.QUERY, queryType.getQueryCode());
 
             final Credentials dbSpecificCredentials = db != null ? Credentials.create(credentials, null, null, null, db) : credentials;
-
+            queryJson.addProperty(QueryConstants.DB, dbSpecificCredentials.getDb());
+            
             switch (queryType) {
                 case LOAD:
                 case REMOVE:
