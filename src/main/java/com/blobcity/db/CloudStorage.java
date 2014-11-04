@@ -552,9 +552,11 @@ public abstract class CloudStorage {
 
         for (final String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
-
+            
             try {
-                setFieldValue(field, payload.get(columnName));
+                if(payload.has(columnName)) {
+                    setFieldValue(field, payload.get(columnName));
+                }
             } catch (IllegalArgumentException ex) {
                 throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
             } catch (IllegalAccessException ex) {
