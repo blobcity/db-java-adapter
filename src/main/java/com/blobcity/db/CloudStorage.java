@@ -309,21 +309,23 @@ public abstract class CloudStorage {
     // Protected instance methods
     protected void setPk(Object pk) {
         final Field primaryKeyField = TableStore.getInstance().getPkField(table);
-        final boolean accessible = primaryKeyField.isAccessible();
+        synchronized (primaryKeyField) {
+            final boolean accessible = primaryKeyField.isAccessible();
 
-        try {
-            if (!accessible) {
-                primaryKeyField.setAccessible(true);
-            }
+            try {
+                if (!accessible) {
+                    primaryKeyField.setAccessible(true);
+                }
 
-            primaryKeyField.set(this, pk);
-        } catch (IllegalArgumentException ex) {
-            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
-        } catch (IllegalAccessException ex) {
-            throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
-        } finally {
-            if (!accessible) {
-                primaryKeyField.setAccessible(false);
+                primaryKeyField.set(this, pk);
+            } catch (IllegalArgumentException ex) {
+                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+            } catch (IllegalAccessException ex) {
+                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+            } finally {
+                if (!accessible) {
+                    primaryKeyField.setAccessible(false);
+                }
             }
         }
     }
@@ -400,40 +402,8 @@ public abstract class CloudStorage {
             return "".equals(value.getAsString()) ? null : Enum.valueOf((Class<? extends Enum>) type, value.getAsString());
         }
 
-        if (type == Double.TYPE || type == Double.class) {
-            return value.getAsDouble();
-        }
-
-        if (type == Float.TYPE || type == Float.class) {
-            return value.getAsFloat();
-        }
-
         if (type == Character.TYPE || type == Character.class) {
             return value.getAsCharacter();
-        }
-
-        if (type == Boolean.TYPE || type == Boolean.class) {
-            return value.getAsBoolean();
-        }
-
-        if (type == BigDecimal.class) {
-            return value.getAsBigInteger();
-        }
-
-        if (type == java.util.Date.class) {
-            return new java.util.Date(value.getAsLong());
-        }
-
-        if (type == java.sql.Date.class) {
-            return new java.sql.Date(value.getAsLong());
-        }
-
-        if (type == Integer.TYPE || type == Integer.class) {
-            return value.getAsInt();
-        }
-
-        if (type == Long.TYPE || type == Long.class) {
-            return value.getAsLong();
         }
 
         if (type == List.class) { // doesn't always return inside this block, BEWARE!
@@ -452,8 +422,69 @@ public abstract class CloudStorage {
 
             Logger.getLogger(CloudStorage.class.getName()).log(Level.WARNING, "Class of type \"{0}\" has field with name \"{1}\" and data type \"{2}\" for value to be set was \"{3}\" has a type of {4}. This will probably cause an exception.", new Object[]{parentClazz, field.getName(), type, value, value.getClass()});
         }
-        // The if for List check does not always return a value. Be sure before putting any code below here
 
+        /* Beyound this point empty string should return null as the below types cannot have empty string values */
+        if ((value.getAsString().isEmpty() || value == null) && !field.getType().isPrimitive()) {
+            return null;
+        }
+
+        if (type == Double.TYPE || type == Double.class) {
+            if (value == null || value.getAsString().isEmpty()) {
+                return 0.0;
+            }
+            return value.getAsDouble();
+        }
+
+        if (type == Float.TYPE || type == Float.class) {
+            if (value == null || value.getAsString().isEmpty()) {
+                return 0.0f;
+            }
+            return value.getAsFloat();
+        }
+
+        if (type == Boolean.TYPE || type == Boolean.class) {
+            if (value == null || value.getAsString().isEmpty()) {
+                return false;
+            }
+            return value.getAsBoolean();
+        }
+
+        if (type == BigDecimal.class) {
+            if (value == null || value.getAsString().isEmpty()) {
+                return BigDecimal.ZERO;
+            }
+            return value.getAsBigInteger();
+        }
+
+        if (type == java.util.Date.class) {
+            if (value == null || value.getAsString().isEmpty()) {
+                return null;
+            }
+            return new java.util.Date(value.getAsLong());
+        }
+
+        if (type == java.sql.Date.class) {
+            if (value == null || value.getAsString().isEmpty()) {
+                return null;
+            }
+            return new java.sql.Date(value.getAsLong());
+        }
+
+        if (type == Integer.TYPE || type == Integer.class) {
+            if (value == null || value.getAsString().isEmpty()) {
+                return 0;
+            }
+            return value.getAsInt();
+        }
+
+        if (type == Long.TYPE || type == Long.class) {
+            if (value == null || value.getAsString().isEmpty()) {
+                return 0;
+            }
+            return value.getAsLong();
+        }
+
+        // The if for List check does not always return a value. Be sure before putting any code below here
         // If weird types are left, lets get their String versions..
         return value.getAsString();
     }
@@ -552,9 +583,9 @@ public abstract class CloudStorage {
 
         for (final String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
-            
+
             try {
-                if(payload.has(columnName)) {
+                if (payload.has(columnName)) {
                     setFieldValue(field, payload.get(columnName));
                 }
             } catch (IllegalArgumentException ex) {
@@ -573,7 +604,7 @@ public abstract class CloudStorage {
 
             final Credentials dbSpecificCredentials = db != null ? Credentials.create(credentials, null, null, null, db) : credentials;
             queryJson.addProperty(QueryConstants.DB, dbSpecificCredentials.getDb());
-            
+
             switch (queryType) {
                 case LOAD:
                 case REMOVE:

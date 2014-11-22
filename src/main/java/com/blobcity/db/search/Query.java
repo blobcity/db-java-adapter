@@ -7,6 +7,7 @@ import com.blobcity.db.CloudStorage;
 import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.exceptions.InternalDbException;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
@@ -30,9 +31,12 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     private SearchParam whereParam;
     private List<String> filterNames;
     private List<OrderElement> orderByList;
+    private Integer limit;
+    private Integer limitOffset;
 
     /**
-     * Internal constructor. For access, use {@link #select()}, {@link #select(java.lang.String[])} or {@link #table(java.lang.Class)}
+     * Internal constructor. For access, use {@link #select()}, {@link #select(java.lang.String[])} or
+     * {@link #table(java.lang.Class)}
      *
      * @see #select()
      * @see #select(java.lang.String[])
@@ -64,8 +68,8 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     }
 
     /**
-     * Static initializer for selecting data from all columns and setting the table. Internally uses {@link Query#select()} and
-     * {@link Query#from(java.lang.Class)}
+     * Static initializer for selecting data from all columns and setting the table. Internally uses
+     * {@link Query#select()} and {@link Query#from(java.lang.Class)}
      *
      * @see #select()
      * @see #from(java.lang.Class)
@@ -78,9 +82,11 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     }
 
     /**
-     * Method to add a table to the list of tables on which the query is to be performed. Joins are performed L-R (FIFO).
+     * Method to add a table to the list of tables on which the query is to be performed. Joins are performed L-R
+     * (FIFO).
      *
-     * Note, currently joins are not supported. Calling this method repeatedly will cause an {@link InternalDbException} to be thrown.
+     * Note, currently joins are not supported. Calling this method repeatedly will cause an {@link InternalDbException}
+     * to be thrown.
      *
      * @param tableName name of the table to be queried
      * @return an instance of {@link Query}
@@ -106,6 +112,31 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
 
     public Query orderBy(final OrderElement... orderElems) {
         this.orderByList = Arrays.asList(orderElems);
+        return this;
+    }
+
+    /**
+     * Use to apply a limit clause on a search query. The result size will be limited to the limit value passed
+     *
+     * @param limit the number of items to which the search response is to be limited
+     * @return a modified object of {@link Query} with the limit clause applied
+     */
+    public Query limit(int limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    /**
+     * Use to apply a limit with offset clause on search results. The result will be returned from the offset specified
+     * from the final result set and will be limited to the limit parameter.
+     *
+     * @param limit the number of items to which the search response is to be limited
+     * @param offset the number of items skipped from the beginning of the result set
+     * @return a modified object of {@link Query} with the limit clause applied
+     */
+    public Query limit(int limit, int offset) {
+        this.limit = limit;
+        this.limitOffset = offset;
         return this;
     }
 
@@ -155,6 +186,16 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
             }
 
             query.add("order-by", orderByElements);
+        }
+
+        // Limit clause
+        if (limit != null) {
+            JsonObject limitJson = new JsonObject();
+            limitJson.addProperty("lim", limit);
+            if (limitOffset != null) {
+                limitJson.addProperty("off", limitOffset);
+            }
+            query.add("lim", limitJson);
         }
 
         return query;
