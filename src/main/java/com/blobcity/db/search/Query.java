@@ -66,6 +66,10 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     public static Query select(final String... columnNames) {
         return new Query(columnNames != null && columnNames.length > 0 ? Arrays.asList(columnNames) : Collections.EMPTY_LIST);
     }
+    
+    public static Query count() {
+        return select("COUNT(*)");
+    }
 
     /**
      * Static initializer for selecting data from all columns and setting the table. Internally uses

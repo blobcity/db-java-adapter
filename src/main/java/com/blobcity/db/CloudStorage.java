@@ -224,6 +224,70 @@ public abstract class CloudStorage {
         throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
     }
 
+    public static <T extends CloudStorage> Object execute(final Query<T> query) {
+        return execute(Credentials.getInstance(), query);
+    }
+
+    public static <T extends CloudStorage> Object execute(final Credentials credentials, final Query<T> query) {
+        if (query.getFromTables() == null && query.getFromTables().isEmpty()) {
+            throw new InternalAdapterException("No table name set. Table name is a mandatory field queries.");
+        }
+
+        final String queryStr = query.asSql();
+
+        final DbQueryResponse response = QueryExecuter.executeSql(DbQueryRequest.create(credentials, queryStr));
+
+        final Class<T> clazz = query.getFromTables().get(0);
+
+        if (response.isSuccessful()) {
+
+            //TODO: Throw away code
+            if (response.getPayload() instanceof JsonArray) {
+                final JsonArray resultJsonArray = response.getPayload().getAsJsonArray();
+                final int resultCount = resultJsonArray.size();
+                final List<T> responseList = new ArrayList<T>();
+                final String tableName = CloudStorage.getTableName(clazz);
+                TableStore.getInstance().registerClass(tableName, clazz);
+                final Map<String, Field> structureMap = TableStore.getInstance().getStructure(tableName);
+
+                for (int i = 0; i < resultCount; i++) {
+                    final T instance = CloudStorage.newInstance(clazz);
+                    final JsonObject instanceData = resultJsonArray.get(i).getAsJsonObject();
+                    final Set<Map.Entry<String, JsonElement>> entrySet = instanceData.entrySet();
+
+                    for (final Map.Entry<String, JsonElement> entry : entrySet) {
+                        final String columnName = entry.getKey();
+
+                        final Field field = structureMap.get(columnName);
+                        final boolean oldAccessibilityValue = field.isAccessible();
+                        field.setAccessible(true);
+
+                        try {
+                            field.set(instance, getCastedValue(field, instanceData.get(columnName), clazz));
+                        } catch (IllegalArgumentException ex) {
+                            throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
+                        } catch (IllegalAccessException ex) {
+                            throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
+                        } finally {
+                            field.setAccessible(oldAccessibilityValue);
+                        }
+                    }
+
+                    responseList.add(instance);
+                }
+                return responseList;
+            }else{
+                JsonObject jsonObject = response.getPayload().getAsJsonObject();
+                if(jsonObject.has("count")) {
+                    return jsonObject.get("count").getAsLong();
+                }
+            }
+
+        }
+
+        throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
+    }
+
     /**
      * Allows quick search queries on a single column. This method internally uses {@link #search(com.blobcity.db.search.Query)
      * }
