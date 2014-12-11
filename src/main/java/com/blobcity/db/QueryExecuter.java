@@ -61,7 +61,7 @@ class QueryExecuter {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
-
+            
             return new DbQueryResponse(response.toString());
         } catch (MalformedURLException ex) {
             throw new InternalAdapterException("Invalid database endpoint address format", ex);

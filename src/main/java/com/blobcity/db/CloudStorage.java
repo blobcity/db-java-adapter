@@ -20,9 +20,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -133,12 +130,12 @@ public abstract class CloudStorage {
         throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
     }
 
-    public static <T extends CloudStorage> void remove(final Object pk) {
-        remove(Credentials.getInstance(), pk);
+    public static <T extends CloudStorage> void remove(Class<T> clazz, final Object pk) {
+        remove(Credentials.getInstance(), clazz, pk);
     }
 
-    public static <T extends CloudStorage> void remove(final Credentials credentials, final Object pk) {
-        final DbQueryResponse response = postStaticRequest(credentials, QueryType.REMOVE, pk);
+    public static <T extends CloudStorage> void remove(final Credentials credentials, Class<T> clazz, final Object pk) {
+        final DbQueryResponse response = postStaticRequest(credentials, clazz, QueryType.REMOVE, pk);
 
         if (!response.isSuccessful()) {
             throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
@@ -202,17 +199,19 @@ public abstract class CloudStorage {
                     final String columnName = entry.getKey();
 
                     final Field field = structureMap.get(columnName);
-                    final boolean oldAccessibilityValue = field.isAccessible();
-                    field.setAccessible(true);
+                    synchronized (field) {
+                        final boolean oldAccessibilityValue = field.isAccessible();
+                        field.setAccessible(true);
 
-                    try {
-                        field.set(instance, getCastedValue(field, instanceData.get(columnName), clazz));
-                    } catch (IllegalArgumentException ex) {
-                        throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
-                    } catch (IllegalAccessException ex) {
-                        throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
-                    } finally {
-                        field.setAccessible(oldAccessibilityValue);
+                        try {
+                            field.set(instance, getCastedValue(field, instanceData.get(columnName), clazz));
+                        } catch (IllegalArgumentException ex) {
+                            throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
+                        } catch (IllegalAccessException ex) {
+                            throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
+                        } finally {
+                            field.setAccessible(oldAccessibilityValue);
+                        }
                     }
                 }
 
@@ -259,26 +258,28 @@ public abstract class CloudStorage {
                         final String columnName = entry.getKey();
 
                         final Field field = structureMap.get(columnName);
-                        final boolean oldAccessibilityValue = field.isAccessible();
-                        field.setAccessible(true);
+                        synchronized (field) {
+                            final boolean oldAccessibilityValue = field.isAccessible();
+                            field.setAccessible(true);
 
-                        try {
-                            field.set(instance, getCastedValue(field, instanceData.get(columnName), clazz));
-                        } catch (IllegalArgumentException ex) {
-                            throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
-                        } catch (IllegalAccessException ex) {
-                            throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
-                        } finally {
-                            field.setAccessible(oldAccessibilityValue);
+                            try {
+                                field.set(instance, getCastedValue(field, instanceData.get(columnName), clazz));
+                            } catch (IllegalArgumentException ex) {
+                                throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
+                            } catch (IllegalAccessException ex) {
+                                throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
+                            } finally {
+                                field.setAccessible(oldAccessibilityValue);
+                            }
                         }
                     }
 
                     responseList.add(instance);
                 }
                 return responseList;
-            }else{
+            } else {
                 JsonObject jsonObject = response.getPayload().getAsJsonObject();
-                if(jsonObject.has("count")) {
+                if (jsonObject.has("count")) {
                     return jsonObject.get("count").getAsLong();
                 }
             }
@@ -286,6 +287,14 @@ public abstract class CloudStorage {
         }
 
         throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
+    }
+
+    public static DbQueryResponse execute(final String sql) {
+        return execute(Credentials.getInstance(), sql);
+    }
+
+    public static DbQueryResponse execute(final Credentials credentials, final String sql) {
+        return QueryExecuter.executeSql(DbQueryRequest.create(credentials, sql));
     }
 
     /**
@@ -580,6 +589,24 @@ public abstract class CloudStorage {
         final DbQueryResponse response = QueryExecuter.executeBql(DbQueryRequest.create(credentials, queryJson.toString()));
         return response;
     }
+    
+    private static <T extends CloudStorage> DbQueryResponse postStaticRequest(final Credentials credentials, final Class<T> clazz, final QueryType queryType, final Object pk) {
+        final JsonObject queryJson = new JsonObject();
+        final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+
+        final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+        final boolean entityContainsDbName = entity != null && entity.db() != null && !"".equals(entity.db());
+        final String db = entityContainsDbName ? entity.db() : credentials.getDb(); // No NPEs here because entityContainsDbName handles that
+        final Credentials dbSpecificCredentials = entityContainsDbName ? Credentials.create(credentials, null, null, null, db) : credentials;
+        
+        queryJson.addProperty(QueryConstants.DB, db);
+        queryJson.addProperty(QueryConstants.TABLE, tableName);
+        queryJson.addProperty(QueryConstants.QUERY, queryType.getQueryCode());
+        queryJson.addProperty(QueryConstants.PRIMARY_KEY, pk.toString());
+
+        final DbQueryResponse response = QueryExecuter.executeBql(DbQueryRequest.create(dbSpecificCredentials, queryJson.toString()));
+        return response;
+    }
 
     // Private instance methods
     private boolean load(final Credentials credentials) {
@@ -706,24 +733,26 @@ public abstract class CloudStorage {
 
         for (String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
-            final boolean accessible = field.isAccessible();
+            synchronized (field) {
+                final boolean accessible = field.isAccessible();
 
-            field.setAccessible(true);
+                field.setAccessible(true);
 
-            try {
-                if (field.getType() == java.util.Date.class) {
-                    dataJson.addProperty(columnName, field.get(this) != null ? ((java.util.Date) field.get(this)).getTime() : null);
-                    continue;
-                } else if (field.getType() == java.sql.Date.class) {
-                    dataJson.addProperty(columnName, field.get(this) != null ? ((java.sql.Date) field.get(this)).getTime() : null);
-                    continue;
+                try {
+                    if (field.getType() == java.util.Date.class) {
+                        dataJson.addProperty(columnName, field.get(this) != null ? ((java.util.Date) field.get(this)).getTime() : null);
+                        continue;
+                    } else if (field.getType() == java.sql.Date.class) {
+                        dataJson.addProperty(columnName, field.get(this) != null ? ((java.sql.Date) field.get(this)).getTime() : null);
+                        continue;
+                    }
+
+                    dataJson.addProperty(columnName, field.get(this) != null ? field.get(this).toString() : null);
+                } catch (IllegalAccessException iae) {
+                    throw iae;
+                } finally {
+                    field.setAccessible(accessible);
                 }
-
-                dataJson.addProperty(columnName, field.get(this) != null ? field.get(this).toString() : null);
-            } catch (IllegalAccessException iae) {
-                throw iae;
-            } finally {
-                field.setAccessible(accessible);
             }
         }
 
