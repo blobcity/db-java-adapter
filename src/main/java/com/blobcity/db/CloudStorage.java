@@ -12,6 +12,7 @@ import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.exceptions.InternalDbException;
 import com.blobcity.db.search.Query;
 import com.blobcity.db.search.StringUtil;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -20,9 +21,14 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -382,6 +388,9 @@ public abstract class CloudStorage {
     // Protected instance methods
     protected void setPk(Object pk) {
         final Field primaryKeyField = TableStore.getInstance().getPkField(table);
+        if (primaryKeyField == null) {
+            throw new InternalAdapterException("Missing mandatory @Primary annotation for entity " + table + " [" + this.getClass().getName() + "]");
+        }
         synchronized (primaryKeyField) {
             final boolean accessible = primaryKeyField.isAccessible();
 
@@ -479,7 +488,14 @@ public abstract class CloudStorage {
             return value.getAsCharacter();
         }
 
-        if (type == List.class) { // doesn't always return inside this block, BEWARE!
+        if (type == List.class
+                || type == ArrayList.class
+                || type == LinkedList.class
+                || type == Set.class
+                || type == HashSet.class
+                || type == SortedSet.class
+                || type == TreeSet.class
+                || type.isArray()) { // doesn't always return inside this block, BEWARE!
             if (value.isJsonArray()) {
                 final JsonArray arr = value.getAsJsonArray();
                 final int length = arr.size();
@@ -589,7 +605,7 @@ public abstract class CloudStorage {
         final DbQueryResponse response = QueryExecuter.executeBql(DbQueryRequest.create(credentials, queryJson.toString()));
         return response;
     }
-    
+
     private static <T extends CloudStorage> DbQueryResponse postStaticRequest(final Credentials credentials, final Class<T> clazz, final QueryType queryType, final Object pk) {
         final JsonObject queryJson = new JsonObject();
         final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
@@ -598,7 +614,7 @@ public abstract class CloudStorage {
         final boolean entityContainsDbName = entity != null && entity.db() != null && !"".equals(entity.db());
         final String db = entityContainsDbName ? entity.db() : credentials.getDb(); // No NPEs here because entityContainsDbName handles that
         final Credentials dbSpecificCredentials = entityContainsDbName ? Credentials.create(credentials, null, null, null, db) : credentials;
-        
+
         queryJson.addProperty(QueryConstants.DB, db);
         queryJson.addProperty(QueryConstants.TABLE, tableName);
         queryJson.addProperty(QueryConstants.QUERY, queryType.getQueryCode());
@@ -744,6 +760,16 @@ public abstract class CloudStorage {
                         continue;
                     } else if (field.getType() == java.sql.Date.class) {
                         dataJson.addProperty(columnName, field.get(this) != null ? ((java.sql.Date) field.get(this)).getTime() : null);
+                        continue;
+                    } else if (field.getType() == List.class
+                            || field.getType() == ArrayList.class
+                            || field.getType() == LinkedList.class
+                            || field.getType() == Set.class
+                            || field.getType() == HashSet.class
+                            || field.getType() == SortedSet.class
+                            || field.getType() == TreeSet.class
+                            || field.getType().isArray()) {
+                        dataJson.add(columnName, field.get(this) != null ? new Gson().toJsonTree(field.get(this)) : null);
                         continue;
                     }
 
