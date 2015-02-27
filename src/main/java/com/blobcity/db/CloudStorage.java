@@ -122,12 +122,12 @@ public abstract class CloudStorage {
         throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
     }
 
-    public static <T extends CloudStorage> boolean contains(final Object key) {
-        return contains(Credentials.getInstance(), key);
+    public static <T extends CloudStorage> boolean contains(final Class<T> clazz, final Object key) {
+        return contains(Credentials.getInstance(), clazz, key);
     }
 
-    public static <T extends CloudStorage> boolean contains(final Credentials credentials, final Object key) {
-        final DbQueryResponse response = postStaticRequest(credentials, QueryType.CONTAINS, key);
+    public static <T extends CloudStorage> boolean contains(final Credentials credentials, final Class<T> clazz, final Object key) {
+        final DbQueryResponse response = postStaticRequest(credentials, clazz, QueryType.CONTAINS, key);
 
         if (response.isSuccessful()) {
             return response.contains();
