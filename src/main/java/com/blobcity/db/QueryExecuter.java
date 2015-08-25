@@ -69,21 +69,21 @@ class QueryExecuter {
                     System.out.println("Execution time (ms) = " + executionTime);
                     return new DbQueryResponse(response);
                 } catch (IllegalAccessException ex) {
-                    Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(QueryExecuter.class.getName()).log(Level.WARNING, null, ex);
                 } catch (IllegalArgumentException ex) {
-                    Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(QueryExecuter.class.getName()).log(Level.WARNING, null, ex);
                 } catch (InvocationTargetException ex) {
-                    Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(QueryExecuter.class.getName()).log(Level.WARNING, null, ex);
                 }
 
             } catch (NoSuchMethodException ex) {
-                Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(QueryExecuter.class.getName()).log(Level.WARNING, null, ex);
             } catch (SecurityException ex) {
-                Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(QueryExecuter.class.getName()).log(Level.WARNING, null, ex);
             }
         }
         catch(ClassNotFoundException ex) {
-             Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+             Logger.getLogger(QueryExecuter.class.getName()).log(Level.WARNING, null, ex);
         }
         return executeQuery(getSqlServiceUrl(queryRequest.getCredentials()), queryRequest.createPostParam());
     }

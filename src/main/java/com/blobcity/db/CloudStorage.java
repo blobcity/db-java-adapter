@@ -256,13 +256,13 @@ public abstract class CloudStorage {
                         field.setAccessible(true);
 
                         try {
-                            System.out.println("tableName: " +tableName);
-                            System.out.println("instanceData: " +instanceData.getClass().getCanonicalName());
-                            System.out.println("col: " +columnName);
-                            System.out.println("clazz: " +clazz + "  " +clazz.getCanonicalName());
-                            System.out.println("casted value: " +getCastedValue(field, instanceData.get(columnName), clazz));
-                            System.out.println("Field: " +field.getName());
-                            System.out.println("instance: " +instance.getClass().getCanonicalName());
+//                            System.out.println("tableName: " +tableName);
+//                            System.out.println("instanceData: " +instanceData.getClass().getCanonicalName());
+//                            System.out.println("col: " +columnName);
+//                            System.out.println("clazz: " +clazz + "  " +clazz.getCanonicalName());
+//                            System.out.println("casted value: " +getCastedValue(field, instanceData.get(columnName), clazz));
+//                            System.out.println("Field: " +field.getName());
+//                            System.out.println("instance: " +instance.getClass().getCanonicalName());
                             field.set(instance, getCastedValue(field, instanceData.get(columnName), clazz));
                         } catch (IllegalArgumentException ex) {
                             throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
