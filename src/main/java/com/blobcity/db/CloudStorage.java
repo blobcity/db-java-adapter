@@ -12,6 +12,8 @@ import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.exceptions.InternalDbException;
 import com.blobcity.db.search.Query;
 import com.blobcity.db.search.StringUtil;
+import com.blobcity.lib.database.bean.manager.factory.BeanConfigFactory;
+import com.blobcity.lib.database.bean.manager.interfaces.engine.SqlExecutor;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -19,6 +21,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +50,7 @@ public abstract class CloudStorage {
 
     private String table = null;
     private String db = null;
+    private static Boolean bStoredProcOrTrigger=false;
 
     public CloudStorage() {
         for (Annotation annotation : this.getClass().getAnnotations()) {
@@ -54,6 +59,12 @@ public abstract class CloudStorage {
                 table = blobCityEntity.table();
                 if (StringUtil.isEmpty(blobCityEntity.db())) {
                     db = blobCityEntity.db();
+                    if(Credentials.getInstance() != null) {
+                        String dbName = Credentials.getInstance().getDb();
+                        if(dbName.equals("dummy")) {
+                            Credentials.getInstance().setDb(db);
+                        }
+                    }
                 }
 
                 if (StringUtil.isEmpty(table)) {
@@ -163,6 +174,40 @@ public abstract class CloudStorage {
      * @return {@link List} of {@code T} that matches {@code searchParams}
      */
     public static <T extends CloudStorage> List<T> search(final Query<T> query) {
+
+        try {
+
+            Class<?> cls = Class.forName( "com.blobcity.db.bquery.SQLExecutorBean" );
+
+            if(!bStoredProcOrTrigger) {
+                //bStoredProcOrTrigger = true;
+                Credentials cr = Credentials.getInstanceNullOrNotNull();
+                if(cr == null) {
+                       cr = Credentials.getInstanceForStoredProc();
+//                       System.out.println(" dbname0 = " +cr.getDb());
+                       return search(cr, query);
+                }
+                else {
+//                    System.out.println(" dbname1 = " +cr.getDb());
+//                    System.out.println(" dbname2 = " + query.getDbName(query.getFromTables().get(0)));
+                    if(cr.getDb().equals(query.getDbName(query.getFromTables().get(0)))) {
+                        return search(cr, query);
+                    }
+                    else {
+                        cr = Credentials.getInstanceForStoredProc();
+//                        System.out.println(" dbname3 = " +cr.getDb());
+                        return search(cr, query);
+                    }
+                }
+                //return search(cr, query);
+            }
+            else {
+                return search(Credentials.getInstance(), query);
+            }
+        }   catch (ClassNotFoundException ex) {
+            System.out.println("Could not find com.blobcity.db.query.SQLExecutorBean");
+            Logger.getLogger(CloudStorage.class.getName()).log(Level.WARNING, null, ex);
+        }
         return search(Credentials.getInstance(), query);
     }
 
@@ -205,11 +250,19 @@ public abstract class CloudStorage {
                     final String columnName = entry.getKey();
 
                     final Field field = structureMap.get(columnName);
+                    // Field field = structureMap.get(columnName);
                     synchronized (field) {
                         final boolean oldAccessibilityValue = field.isAccessible();
                         field.setAccessible(true);
 
                         try {
+                            System.out.println("tableName: " +tableName);
+                            System.out.println("instanceData: " +instanceData.getClass().getCanonicalName());
+                            System.out.println("col: " +columnName);
+                            System.out.println("clazz: " +clazz + "  " +clazz.getCanonicalName());
+                            System.out.println("casted value: " +getCastedValue(field, instanceData.get(columnName), clazz));
+                            System.out.println("Field: " +field.getName());
+                            System.out.println("instance: " +instance.getClass().getCanonicalName());
                             field.set(instance, getCastedValue(field, instanceData.get(columnName), clazz));
                         } catch (IllegalArgumentException ex) {
                             throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
@@ -424,9 +477,11 @@ public abstract class CloudStorage {
             }
         }
         payload.add("params", paramsJsonArr);
-
         final JsonObject queryJson = new JsonObject();
         queryJson.addProperty(QueryConstants.QUERY, queryType.getQueryCode());
+        queryJson.addProperty(QueryConstants.USER, credentials.getUsername());
+        queryJson.addProperty(QueryConstants.PASS, credentials.getPassword());
+        queryJson.addProperty(QueryConstants.DB, credentials.getDb());
         queryJson.add(QueryConstants.PAYLOAD, payload);
 
         final DbQueryResponse response = QueryExecuter.executeBql(DbQueryRequest.create(credentials, queryJson.toString()));

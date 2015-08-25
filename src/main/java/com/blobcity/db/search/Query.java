@@ -250,4 +250,8 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     public List<Class<T>> getFromTables() {
         return fromTables;
     }
+
+    public String getDbName(Class <T> cls) {
+        return CloudStorage.getDbName(cls);
+    }
 }

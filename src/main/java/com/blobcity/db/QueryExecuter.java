@@ -9,19 +9,26 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.text.MessageFormat;
+import org.springframework.context.ApplicationContext;
+import com.blobcity.lib.database.bean.manager.factory.BeanConfigFactory;
+import com.blobcity.lib.database.bean.manager.interfaces.engine.SqlExecutor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Handles execution of different types of queries
  *
  * @author Karun AB <karun.ab@blobcity.net>
  */
-class QueryExecuter {
 
+class QueryExecuter {
     private QueryExecuter() {
         // do nothing
     }
@@ -31,13 +38,59 @@ class QueryExecuter {
     }
 
     public static DbQueryResponse executeSql(final DbQueryRequest queryRequest) {
+
+        try {
+
+            Class<?> cls = Class.forName( "com.blobcity.db.bquery.SQLExecutorBean" );
+
+            final long startTime = System.currentTimeMillis();
+            Method  method;
+
+            try {
+                method = cls.getDeclaredMethod ("runQuery", String.class, String.class, String.class, String.class);
+
+//                System.out.println(".....query = " + queryRequest.getQuery());
+
+                final String response;
+                try {
+//                    System.out.println(".....query2 = " + queryRequest.getCredentials().getDb());
+                    response = (String)method.invoke (
+                            BeanConfigFactory.getConfigBean("com.blobcity.pom.database.engine.factory.EngineBeanConfig").getBean(SqlExecutor.class),
+                            "root", "root",
+                            ".systemdb", queryRequest.getQuery());
+
+                    final long executionTime = System.currentTimeMillis() - startTime;
+                    //logger.debug("User: \"{}\"\n"
+                    //    + "DB: \"{}\"\n"
+                    //    + "Query: \"{}\"\n\n"
+                    //    + "Response: \"{}\"\n\n"
+                    //    + "End of result.", new Object[]{username, db, queryPayload, response});
+                    //logger.debug("Execution time (ms): " + executionTime);
+                    System.out.println("Execution time (ms) = " + executionTime);
+                    return new DbQueryResponse(response);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalArgumentException ex) {
+                    Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InvocationTargetException ex) {
+                    Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            } catch (NoSuchMethodException ex) {
+                Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SecurityException ex) {
+                Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        catch(ClassNotFoundException ex) {
+             Logger.getLogger(QueryExecuter.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return executeQuery(getSqlServiceUrl(queryRequest.getCredentials()), queryRequest.createPostParam());
     }
 
     private static DbQueryResponse executeQuery(final String serviceUrl, final String postParams) {
         BufferedReader in = null;
         DataOutputStream wr = null;
-
         try {
             final URL url = new URL(serviceUrl);
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();
