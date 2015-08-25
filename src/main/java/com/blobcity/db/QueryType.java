@@ -17,6 +17,7 @@ enum QueryType {
     SELECT_ALL("select-all"),
     SEARCH("search"),
     CONTAINS("contains"),
+    SEARCH_FILTERED("search-filtered"),
     STORED_PROC("sp");
     
     private final String queryCode;

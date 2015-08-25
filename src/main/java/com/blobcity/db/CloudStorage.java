@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONObject;
 
 /**
  * This class provides the connection and query execution framework for performing operations on the BlobCity data
@@ -43,7 +45,6 @@ import java.util.logging.Logger;
  * @since 1.0
  */
 public abstract class CloudStorage {
-
     private String table = null;
     private String db = null;
 
@@ -183,13 +184,14 @@ public abstract class CloudStorage {
         }
 
         final String queryStr = query.asSql();
-
+        
         final DbQueryResponse response = QueryExecuter.executeSql(DbQueryRequest.create(credentials, queryStr));
-
+        
         final Class<T> clazz = query.getFromTables().get(0);
 
         if (response.isSuccessful()) {
             final JsonArray resultJsonArray = response.getPayload().getAsJsonArray();
+            System.out.println(resultJsonArray);
             final int resultCount = resultJsonArray.size();
             final List<T> responseList = new ArrayList<T>();
             final String tableName = CloudStorage.getTableName(clazz);
@@ -321,7 +323,32 @@ public abstract class CloudStorage {
     public static <T extends CloudStorage> List<T> filter(Class<T> clazz, String filterName) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
+    /**
+     * this will return the list of class object which have passed the filter
+     * 
+     * @param <T> 
+     * @param tableClass : Table class
+     * @param filterName : name of filter 
+     * @param params : arguments to loadCriteria function of filter
+     * @return 
+     */
+    public static <T extends CloudStorage> Iterator<T> searchFiltered(final Class<T> tableClass, final String filterName, Object... params){
+        return searchFiltered(Credentials.getInstance(), tableClass, filterName, params);
+    }
+    
+    /**
+     * this will return a list of primary keys of the data which was matched through the filter
+     * 
+     * @param tableName : name of table 
+     * @param filterName : name of filter
+     * @param params : arguments to loadCriteria function of given filter
+     * @return 
+     */
+    public static Iterator<Object> searchFiltered(final String tableName, final String filterName, Object... params){
+        return searchFiltered(Credentials.getInstance(), tableName, filterName, params);
+    }
+    
     /**
      * Statically provides the table name for any instance/child of {@link CloudStorage} that is internally used by the
      * adapter for querying. Note, this method is not used by the adapter internally but the logic here, should be kept
@@ -384,7 +411,7 @@ public abstract class CloudStorage {
     public void remove() {
         remove(Credentials.getInstance());
     }
-
+    
     // Protected instance methods
     protected void setPk(Object pk) {
         final Field primaryKeyField = TableStore.getInstance().getPkField(table);
@@ -596,7 +623,7 @@ public abstract class CloudStorage {
         final DbQueryResponse response = QueryExecuter.executeBql(DbQueryRequest.create(dbSpecificCredentials, queryStr));
         return response;
     }
-
+    
     private static <T extends CloudStorage> DbQueryResponse postStaticRequest(final Credentials credentials, final QueryType queryType, final Object pk) {
         final JsonObject queryJson = new JsonObject();
         queryJson.addProperty(QueryConstants.QUERY, queryType.getQueryCode());
@@ -623,7 +650,88 @@ public abstract class CloudStorage {
         final DbQueryResponse response = QueryExecuter.executeBql(DbQueryRequest.create(dbSpecificCredentials, queryJson.toString()));
         return response;
     }
+    
+    private static <T extends CloudStorage> DbQueryResponse postStaticRequest(final Credentials credentials, final QueryType queryType, final String table, final JSONObject payloadJSON){
+        JSONObject queryJson = new JSONObject();
+        queryJson.put(QueryConstants.DB, credentials.getDb());
+        queryJson.put(QueryConstants.TABLE, table);
+        queryJson.put(QueryConstants.QUERY, queryType.getQueryCode());
+        queryJson.put(QueryConstants.PAYLOAD, payloadJSON);
+        
+        final DbQueryResponse response = QueryExecuter.executeBql(DbQueryRequest.create(Credentials.getInstance(), queryJson.toString()));
+        if( response.isSuccessful() ){
+            return response;
+        } 
+        return null;
+    }
+    
+    private static Iterator<Object> searchFiltered(final Credentials credentials, final String tableName, final String filterName, final Object... params){
+        JSONObject payloadJSON = new JSONObject();
+        payloadJSON.put("name", filterName);
+        payloadJSON.put("full-data", Boolean.FALSE);
+        payloadJSON.put("params", convertObjectArrayToJSON(params));
+        
+        System.out.println("printing now");
+        System.out.println(payloadJSON);
+        final DbQueryResponse response = postStaticRequest(credentials, QueryType.SEARCH_FILTERED, tableName, payloadJSON);
+        
+        reportIfError(response);
+        
+        final JsonArray keysArray = response.getPayload().getAsJsonArray();
+        System.out.println(keysArray);
+        List<Object> keys = new ArrayList<Object>();
+        for(JsonElement key: keysArray){
+            keys.add(key);
+        }
+        return keys.iterator();
+    }
+    
+    private static <T extends CloudStorage> Iterator<T> searchFiltered(final Credentials credentials, final Class<T> clazz, final String filterName, final Object... params){
+        JSONObject payloadJSON = new JSONObject();
+        payloadJSON.put("name", filterName);
+        payloadJSON.put("full-data", Boolean.TRUE);
+        payloadJSON.put("params", convertObjectArrayToJSON(params));
+        
+        final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+        final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+        final DbQueryResponse response = postStaticRequest(credentials, QueryType.SEARCH_FILTERED, tableName, payloadJSON);
+        
+        reportIfError(response);
+        // Query successfull, proceeding...
+        final JsonArray resultJsonArray = response.getPayload().getAsJsonArray();
+        final int resultCount = resultJsonArray.size();
+        final List<T> responseList = new ArrayList<T>();
+        TableStore.getInstance().registerClass(tableName, clazz);
+        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(tableName);
 
+        for (int i = 0; i < resultCount; i++) {
+            final T instance = CloudStorage.newInstance(clazz);
+            final JsonObject instanceData = resultJsonArray.get(i).getAsJsonObject();
+            final Set<Map.Entry<String, JsonElement>> entrySet = instanceData.entrySet();
+
+            for (final Map.Entry<String, JsonElement> entry : entrySet) {
+                final String columnName = entry.getKey();
+                final Field field = structureMap.get(columnName);
+                synchronized (field) {
+                    final boolean oldAccessibilityValue = field.isAccessible();
+                    field.setAccessible(true);
+
+                    try {
+                        field.set(instance, getCastedValue(field, instanceData.get(columnName), clazz));
+                    } catch (IllegalArgumentException ex) {
+                        throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
+                    } catch (IllegalAccessException ex) {
+                        throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
+                    } finally {
+                        field.setAccessible(oldAccessibilityValue);
+                    }
+                }
+            }
+            responseList.add(instance);
+        }
+        return responseList.iterator();
+    }
+    
     // Private instance methods
     private boolean load(final Credentials credentials) {
         final DbQueryResponse response = postRequest(credentials, QueryType.LOAD);
@@ -671,7 +779,7 @@ public abstract class CloudStorage {
             reportIfError(response);
         }
     }
-
+    
     /**
      * Instantiates current object with data from the provided {@link JSONObject}.
      *
@@ -836,4 +944,22 @@ public abstract class CloudStorage {
             }
         }
     }
+    
+    /**
+     * 
+     * @param params : object array to be converted
+     * @return : json object with keys as indexes and value as another json object containing keys as type and value
+     */
+    private static JSONObject convertObjectArrayToJSON(Object[] params){
+        JSONObject jsonObj = new JSONObject();
+        if(params == null) return jsonObj;
+        for(int i=0;i<params.length;i++){
+            JSONObject currObj = new JSONObject();
+            currObj.put("type", params[i].getClass().getSimpleName().toLowerCase());
+            currObj.put("value", params[i]);
+            jsonObj.put(String.valueOf(i), currObj);
+        }
+        return jsonObj;
+    }
+
 }
