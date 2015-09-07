@@ -21,7 +21,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -32,6 +31,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -667,12 +667,11 @@ public abstract class CloudStorage {
     
     private static Iterator<Object> searchFiltered(final Credentials credentials, final String tableName, final String filterName, final Object... params){
         JSONObject payloadJSON = new JSONObject();
+        Gson gson = new Gson();
         payloadJSON.put("name", filterName);
         payloadJSON.put("full-data", Boolean.FALSE);
-        payloadJSON.put("params", convertObjectArrayToJSON(params));
+        payloadJSON.put("params", gson.toJson(params));
         
-        System.out.println("printing now");
-        System.out.println(payloadJSON);
         final DbQueryResponse response = postStaticRequest(credentials, QueryType.SEARCH_FILTERED, tableName, payloadJSON);
         
         reportIfError(response);
@@ -688,9 +687,10 @@ public abstract class CloudStorage {
     
     private static <T extends CloudStorage> Iterator<T> searchFiltered(final Credentials credentials, final Class<T> clazz, final String filterName, final Object... params){
         JSONObject payloadJSON = new JSONObject();
+        Gson gson = new Gson();
         payloadJSON.put("name", filterName);
         payloadJSON.put("full-data", Boolean.TRUE);
-        payloadJSON.put("params", convertObjectArrayToJSON(params));
+        payloadJSON.put("params", gson.toJson(params));
         
         final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
         final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
@@ -943,23 +943,6 @@ public abstract class CloudStorage {
                 field.setAccessible(oldAccessibilityValue);
             }
         }
-    }
-    
-    /**
-     * 
-     * @param params : object array to be converted
-     * @return : json object with keys as indexes and value as another json object containing keys as type and value
-     */
-    private static JSONObject convertObjectArrayToJSON(Object[] params){
-        JSONObject jsonObj = new JSONObject();
-        if(params == null) return jsonObj;
-        for(int i=0;i<params.length;i++){
-            JSONObject currObj = new JSONObject();
-            currObj.put("type", params[i].getClass().getSimpleName().toLowerCase());
-            currObj.put("value", params[i]);
-            jsonObj.put(String.valueOf(i), currObj);
-        }
-        return jsonObj;
     }
 
 }
