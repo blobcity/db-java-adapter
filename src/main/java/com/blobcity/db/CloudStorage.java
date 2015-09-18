@@ -418,8 +418,10 @@ public abstract class CloudStorage {
      * @param params : arguments to loadCriteria function of filter
      * @return 
      */
-    public static <T extends CloudStorage> Iterator<T> searchFiltered(final Class<T> tableClass, final String filterName, Object... params){
-        return searchFiltered(Credentials.getInstance(), tableClass, filterName, params);
+    public static <T extends CloudStorage> Iterator<Object> searchFiltered(final Class<T> tableClass, final String filterName, Object... params){
+        final Entity entity = (Entity) tableClass.getAnnotation(Entity.class);
+        final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : tableClass.getSimpleName();
+        return searchFiltered(Credentials.getInstance(), tableName, filterName, params);
     }
     
     /**
@@ -754,7 +756,6 @@ public abstract class CloudStorage {
         JSONObject payloadJSON = new JSONObject();
         Gson gson = new Gson();
         payloadJSON.put("name", filterName);
-        payloadJSON.put("full-data", Boolean.FALSE);
         payloadJSON.put("params", gson.toJson(params));
         
         final DbQueryResponse response = postStaticRequest(credentials, QueryType.SEARCH_FILTERED, tableName, payloadJSON);
@@ -770,6 +771,8 @@ public abstract class CloudStorage {
         return keys.iterator();
     }
     
+    @Deprecated
+    // we need some intelligent idea to send large amount of data over network. Until then, this is of no use to us.
     private static <T extends CloudStorage> Iterator<T> searchFiltered(final Credentials credentials, final Class<T> clazz, final String filterName, final Object... params){
         JSONObject payloadJSON = new JSONObject();
         Gson gson = new Gson();
@@ -1064,8 +1067,8 @@ public abstract class CloudStorage {
     }
 
     private static void reportIfError(final DbQueryResponse response) {
-        if (!response.isSuccessful()) {
-            throw response.createException();
+            if (!response.isSuccessful()) {
+                throw response.createException();
         }
     }
 
