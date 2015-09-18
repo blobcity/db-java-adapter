@@ -3,10 +3,15 @@
  */
 package com.blobcity.db;
 
+import com.blobcity.db.enums.TableType;
 import com.blobcity.db.search.SearchParam;
 import com.blobcity.db.annotations.Entity;
 import com.blobcity.db.config.Credentials;
 import com.blobcity.db.annotations.Primary;
+import com.blobcity.db.enums.AutoDefineType;
+import com.blobcity.db.enums.ColumnType;
+import com.blobcity.db.enums.IndexType;
+import com.blobcity.db.enums.ReplicationType;
 import com.blobcity.db.exceptions.DbOperationException;
 import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.exceptions.InternalDbException;
@@ -297,6 +302,86 @@ public abstract class CloudStorage {
         throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
     }
 
+    public static boolean createTable(final String table){
+        if( table == null || table.isEmpty() ){
+            throw new InternalAdapterException("Table can't be empty");
+        }
+        return createTable(Credentials.getInstance(), table);
+    }
+    
+    public static boolean createTable(final String table, final JSONObject jsonSchema){
+        if(table == null || table.isEmpty() ){
+            throw new InternalAdapterException("Table can't be empty");
+        }
+        if(jsonSchema == null ){
+            throw new InternalAdapterException("Schema can't be empty or null");
+        }
+        return createTable(Credentials.getInstance(), table, jsonSchema);
+    }
+    
+    public static boolean createTable(final String table, final TableType tableType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
+        if(table == null || table.isEmpty() ){
+            throw new InternalAdapterException("Table can't be empty");
+        }
+        if( tableType == null || replicationType == null){
+            throw new InternalAdapterException("TableType and ReplicationType can't be empty");
+        }
+        return createTable(Credentials.getInstance(), table, tableType, replicationType, replicationFactor, flexibleSchema);
+    }
+    
+    public static boolean dropTable(final String table){
+        if(table == null || table.isEmpty() ){
+            throw new InternalAdapterException("Table can't be empty");
+        }
+        return dropTable(Credentials.getInstance(), table);
+    }
+    
+    public static boolean truncateTable(final String table){
+        if(table == null || table.isEmpty() ){
+            throw new InternalAdapterException("Table can't be empty");
+        }
+        return truncateTable(Credentials.getInstance(), table);
+    }
+    
+    public static boolean addColumn(final String table, final String columnName, final ColumnType columnType, final IndexType indexType, final AutoDefineType autoDefineType){
+        if(table == null || table.isEmpty() || columnName == null || columnName.isEmpty() ){
+            throw new InternalAdapterException("Table and columnName can't be empty");
+        }
+        if(columnType == null ){
+            throw new InternalAdapterException("Column Type can't be null");
+        }
+        
+        return addColumn(Credentials.getInstance(), table, columnName, columnType, indexType, autoDefineType);
+    }
+    
+    public static boolean dropColumn(final String table, final String columnName){
+        if(table == null || table.isEmpty() || columnName == null || columnName.isEmpty() ){
+            throw new InternalAdapterException("Table and columnName can't be empty");
+        }
+        
+        return dropColumn(Credentials.getInstance(), table, columnName);
+    }
+    
+    public static boolean createIndex(final String table, final String columnName, final IndexType indexType){
+        if(table == null || table.isEmpty() || columnName == null || columnName.isEmpty() ){
+            throw new InternalAdapterException("Table and columnName can't be empty");
+        }
+        if(indexType == null  || indexType == IndexType.NONE){
+            throw new InternalAdapterException("Column Type can't be null or none. Use Drop-index to remove indexing");
+        }
+        
+        return createIndex(Credentials.getInstance(), table, columnName, indexType);
+    }
+    
+    public static boolean dropIndex(final String table, final String columnName){
+        if(table == null || table.isEmpty() || columnName == null || columnName.isEmpty() ){
+            throw new InternalAdapterException("Table and columnName can't be empty");
+        }
+        
+        return dropIndex(Credentials.getInstance(), table, columnName);
+    }
+    
+    
     public static DbQueryResponse execute(final String sql) {
         return execute(Credentials.getInstance(), sql);
     }
@@ -651,7 +736,7 @@ public abstract class CloudStorage {
         return response;
     }
     
-    private static <T extends CloudStorage> DbQueryResponse postStaticRequest(final Credentials credentials, final QueryType queryType, final String table, final JSONObject payloadJSON){
+    private static  DbQueryResponse postStaticRequest(final Credentials credentials, final QueryType queryType, final String table, final JSONObject payloadJSON){
         JSONObject queryJson = new JSONObject();
         queryJson.put(QueryConstants.DB, credentials.getDb());
         queryJson.put(QueryConstants.TABLE, table);
@@ -730,6 +815,91 @@ public abstract class CloudStorage {
             responseList.add(instance);
         }
         return responseList.iterator();
+    }
+    
+    // create-table with no schema only table name
+    private static boolean createTable(final Credentials credentials, final String table){
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_TABLE, table, null);
+        return response != null;
+    } 
+    
+    // create-table with given schema
+    private static boolean createTable(final Credentials credentials, final String table, final JSONObject jsonSchema){
+        
+        // this needs to be changed in future to be nested inside the payload json and not as payloadjson itself.
+        JSONObject payloadJson = jsonSchema;
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_TABLE, table, payloadJson);
+        
+        return response != null;
+    } 
+    
+    // create-table with some schema information
+    private static boolean createTable(final Credentials credentials, final String table, final TableType tableType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
+        JSONObject payloadJson = new JSONObject();
+        JSONObject metaJson = new JSONObject();
+        metaJson.put("replication-type", replicationType.getType());
+        metaJson.put("replication-factor", replicationFactor);
+        metaJson.put("table-type", tableType.getType());
+        metaJson.put("flexible-schema", flexibleSchema);
+        payloadJson.put("meta", metaJson);
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_TABLE, table, payloadJson);
+        
+        return response != null;
+    }
+    
+    private static boolean dropTable(final Credentials credentials, final String table){
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_TABLE, table, null);
+        return response != null;
+    }
+    
+    private static boolean truncateTable(final Credentials credentials, final String table){
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.TRUNCATE_TABLE, table, null);
+        return response != null;
+    }
+    
+    private static boolean addColumn(final Credentials credentials, final String table, final String columnName, final ColumnType columnType, final IndexType indexType, final AutoDefineType autoDefineType){
+        JSONObject payloadJson = new JSONObject();
+        payloadJson.put("name", columnName);
+        JSONObject typeJson = new JSONObject();
+        typeJson.put("type", columnType.getType());
+        payloadJson.put("type", typeJson);
+        
+        if( autoDefineType != null )
+            payloadJson.put("auto-define", autoDefineType.getType());
+        if( indexType != null )
+            payloadJson.put("index", indexType.getType());
+        
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.ADD_COLUMN, table, payloadJson);
+        
+        return response != null;
+    }
+    
+    private static boolean dropColumn(final Credentials credentials, final String table, final String columnName){
+        JSONObject payloadJson = new JSONObject();
+        payloadJson.put("name", columnName);
+        
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_COLUMN, table, payloadJson);
+        
+        return response != null;
+    }
+    
+    private static boolean createIndex(final Credentials credentials, final String table, final String columnName, final IndexType indexType){
+        JSONObject payloadJson = new JSONObject();
+        payloadJson.put("name", columnName);
+        payloadJson.put("index", indexType.getType());
+        
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.INDEX, table, payloadJson);
+        
+        return response != null;
+    }
+    
+    private static boolean dropIndex(final Credentials credentials, final String table, final String columnName){
+        JSONObject payloadJson = new JSONObject();
+        payloadJson.put("name", columnName);
+        
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_INDEX, table, payloadJson);
+        
+        return response != null;
     }
     
     // Private instance methods
