@@ -540,6 +540,7 @@ public abstract class CloudStorage {
         payload.add("params", paramsJsonArr);
 
         final JsonObject queryJson = new JsonObject();
+        queryJson.addProperty(QueryConstants.DB, credentials.getDb());
         queryJson.addProperty(QueryConstants.QUERY, queryType.getQueryCode());
         queryJson.add(QueryConstants.PAYLOAD, payload);
 
