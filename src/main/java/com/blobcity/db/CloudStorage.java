@@ -302,6 +302,10 @@ public abstract class CloudStorage {
         throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
     }
 
+    public static void insertJsonData(final String table, final JSONObject insertJson){
+        insertJsonData(Credentials.getInstance(), table, insertJson);
+    }
+    
     public static boolean createTable(final String table){
         if( table == null || table.isEmpty() ){
             throw new InternalAdapterException("Table can't be empty");
@@ -763,7 +767,6 @@ public abstract class CloudStorage {
         reportIfError(response);
         
         final JsonArray keysArray = response.getPayload().getAsJsonArray();
-        System.out.println(keysArray);
         List<Object> keys = new ArrayList<Object>();
         for(JsonElement key: keysArray){
             keys.add(key);
@@ -818,6 +821,11 @@ public abstract class CloudStorage {
             responseList.add(instance);
         }
         return responseList.iterator();
+    }
+    
+    private static void insertJsonData(final Credentials credentials, final String table, final JSONObject insertJson){
+        final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT, table, insertJson);
+        reportIfError(response);
     }
     
     // create-table with no schema only table name
