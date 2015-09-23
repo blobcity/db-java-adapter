@@ -22,10 +22,8 @@ enum QueryType {
     CREATE_TABLE("create-table"),
     DROP_TABLE("drop-table"),
     TRUNCATE_TABLE("truncate-table"),
-    
     ADD_COLUMN("add-column"),
     DROP_COLUMN("drop-column"),
-    
     INDEX("index"),
     DROP_INDEX("drop-index"),
     // user-provided code related commands
