@@ -50,7 +50,7 @@ public abstract class CloudStorage {
 
     private String table = null;
     private String db = null;
-    private static Boolean bStoredProcOrTrigger=false;
+    private static final Boolean bStoredProcOrTrigger=false;
 
     public CloudStorage() {
         for (Annotation annotation : this.getClass().getAnnotations()) {
@@ -117,6 +117,11 @@ public abstract class CloudStorage {
         } catch (IllegalAccessException ex) {
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         }
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
     }
 
     public static <T extends CloudStorage> List<Object> selectAll(Class<T> clazz) {
@@ -205,8 +210,8 @@ public abstract class CloudStorage {
                 return search(Credentials.getInstance(), query);
             }
         }   catch (ClassNotFoundException ex) {
-            System.out.println("Could not find com.blobcity.db.query.SQLExecutorBean");
-            Logger.getLogger(CloudStorage.class.getName()).log(Level.WARNING, null, ex);
+//            System.out.println("Could not find com.blobcity.db.query.SQLExecutorBean");
+//            Logger.getLogger(CloudStorage.class.getName()).log(Level.WARNING, null, ex);
         }
         return search(Credentials.getInstance(), query);
     }
@@ -414,6 +419,17 @@ public abstract class CloudStorage {
         return (U) payloadObj;
     }
 
+    public static <T extends CloudStorage, U extends Object> U repopulateTable(final Credentials credentials, final String tableName, final Class<U> retClazz, final String... params) {
+        final DbQueryResponse response = postRepopulateTableRequest(credentials, QueryType.REPOP_TABLE, tableName, params);
+
+        /* If ack:0 then check for error code and report accordingly */
+        reportIfError(response);
+
+        final JsonElement payloadObj = response.getPayload(); // TODO: implementation to be completed
+
+        return (U) payloadObj;
+    }
+    
     // Public instance methods
     public boolean load() {
         return load(Credentials.getInstance());
@@ -462,6 +478,29 @@ public abstract class CloudStorage {
     private static <T extends CloudStorage> DbQueryResponse postStaticProcRequest(final Credentials credentials, final QueryType queryType, final String name, final String[] params) {
         final JsonObject payload = new JsonObject();
         payload.addProperty("name", name);
+
+        final JsonArray paramsJsonArr = new JsonArray();
+        if (params != null) {
+            for (final String param : params) {
+                paramsJsonArr.add(new JsonPrimitive(param));
+            }
+        }
+        payload.add("params", paramsJsonArr);
+        final JsonObject queryJson = new JsonObject();
+        queryJson.addProperty(QueryConstants.QUERY, queryType.getQueryCode());
+        queryJson.addProperty(QueryConstants.USER, credentials.getUsername());
+        queryJson.addProperty(QueryConstants.PASS, credentials.getPassword());
+        queryJson.addProperty(QueryConstants.DB, credentials.getDb());
+        queryJson.add(QueryConstants.PAYLOAD, payload);
+
+        final DbQueryResponse response = QueryExecuter.executeBql(DbQueryRequest.create(credentials, queryJson.toString()));
+        return response;
+    }
+    
+    // Private static methods
+    private static <T extends CloudStorage> DbQueryResponse postRepopulateTableRequest(final Credentials credentials, final QueryType queryType, final String table, final String[] params) {
+        final JsonObject payload = new JsonObject();
+        payload.addProperty("t", table);
 
         final JsonArray paramsJsonArr = new JsonArray();
         if (params != null) {
