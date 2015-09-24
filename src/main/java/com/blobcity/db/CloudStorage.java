@@ -12,8 +12,6 @@ import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.exceptions.InternalDbException;
 import com.blobcity.db.search.Query;
 import com.blobcity.db.search.StringUtil;
-import com.blobcity.lib.database.bean.manager.factory.BeanConfigFactory;
-import com.blobcity.lib.database.bean.manager.interfaces.engine.SqlExecutor;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -21,11 +19,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,13 +52,15 @@ public abstract class CloudStorage {
             if (annotation instanceof Entity) {
                 final Entity blobCityEntity = (Entity) annotation;
                 table = blobCityEntity.table();
+                // if no db is present in the entity
                 if (StringUtil.isEmpty(blobCityEntity.db())) {
+                    db = Credentials.getInstance().getDb();
+                }
+                else{
                     db = blobCityEntity.db();
-                    if(Credentials.getInstance() != null) {
-                        String dbName = Credentials.getInstance().getDb();
-                        if(dbName.equals("dummy")) {
-                            Credentials.getInstance().setDb(db);
-                        }
+                    String dbName = Credentials.getInstance().getDb();
+                    if(dbName.equals("dummy")) {
+                        Credentials.getInstance().setDb(db);
                     }
                 }
 
@@ -77,8 +74,11 @@ public abstract class CloudStorage {
         if (table == null) {
             table = this.getClass().getSimpleName();
         }
-
-        TableStore.getInstance().registerClass(table, this.getClass());
+        if( db==null || db.isEmpty() ){
+            throw new InternalAdapterException("No Database information found. Did u make a call to Credentials.init() ");
+        }
+        
+        TableStore.getInstance().registerClass(db, table, this.getClass());
     }
 
     // Public static methods
@@ -243,9 +243,10 @@ public abstract class CloudStorage {
             final int resultCount = resultJsonArray.size();
             final List<T> responseList = new ArrayList<T>();
             final String tableName = CloudStorage.getTableName(clazz);
-            TableStore.getInstance().registerClass(tableName, clazz);
-            final Map<String, Field> structureMap = TableStore.getInstance().getStructure(tableName);
-
+            final String dbName = CloudStorage.getDbName(clazz);
+            TableStore.getInstance().registerClass(dbName, tableName, clazz);
+            
+            final Map<String, Field> structureMap = TableStore.getInstance().getStructure(dbName, tableName);
             for (int i = 0; i < resultCount; i++) {
                 final T instance = CloudStorage.newInstance(clazz);
                 final JsonObject instanceData = resultJsonArray.get(i).getAsJsonObject();
@@ -303,8 +304,9 @@ public abstract class CloudStorage {
                 final int resultCount = resultJsonArray.size();
                 final List<T> responseList = new ArrayList<T>();
                 final String tableName = CloudStorage.getTableName(clazz);
-                TableStore.getInstance().registerClass(tableName, clazz);
-                final Map<String, Field> structureMap = TableStore.getInstance().getStructure(tableName);
+                final String dbName = CloudStorage.getDbName(clazz);
+                TableStore.getInstance().registerClass(dbName, tableName, clazz);
+                final Map<String, Field> structureMap = TableStore.getInstance().getStructure(dbName, tableName);
 
                 for (int i = 0; i < resultCount; i++) {
                     final T instance = CloudStorage.newInstance(clazz);
@@ -449,9 +451,9 @@ public abstract class CloudStorage {
 
     // Protected instance methods
     protected void setPk(Object pk) {
-        final Field primaryKeyField = TableStore.getInstance().getPkField(table);
+        final Field primaryKeyField = TableStore.getInstance().getPkField(db, table);
         if (primaryKeyField == null) {
-            throw new InternalAdapterException("Missing mandatory @Primary annotation for entity " + table + " [" + this.getClass().getName() + "]");
+            throw new InternalAdapterException("Missing mandatory @Primary annotation for entity " + db + "." + table + " [" + this.getClass().getName() + "]");
         }
         synchronized (primaryKeyField) {
             final boolean accessible = primaryKeyField.isAccessible();
@@ -773,7 +775,7 @@ public abstract class CloudStorage {
      * @param payload input {@link JSONObject} from which the data for the current instance are to be loaded.
      */
     private void fromJson(final JsonObject payload) {
-        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
+        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(db, table);
 
         for (final String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
@@ -831,7 +833,7 @@ public abstract class CloudStorage {
      * underlying field is inaccessible.
      */
     private JsonObject toJson() throws IllegalArgumentException, IllegalAccessException {
-        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
+        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(db, table);
         final JsonObject dataJson = new JsonObject();
 
         for (String columnName : structureMap.keySet()) {
@@ -879,7 +881,7 @@ public abstract class CloudStorage {
     }
 
     private Object getPrimaryKeyValue() throws IllegalArgumentException, IllegalAccessException {
-        Map<String, Field> structureMap = TableStore.getInstance().getStructure(table);
+        Map<String, Field> structureMap = TableStore.getInstance().getStructure(db, table);
 
         for (String columnName : structureMap.keySet()) {
             Field field = structureMap.get(columnName);
