@@ -15,7 +15,8 @@ public class Credentials {
     private final String serverAddress;
     private final String username;
     private final String password;
-    private final String db;
+    //private final String db;
+    private String db;
     private static Credentials instance;
     private static final String DEFAULT_SERVER_ADDRESS = "db.blobcity.com";
 
@@ -30,8 +31,20 @@ public class Credentials {
         if (instance == null) {
             throw new InternalAdapterException("Credentials have not been setup before a request was made.");
         }
+        return instance;
+    }
+
+    //Called only for stored procs
+    public static Credentials getInstanceNullOrNotNull() {
+        if (instance == null) {
+            System.out.println("Credentials have not been setup before a request was made.");
+        }
 
         return instance;
+    }
+
+    public static Credentials getInstanceForStoredProc() {
+        return new Credentials(DEFAULT_SERVER_ADDRESS, "root", "root", "dummy");
     }
 
     public static Credentials init(final String username, final String password, final String db) {
@@ -77,5 +90,9 @@ public class Credentials {
 
     public String getDb() {
         return db;
+    }
+
+    public void setDb(String db) {
+        this.db = db;
     }
 }

@@ -28,7 +28,8 @@ enum QueryType {
     DROP_INDEX("drop-index"),
     // user-provided code related commands
     SEARCH_FILTERED("search-filtered"),
-    STORED_PROC("sp");
+    STORED_PROC("sp"),
+    REPOP_TABLE("repop");
     
     private final String queryCode;
     
@@ -40,3 +41,4 @@ enum QueryType {
         return queryCode;
     }
 }
+
