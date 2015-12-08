@@ -689,7 +689,8 @@ public abstract class CloudStorage {
 
         /* If ack:0 then check for error code and report accordingly */
         reportIfError(response);
-        
+        //todo proper handling here.
+        // some things can return null also.
         U returnObj = gson.fromJson(response.getPayload().getAsString(), retClazz);
         return returnObj;
     }

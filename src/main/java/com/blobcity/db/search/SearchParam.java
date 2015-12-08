@@ -233,7 +233,8 @@ public class SearchParam implements ArrayJsonable, Sqlable {
                 sb.append(" ").append(padSqlArg(args.get(0)));
                 break;
             case BETWEEN:
-                sb.append(" (").append(padSqlArg(args.get(0))).append(",").append(padSqlArg(args.get(1))).append(") ");
+                sb.append(" ").append(padSqlArg(args.get(0))).append(" and ").append(padSqlArg(args.get(1)));
+                //sb.append(" (").append(padSqlArg(args.get(0))).append(",").append(padSqlArg(args.get(1))).append(") ");
                 break;
             case IN:
                 sb.append(" (").append(padSqlArgs(args)).append(")");
