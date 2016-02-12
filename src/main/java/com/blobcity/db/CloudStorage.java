@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -36,6 +37,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
 
 /**
  * This class provides the connection and query execution framework for performing operations on the BlobCity data
@@ -256,40 +258,6 @@ public abstract class CloudStorage {
      * @return {@link List} of {@code T} that matches {@code searchParams}
      */
     public static <T extends CloudStorage> List<T> search(final Query<T> query) {
-
-        try {
-
-            Class<?> cls = Class.forName( "com.blobcity.db.bquery.SQLExecutorBean" );
-
-            if(!bStoredProcOrTrigger) {
-                //bStoredProcOrTrigger = true;
-                Credentials cr = Credentials.getInstanceNullOrNotNull();
-                if(cr == null) {
-                       cr = Credentials.getInstanceForStoredProc();
-//                       System.out.println(" dbname0 = " +cr.getDb());
-                       return search(cr, query);
-                }
-                else {
-//                    System.out.println(" dbname1 = " +cr.getDb());
-//                    System.out.println(" dbname2 = " + query.getDbName(query.getFromTables().get(0)));
-                    if(cr.getDb().equals(query.getDbName(query.getFromTables().get(0)))) {
-                        return search(cr, query);
-                    }
-                    else {
-                        cr = Credentials.getInstanceForStoredProc();
-//                        System.out.println(" dbname3 = " +cr.getDb());
-                        return search(cr, query);
-                    }
-                }
-                //return search(cr, query);
-            }
-            else {
-                return search(Credentials.getInstance(), query);
-            }
-        }   catch (ClassNotFoundException ex) {
-//            System.out.println("Could not find com.blobcity.db.query.SQLExecutorBean");
-//            Logger.getLogger(CloudStorage.class.getName()).log(Level.WARNING, null, ex);
-        }
         return search(Credentials.getInstance(), query);
     }
 
@@ -402,7 +370,14 @@ public abstract class CloudStorage {
         return repopulateTable(Credentials.getInstance(), tableName, retClazz, params);
     }
     
+    public static void insert(final String tableName, final String interpreterName, final String... data){
+        if(data == null) return ; 
+        insert(Credentials.getInstance(), tableName, interpreterName, data);
+    }
     
+    public static void insert(final String tableName, final String interpreterName, final List<String> data){
+        insert(Credentials.getInstance(), tableName, interpreterName, data.toArray(new String[data.size()]));
+    }
    
     // private static methods
     private static <T extends CloudStorage> boolean contains(final Credentials credentials, final Class<T> clazz, final Object key) {
@@ -777,7 +752,14 @@ public abstract class CloudStorage {
         return responseList.iterator();
     }
     
-    
+    private static void insert(final Credentials credentials, final String tableName, final String interpreterName, final String... data){
+        JsonObject payloadJson = new JsonObject();
+        payloadJson.addProperty("interpreter", interpreterName);
+        JSONArray arr = new JSONArray(data);
+        payloadJson.add("payload", new JsonParser().parse(arr.toString()).getAsJsonArray());
+        final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT_CUSTOM, tableName, payloadJson);
+        reportIfError(response);
+    }
     
     //private post request methods
     private DbQueryResponse postRequest(final Credentials credentials, QueryType queryType) {
