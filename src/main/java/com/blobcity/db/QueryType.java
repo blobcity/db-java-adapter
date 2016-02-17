@@ -18,6 +18,7 @@ enum QueryType {
     SELECT_ALL("select-all"),
     SEARCH("search"),
     CONTAINS("contains"),
+    INSERT_CUSTOM("insert-custom"),
     // database related commands
     CREATE_TABLE("create-table"),
     DROP_TABLE("drop-table"),

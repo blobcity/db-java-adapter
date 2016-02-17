@@ -15,7 +15,6 @@ public class Credentials {
     private final String serverAddress;
     private final String username;
     private final String password;
-    //private final String db;
     private String db;
     private static Credentials instance;
     private static final String DEFAULT_SERVER_ADDRESS = "db.blobcity.com";
@@ -41,10 +40,6 @@ public class Credentials {
         }
 
         return instance;
-    }
-
-    public static Credentials getInstanceForStoredProc() {
-        return new Credentials(DEFAULT_SERVER_ADDRESS, "root", "root", "dummy");
     }
 
     public static Credentials init(final String username, final String password, final String db) {
