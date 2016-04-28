@@ -27,7 +27,8 @@ import java.util.logging.Logger;
 public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
 
     private final List<String> selectColumnNames;
-    private final List<Class<T>> fromTables;
+    private final List<Class<T>> fromTables; //for backward compatibility upto 1.2.5
+    private final List<String> fromTablesString;
     private SearchParam whereParam;
     private List<String> filterNames;
     private List<OrderElement> orderByList;
@@ -46,6 +47,7 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     private Query(final List<String> selectColumnNames) {
         this.selectColumnNames = selectColumnNames;
         this.fromTables = new ArrayList<Class<T>>();
+        this.fromTablesString = new ArrayList<String>();
     }
 
     /**
@@ -96,11 +98,20 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
      * @return an instance of {@link Query}
      */
     public Query from(Class<T> tableName) {
-        if (!fromTables.isEmpty()) {
+        if (!fromTables.isEmpty() || !fromTablesString.isEmpty()) {
             throw new InternalDbException("Joins are currently not supported");
         }
 
         fromTables.add(tableName);
+        return this;
+    }
+    
+    public Query from(String tableName) {
+        if(!fromTables.isEmpty() || !fromTablesString.isEmpty()) {
+            throw new InternalDbException("Joins are currently not supported");
+        }
+        
+        fromTablesString.add(tableName);
         return this;
     }
 
@@ -157,14 +168,12 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
         }
 
         // From
-        if (fromTables == null && fromTables.isEmpty()) {
-            throw new InternalAdapterException("No table name set. Table name is a mandatory field queries.");
+        if ((fromTables == null || fromTables.isEmpty()) && (fromTablesString == null || fromTablesString.isEmpty())) {
+            throw new InternalAdapterException("No table name set. Table name is a mandatory field query.");
         }
         final JsonArray tableNames = new JsonArray();
-        for (Class<T> tableClazz : fromTables) {
-            final String tableName = CloudStorage.getDbName(tableClazz) + "." + CloudStorage.getTableName(tableClazz);
-
-            tableNames.add(new JsonPrimitive(tableName));
+        for (Object tableClazz : (fromTables.isEmpty() ? fromTablesString : fromTables)) {
+            tableNames.add(new JsonPrimitive(getDbDotTableName(tableClazz)));
         }
         query.add("t", tableNames);
 
@@ -210,14 +219,23 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
         final StringBuffer sb = new StringBuffer();
         sb.append("SELECT ").append(StringUtil.join(selectColumnNames, ", ", "*", "`"));
 
-        if (fromTables == null || fromTables.isEmpty()) {
+        if ((fromTables == null || fromTables.isEmpty()) && (fromTablesString == null || fromTablesString.isEmpty())) {
             throw new InternalAdapterException("No table name set. Table name is a mandatory field queries.");
+        }
+        
+        boolean binaryClassNames = true;
+        if(fromTables == null || fromTables.isEmpty()) {
+            binaryClassNames = false;
         }
 
         sb.append(" FROM ");
-        final int fromTableCount = fromTables.size();
+        final int fromTableCount = binaryClassNames ? fromTables.size() : fromTablesString.size();
         for (int i = 0; i < fromTableCount; i++) {
-            sb.append('`').append(CloudStorage.getDbName(fromTables.get(i))).append("`.`").append(CloudStorage.getTableName(fromTables.get(i)));
+            if(binaryClassNames) {
+                sb.append('`').append(CloudStorage.getDbName(fromTables.get(i))).append("`.`").append(CloudStorage.getTableName(fromTables.get(i)));
+            }else{
+                sb.append('`').append(CloudStorage.getDbName()).append("`.`").append(fromTablesString.get(i));
+            }
 
             if (i < fromTableCount - 1) {
                 sb.append("`, `");
@@ -250,8 +268,37 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     public List<Class<T>> getFromTables() {
         return fromTables;
     }
+    
+    /**
+     * 
+     * @return (@link List} of tables being searched through in string form
+     */
+    public List<String> getFromTableStrings() {
+        return fromTablesString;
+    }
 
     public String getDbName(Class <T> cls) {
         return CloudStorage.getDbName(cls);
+    }
+    
+    private String getDbDotTableName(Class <T> cls) {
+        return CloudStorage.getDbName(cls) + "." + CloudStorage.getTableName(cls);
+    }
+    
+    private String getDbDotTableName(String tableName) {
+        if(tableName.contains(".")) {
+            return tableName;
+        }
+        
+        return CloudStorage.getDbName() + "." + tableName;
+    }
+    
+    private String getDbDotTableName(Object table) {
+        if(table instanceof Class) {
+            return getDbDotTableName((Class) table);
+        }
+        else{
+            return getDbDotTableName((String) table);
+        }
     }
 }

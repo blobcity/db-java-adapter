@@ -96,11 +96,11 @@ public class QueryTest {
      */
 //    @Test
     public void testFrom() {
-        System.out.println("from");
-        Query instance = null;
-        Query expResult = null;
-        Query result = instance.from(null);
-        assertEquals(expResult, result);
+//        System.out.println("from");
+//        Query instance = null;
+//        Query expResult = null;
+//        Query result = instance.from(null);
+//        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

@@ -104,6 +104,10 @@ public abstract class CloudStorage {
         return entity != null && !StringUtil.isEmpty(entity.db()) ? entity.db() : Credentials.getInstance().getDb();
     }
     
+    public static String getDbName() {
+        return Credentials.getInstance().getDb();
+    }
+    
     /**
      * Statically provides the table name for any instance/child of {@link CloudStorage} that is internally used by the
      * adapter for querying. Note, this method is not used by the adapter internally but the logic here, should be kept
@@ -439,7 +443,7 @@ public abstract class CloudStorage {
 
         final DbQueryResponse response = QueryExecuter.executeSql(DbQueryRequest.create(credentials, queryStr));
 
-        final Class<T> clazz = query.getFromTables().get(0);
+        final Class<T> clazz = (query.getFromTables() == null || query.getFromTables().isEmpty()) ? null : query.getFromTables().get(0);
 
         if (response.isSuccessful()) {
 
@@ -448,8 +452,8 @@ public abstract class CloudStorage {
                 final JsonArray resultJsonArray = response.getPayload().getAsJsonArray();
                 final int resultCount = resultJsonArray.size();
                 final List<T> responseList = new ArrayList<T>();
-                final String tableName = getTableName(clazz);
-                final String dbName = getDbName(clazz);
+                final String tableName = clazz == null ? query.getFromTableStrings().get(0) : getTableName(clazz);
+                final String dbName = clazz == null ? CloudStorage.getDbName() : getDbName(clazz);
                 TableStore.getInstance().registerClass(dbName, tableName, clazz);
                 final Map<String, Field> structureMap = TableStore.getInstance().getStructure(dbName, tableName);
 
