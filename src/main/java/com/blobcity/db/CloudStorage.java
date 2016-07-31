@@ -405,6 +405,9 @@ public abstract class CloudStorage {
                     final String columnName = entry.getKey();
 
                     final Field field = structureMap.get(columnName);
+                    if(field == null) {
+                        continue;
+                    }
                     // Field field = structureMap.get(columnName);
                     synchronized (field) {
                         final boolean oldAccessibilityValue = field.isAccessible();
@@ -466,6 +469,9 @@ public abstract class CloudStorage {
                         final String columnName = entry.getKey();
 
                         final Field field = structureMap.get(columnName);
+                        if(field == null) {
+                            continue;
+                        }
                         synchronized (field) {
                             final boolean oldAccessibilityValue = field.isAccessible();
                             field.setAccessible(true);
@@ -551,6 +557,9 @@ public abstract class CloudStorage {
                     final String columnName = entry.getKey();
 
                     final Field field = structureMap.get(columnName);
+                    if(field == null) {
+                        continue;
+                    }
                     synchronized (field) {
                         final boolean oldAccessibilityValue = field.isAccessible();
                         field.setAccessible(true);
@@ -736,6 +745,9 @@ public abstract class CloudStorage {
             for (final Map.Entry<String, JsonElement> entry : entrySet) {
                 final String columnName = entry.getKey();
                 final Field field = structureMap.get(columnName);
+                if(field == null) {
+                    continue;
+                }
                 synchronized (field) {
                     final boolean oldAccessibilityValue = field.isAccessible();
                     field.setAccessible(true);
@@ -921,7 +933,9 @@ public abstract class CloudStorage {
 
         for (final String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
-
+            if(field == null) {
+                continue;
+            }
             try {
                 if (jsonData.has(columnName)) {
                     setFieldValue(field, jsonData.get(columnName));
@@ -949,6 +963,9 @@ public abstract class CloudStorage {
 
         for (String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
+            if(field == null) {
+                continue;
+            }
             synchronized (field) {
                 final boolean accessible = field.isAccessible();
 
@@ -990,6 +1007,9 @@ public abstract class CloudStorage {
 
         for (String columnName : structureMap.keySet()) {
             Field field = structureMap.get(columnName);
+            if(field == null) {
+                continue;
+            }
             if (field.getAnnotation(Primary.class) != null) {
                 final boolean accessible = field.isAccessible();
 
