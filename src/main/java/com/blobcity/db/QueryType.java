@@ -20,9 +20,10 @@ enum QueryType {
     CONTAINS("contains"),
     INSERT_CUSTOM("insert-custom"),
     // database related commands
-    CREATE_TABLE("create-table"),
-    DROP_TABLE("drop-table"),
-    TRUNCATE_TABLE("truncate-table"),
+    CREATE_DATASTORE("create-datastore"),
+    CREATE_COLLECTION("create-collection"),
+    DROP_COLLECTION("drop-collection"),
+    TRUNCATE_COLLECTION("truncate-collection"),
     ADD_COLUMN("add-column"),
     DROP_COLUMN("drop-column"),
     INDEX("index"),
@@ -30,7 +31,7 @@ enum QueryType {
     // user-provided code related commands
     SEARCH_FILTERED("search-filtered"),
     STORED_PROC("sp"),
-    REPOP_TABLE("repop");
+    REPOP_TABLE("repop"); //possibly depricate this function
     
     private final String queryCode;
     

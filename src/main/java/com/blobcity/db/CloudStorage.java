@@ -22,7 +22,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -276,46 +276,53 @@ public abstract class CloudStorage {
     public static void insertJsonData(final String table, final JsonObject insertJson){
         insertJsonData(Credentials.getInstance(), table, insertJson);
     }
+
+    public static boolean createDatastore(final String datastore) {
+        if(datastore == null || datastore.isEmpty() ){
+            throw new InternalAdapterException("datastore name must be specified");
+        }
+        return createCollection(Credentials.getInstance(), datastore);
+    }
     
-    public static boolean createTable(final String table){
+    public static boolean createCollection(final String table){
         if( table == null || table.isEmpty() ){
             throw new InternalAdapterException("Table can't be empty");
         }
-        return createTable(Credentials.getInstance(), table);
+        return createCollection(Credentials.getInstance(), table);
     }
     
-    public static boolean createTable(final String table, final JsonObject jsonSchema){
+    public static boolean createCollection(final String table, final JsonObject jsonSchema){
         if(table == null || table.isEmpty() ){
             throw new InternalAdapterException("Table can't be empty");
         }
         if(jsonSchema == null ){
             throw new InternalAdapterException("Schema can't be empty or null");
         }
-        return createTable(Credentials.getInstance(), table, jsonSchema);
+        return createCollection(Credentials.getInstance(), table, jsonSchema);
     }
     
-    public static boolean createTable(final String table, final TableType tableType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
+    public static boolean createCollection(final String table, final TableType tableType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
         if(table == null || table.isEmpty() ){
             throw new InternalAdapterException("Table can't be empty");
         }
         if( tableType == null || replicationType == null){
             throw new InternalAdapterException("TableType and ReplicationType can't be empty");
         }
-        return createTable(Credentials.getInstance(), table, tableType, replicationType, replicationFactor, flexibleSchema);
+        return createCollection(Credentials.getInstance(), table, tableType, replicationType, replicationFactor, flexibleSchema);
     }
     
-    public static boolean dropTable(final String table){
+    public static boolean dropCollection(final String table){
         if(table == null || table.isEmpty() ){
             throw new InternalAdapterException("Table can't be empty");
         }
-        return dropTable(Credentials.getInstance(), table);
+        return dropCollection(Credentials.getInstance(), table);
     }
     
-    public static boolean truncateTable(final String table){
+    public static boolean truncateCollection(final String table){
         if(table == null || table.isEmpty() ){
             throw new InternalAdapterException("Table can't be empty");
         }
-        return truncateTable(Credentials.getInstance(), table);
+        return truncateCollection(Credentials.getInstance(), table);
     }
     
     public static boolean addColumn(final String table, final String columnName, final ColumnType columnType, final IndexType indexType, final AutoDefineType autoDefineType){
@@ -583,21 +590,26 @@ public abstract class CloudStorage {
 
         throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
     }
+
+    private static boolean createDatastore(final Credentials credentials, final String datastore) {
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_DATASTORE, datastore, null);
+        return response != null;
+    }
     
-    private static boolean createTable(final Credentials credentials, final String table){
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_TABLE, table, null);
+    private static boolean createCollection(final Credentials credentials, final String table){
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, table, null);
         return response != null;
     } 
     
-    private static boolean createTable(final Credentials credentials, final String table, final JsonObject jsonSchema){
+    private static boolean createCollection(final Credentials credentials, final String table, final JsonObject jsonSchema){
         // this needs to be changed in future to be nested inside the payload json and not as payloadjson itself.
         JsonObject payloadJson = jsonSchema;
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_TABLE, table, payloadJson);
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, table, payloadJson);
         
         return response != null;
     } 
     
-    private static boolean createTable(final Credentials credentials, final String table, final TableType tableType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
+    private static boolean createCollection(final Credentials credentials, final String table, final TableType tableType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
         JsonObject payloadJson = new JsonObject();
         JsonObject metaJson = new JsonObject();
         metaJson.addProperty("replication-type", replicationType.getType());
@@ -605,18 +617,18 @@ public abstract class CloudStorage {
         metaJson.addProperty("table-type", tableType.getType());
         metaJson.addProperty("flexible-schema", flexibleSchema);
         payloadJson.add("meta", metaJson);
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_TABLE, table, payloadJson);
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, table, payloadJson);
         
         return response != null;
     }
     
-    private static boolean dropTable(final Credentials credentials, final String table){
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_TABLE, table, null);
+    private static boolean dropCollection(final Credentials credentials, final String table){
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_COLLECTION, table, null);
         return response != null;
     }
     
-    private static boolean truncateTable(final Credentials credentials, final String table){
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.TRUNCATE_TABLE, table, null);
+    private static boolean truncateCollection(final Credentials credentials, final String table){
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.TRUNCATE_COLLECTION, table, null);
         return response != null;
     }
     
@@ -807,6 +819,27 @@ public abstract class CloudStorage {
         } catch (IllegalAccessException ex) {
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         }
+    }
+
+    /** Used to post requests that are not related to table or data operations. The credentials of the user are not required
+     * to have a datastore level authorisation to execute this, but the connecting user must be authorized to carry out
+     * operations that can created and delete data stores, as well as perform other system level operations such as
+     * adding and deleting nodes from a cluster.
+     *
+     * @param credentials the credentials containing only username and password
+     * @param queryType the {@link QueryType} of the query
+     * @param payloadJson information specific to the corresponding query type
+     * @return the received response, post execution of the request
+     */
+    private static DbQueryResponse postStaticRequest(final Credentials credentials, final QueryType queryType, final JsonObject payloadJson) {
+        JsonObject queryJson = new JsonObject();
+        queryJson.addProperty(QueryConstants.QUERY, queryType.getQueryCode());
+        queryJson.addProperty(QueryConstants.USER, credentials.getUsername());
+        queryJson.addProperty(QueryConstants.PASS, credentials.getPassword());
+        queryJson.add(QueryConstants.PAYLOAD, payloadJson);
+
+        final DbQueryResponse response = QueryExecuter.executeBql(DbQueryRequest.create(credentials, queryJson.toString()));
+        return response;
     }
     
     private static  DbQueryResponse postStaticRequest(final Credentials credentials, final QueryType queryType, final String table, final JsonObject payloadJson){
