@@ -2,13 +2,42 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.blobcity.lib</groupId>
+    <groupId>com.blobcity</groupId>
     <artifactId>db-java-adapter</artifactId>
     <version>1.2.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>DB Adapter [Java]</name>
-    <url>http://stash.blobcity.net/projects/DBADAPT/repos/java-adapter/browse</url>
+    <name>BlobCity DB Java Adapter</name>
+    <description>Java adapter for connecting your Java applications to the BlobCity DB. Contains a full feature
+        implementation of the BlobCity DB web service interfaces, to use BlobCity DB on-cloud or on-premise seamlessly
+        from your Java applications.</description>
+    <url>https://github.com/blobcity/db-java-adapter</url>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Sanket Sarang</name>
+            <email>sanket@blobcity.com</email>
+            <organization>BlobCity iSolutions Pvt. Ltd.</organization>
+            <organizationUrl>http://www.blobcity.com</organizationUrl>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/blobcity/db-java-adapter.git</connection>
+        <developerConnection>scm:git:git://github.com/blobcity/db-java-adapter.git</developerConnection>
+        <url>https://github.com/blobcity/db-java-adapter</url>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -115,6 +144,31 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <executions>true</executions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org</nexusUrl>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                </configuration>
             </plugin>
         </plugins>
     </build>
