@@ -163,7 +163,7 @@
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <version>1.6.7</version>
-                <executions>true</executions>
+                <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org</nexusUrl>
@@ -197,16 +197,4 @@
         </plugins>
     </reporting>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>BlobFactory-snapshots</name>
-            <url>http://mvn.blobcity.net/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
-        <repository>
-            <id>central</id>
-            <name>BlobFactory-release</name>
-            <url>http://mvn.blobcity.net/artifactory/libs-release-local</url>
-        </repository>
-    </distributionManagement>
 </project>
