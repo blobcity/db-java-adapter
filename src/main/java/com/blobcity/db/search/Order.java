@@ -6,7 +6,7 @@ package com.blobcity.db.search;
 /**
  * Used to provide sorting order for {@link OrderElement}s
  *
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 public enum Order {
 

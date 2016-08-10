@@ -21,8 +21,7 @@ import java.util.logging.Logger;
  * Query builder interface for the adapter to support querying mechanism for search functionality
  *
  * @param <T> Class on which the query is being performed
- * @see CloudStorage#search(java.lang.Class, com.blobcity.db.search.SearchParam)
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
 

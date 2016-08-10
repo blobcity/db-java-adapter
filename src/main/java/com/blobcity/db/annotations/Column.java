@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 /**
  * An optional annotation for entity fields. If none of the fields are annotated, they are all columns. If the name is not provided, the field name is used
  *
- * @author Karun AB <karun.ab@blobcity.com>
+ * @author Karun AB
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

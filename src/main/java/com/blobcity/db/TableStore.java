@@ -19,8 +19,8 @@ import java.util.Map;
  * instead of using just table name, we are using tableName.RandomUUID as key to reduce chances of collision
  *
  * @author Sanket Sarang
- * @author Karun AB <karun.ab@blobcity.net>
- * @author Prikshit Kumar <prikshit.kumar@blobcity.com>
+ * @author Karun AB
+ * @author Prikshit Kumar
  */
 class TableStore {
     // outer key is mapped on dbName.tableName instead of just tableName

@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Class to wrap responses from the database for internal representation before it gets returned to the client
  *
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 class DbQueryResponse {
 

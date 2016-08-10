@@ -18,7 +18,7 @@ import java.text.MessageFormat;
 /**
  * Handles execution of different types of queries
  *
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 
 class QueryExecuter {

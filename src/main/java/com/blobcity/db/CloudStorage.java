@@ -45,7 +45,7 @@ import org.json.JSONArray;
  *
  * @author Sanket Sarang
  * @author Karishma
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  * @version 1.0
  * @since 1.0
  */
@@ -249,14 +249,15 @@ public abstract class CloudStorage {
 
     /**
      * Allows search queries to be performed as defined by
-     * {@link http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH}. This method internally
-     * calls {@link #search(com.blobcity.db.config.Credentials, com.blobcity.db.search.Query)} with default credentials
+     * <a href="http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH">
+     *     http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH</a>. This method internally
+     * calls search(com.blobcity.db.config.Credentials, com.blobcity.db.search.Query) with default credentials
      * from {@link Credentials#getInstance()}
      *
      * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
      *
-     * @see #search(com.blobcity.db.config.Credentials, com.blobcity.db.search.Query)
-     * @see Credentials#getInstance()
+     * see #search(com.blobcity.db.config.Credentials, com.blobcity.db.search.Query)
+     * see Credentials#getInstance()
      * @param <T> Any class reference which extends {@link CloudStorage}
      * @param query {@link SearchParam}s which are to be used to search for data
      * @return {@link List} of {@code T} that matches {@code searchParams}
@@ -525,7 +526,8 @@ public abstract class CloudStorage {
     
     /**
      * Allows search queries to be performed as defined by
-     * {@link http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH}.
+     * @see <a href="http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH">
+     *     http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH</a>.
      *
      * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
      *

@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Class to create Search parameters to be used as the WHERE clause in a query which helps in filtering result sets.
  *
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 public class SearchParam implements ArrayJsonable, Sqlable {
 

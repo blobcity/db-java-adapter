@@ -8,7 +8,7 @@ import com.blobcity.db.exceptions.InternalDbException;
 /**
  * Enumeration of operators that can be applied inside search criteria defined by {@link SearchParam}
  *
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 public enum ParamOperator implements Sqlable {
 

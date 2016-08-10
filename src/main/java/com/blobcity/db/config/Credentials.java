@@ -8,7 +8,7 @@ import com.blobcity.db.search.StringUtil;
  * Holds the default credentials for the application. If you require to set run time credentials that are different from the default for the application, this
  * class is not for you. Please look for appropriate {@link CloudStorage} methods
  *
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 public class Credentials {
 

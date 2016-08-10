@@ -11,7 +11,7 @@ package com.blobcity.db.search;
  * This interface has default visibility since its visibility is to be restricted to its package.
  *
  * @see Jsonable
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 interface Sqlable {
 

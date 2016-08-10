@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
  *
  * This interface has default visibility since its visibility is to be restricted to its package.
  *
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 interface ObjectJsonable extends Jsonable<JsonObject> {
 }

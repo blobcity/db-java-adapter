@@ -6,7 +6,7 @@ package com.blobcity.db;
 /**
  * Class to hold QUERY parameter names for the adapter's communication
  *
- * @author Karun AB <karun.ab@blobcity.com>
+ * @author Karun AB
  */
 class QueryConstants {
 

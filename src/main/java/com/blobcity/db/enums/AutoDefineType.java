@@ -7,7 +7,7 @@ package com.blobcity.db.enums;
 
 /**
  *
- * @author Prikshit Kumar <prikshit.kumar@blobcity.com>
+ * @author Prikshit Kumar
  */
 public enum AutoDefineType {
     NONE("none"),

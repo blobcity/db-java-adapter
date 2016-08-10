@@ -10,7 +10,7 @@ import java.util.List;
  *
  * This class is default to ensure projects that include this class do not see this class.
  *
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 public class StringUtil {
 

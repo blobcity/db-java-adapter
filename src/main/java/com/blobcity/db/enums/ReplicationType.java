@@ -7,7 +7,7 @@ package com.blobcity.db.enums;
 
 /**
  *
- * @author Prikshit Kumar <prikshit.kumar@blobcity.com>
+ * @author Prikshit Kumar
  */
 public enum ReplicationType {
     /* Data distributed to match the replication factor of the cluster */

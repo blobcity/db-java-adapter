@@ -14,8 +14,8 @@ import java.util.logging.Logger;
 /**
  * Internal class to represent a query to be sent to the database
  *
- * @author Karun AB <karun.ab@blobcity.net>
- * @author Sanket Sarang <sanket@blobcity.net>
+ * @author Karun AB
+ * @author Sanket Sarang
  */
 class DbQueryRequest {
 

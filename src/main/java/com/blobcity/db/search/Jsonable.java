@@ -19,14 +19,14 @@ import com.google.gson.JsonObject;
  * @see ArrayJsonable
  * @see ObjectJsonable
  * @see Sqlable
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 interface Jsonable<T> {
 
     /**
      * Provides a legal JSON form of the implementing class
      *
-     * @return instance of a legal JSON format (as {@link JSONArray}, {@link JSONObject} or {@link String}) as defined by {@code T}
+     * @return instance of a legal JSON format (as {@link org.json.JSONArray}, {@link org.json.JSONObject} or {@link String}) as defined by {@code T}
      */
     public T asJson();
 }

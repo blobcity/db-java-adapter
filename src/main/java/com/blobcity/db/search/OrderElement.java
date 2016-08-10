@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 /**
  * Class to handle order by clauses for results of queries. Instances of this class are immutable. Allows cloning if required.
  *
- * @author Karun AB <karun.ab@blobcity.net>
+ * @author Karun AB
  */
 public class OrderElement implements ObjectJsonable, Sqlable, Cloneable {
 
