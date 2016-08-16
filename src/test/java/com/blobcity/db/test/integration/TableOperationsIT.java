@@ -1,6 +1,6 @@
 package com.blobcity.db.test.integration;
 
-import com.blobcity.db.CloudStorage;
+import com.blobcity.db.Db;
 import com.blobcity.db.config.Credentials;
 import org.junit.*;
 
@@ -29,19 +29,19 @@ public class TableOperationsIT {
     @Test
     public void createCollection() {
         System.out.println("IT: createCollection(\"test\")");
-        Assert.assertTrue(CloudStorage.createCollection("test"));
+        Assert.assertTrue(Db.createCollection("test"));
 
         /* Test for error on duplicate collection name */
-        Assert.assertFalse(CloudStorage.createCollection("test"));
+        Assert.assertFalse(Db.createCollection("test"));
     }
 
     @Test
     public void dropCollection() {
         System.out.println("IT: dropCollection(\"test\")");
-        Assert.assertTrue(CloudStorage.createCollection("test"));
-        Assert.assertTrue(CloudStorage.dropCollection("test"));
+        Assert.assertTrue(Db.createCollection("test"));
+        Assert.assertTrue(Db.dropCollection("test"));
 
         /* Test for error on delete on in-existent collection */
-        Assert.assertFalse(CloudStorage.dropCollection("test"));
+        Assert.assertFalse(Db.dropCollection("test"));
     }
 }

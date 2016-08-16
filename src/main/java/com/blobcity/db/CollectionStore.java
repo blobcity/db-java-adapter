@@ -13,46 +13,46 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Caches table structures, so that annotations are not require to be processed on every operation.
+ * Caches collection structures, so that annotations are not require to be processed on every operation.
  * 
  * New:
- * instead of using just table name, we are using tableName.RandomUUID as key to reduce chances of collision
+ * instead of using just collection name, we are using tableName.RandomUUID as key to reduce chances of collision
  *
  * @author Sanket Sarang
  * @author Karun AB
  * @author Prikshit Kumar
  */
-class TableStore {
+class CollectionStore {
     // outer key is mapped on dbName.tableName instead of just tableName
     private final Map<String, Map<String, Field>> tableStructureMap;
-    private final Map<String, Class<? extends CloudStorage>> tableClassMap;
+    private final Map<String, Class<? extends Db>> tableClassMap;
     private final Map<String, Field> tablePrimaryMap;
 
-    private TableStore() {
+    private CollectionStore() {
         this.tablePrimaryMap = new HashMap<String, Field>();
-        this.tableClassMap = new HashMap<String, Class<? extends CloudStorage>>();
+        this.tableClassMap = new HashMap<String, Class<? extends Db>>();
         this.tableStructureMap = new HashMap<String, Map<String, Field>>();
     }
 
-    public static TableStore getInstance() {
+    public static CollectionStore getInstance() {
         return TableStoreHolder.INSTANCE;
     }
 
     private static class TableStoreHolder {
 
-        private static final TableStore INSTANCE = new TableStore();
+        private static final CollectionStore INSTANCE = new CollectionStore();
     }
 
-    public <T extends CloudStorage> void registerClass(String dbName, String tableName, Class<T> clazz) {
+    public <T extends Db> void registerClass(String dbName, String tableName, Class<T> clazz) {
         String key = dbName + "." + tableName;
         tableClassMap.put(key, clazz);
     }
     
     /**
-     * returns the structure of table given tableName and className
+     * returns the structure of collection given tableName and className
      * @param tableName
      * @param className
-     * @return null if no such table is registered
+     * @return null if no such collection is registered
      */
     public Map<String, Field> getStructure(final String dbName, final String tableName) {
         String key = dbName + "." + tableName;
@@ -64,10 +64,10 @@ class TableStore {
     
     /**
      * 
-     * @param tableName : name of table for which class belongs to
-     * @param className : name of class of table
-     * @return null if there is no table is registered
-     *          primary field if table is registered
+     * @param tableName : name of collection for which class belongs to
+     * @param className : name of class of collection
+     * @return null if there is no collection is registered
+     *          primary field if collection is registered
      */
     public Field getPkField(final String dbName, final String tableName) {
         String key = dbName + "." + tableName;
@@ -104,7 +104,7 @@ class TableStore {
                     columnFieldMap.put(columnName, field);
                 } else if (a instanceof Primary) {
                     if (primaryKeyField != null) {
-                        throw new InternalAdapterException("Repetition of primary key annotation in table: " + key
+                        throw new InternalAdapterException("Repetition of primary key annotation in collection: " + key
                                 + ". Repeat value found for fields " + primaryKeyField.getName() + " and " + field.getName()
                                 + ". The @Primary annotation may be applied to only one field in an entity class");
                     }

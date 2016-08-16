@@ -1,12 +1,12 @@
 package com.blobcity.db.config;
 
-import com.blobcity.db.CloudStorage;
+import com.blobcity.db.Db;
 import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.search.StringUtil;
 
 /**
  * Holds the default credentials for the application. If you require to set run time credentials that are different from the default for the application, this
- * class is not for you. Please look for appropriate {@link CloudStorage} methods
+ * class is not for you. Please look for appropriate {@link Db} methods
  *
  * @author Karun AB
  */
@@ -17,7 +17,7 @@ public class Credentials {
     private final String password;
     private String db;
     private static Credentials instance;
-    private static final String DEFAULT_SERVER_ADDRESS = "db.blobcity.com";
+    private static final String DEFAULT_SERVER_ADDRESS = "ds.blobcity.com";
 
     private Credentials(final String serverAddress, final String username, final String password, final String db) {
         this.serverAddress = serverAddress;

@@ -3,7 +3,7 @@
  */
 package com.blobcity.db;
 
-import com.blobcity.db.enums.TableType;
+import com.blobcity.db.enums.CollectionType;
 import com.blobcity.db.search.SearchParam;
 import com.blobcity.db.annotations.Entity;
 import com.blobcity.db.config.Credentials;
@@ -49,78 +49,77 @@ import org.json.JSONArray;
  * @version 1.0
  * @since 1.0
  */
-public abstract class CloudStorage {
+public abstract class Db {
 
-    private String table = null;
-    private String db = null;
-    private static final Boolean bStoredProcOrTrigger=false;
+    private String collection = null;
+    private String ds = null;
 
-    public CloudStorage() {
+    public Db() {
         for (Annotation annotation : this.getClass().getAnnotations()) {
             if (annotation instanceof Entity) {
                 final Entity blobCityEntity = (Entity) annotation;
-                table = blobCityEntity.table();
-                // if no db is present in the entity
-                if (StringUtil.isEmpty(blobCityEntity.db())) {
-                    db = Credentials.getInstance().getDb();
+                collection = blobCityEntity.collection();
+                // if no ds is present in the entity
+                if (StringUtil.isEmpty(blobCityEntity.ds())) {
+                    ds = Credentials.getInstance().getDb();
                 }
                 else{
-                    db = blobCityEntity.db();
+                    ds = blobCityEntity.ds();
                     String dbName = Credentials.getInstance().getDb();
                     if(dbName.equals("dummy")) {
-                        Credentials.getInstance().setDb(db);
+                        Credentials.getInstance().setDb(ds);
                     }
                 }
 
-                if (StringUtil.isEmpty(table)) {
-                    table = this.getClass().getSimpleName();
+                if (StringUtil.isEmpty(collection)) {
+                    collection = this.getClass().getSimpleName();
                 }
                 break;
             }
         }
 
-        if (table == null) {
-            table = this.getClass().getSimpleName();
+        if (collection == null) {
+            collection = this.getClass().getSimpleName();
         }
-        if( db==null || db.isEmpty() ){
-            throw new InternalAdapterException("No Database information found. Did u make a call to Credentials.init() ");
+        if( ds ==null || ds.isEmpty() ){
+            throw new InternalAdapterException("No datastore information found. Did you make a call to Credentials.init() ");
         }
         
-        TableStore.getInstance().registerClass(db, table, this.getClass());
+        CollectionStore.getInstance().registerClass(ds, collection, this.getClass());
     }
 
     /**
-     * Statically provides the db name for any instance/child of {@link CloudStorage} that is internally used by the
+     * Statically provides the ds name for any instance/child of {@link Db} that is internally used by the
      * adapter for querying. Note, this method is used by the adapter internally for SQL queries and the logic here
-     * should be kept in sync with the rest of the class to ensure db names are evaluated appropriately. This method can
-     * be used for logging purposes where the db name for a class is required.
+     * should be kept in sync with the rest of the class to ensure ds names are evaluated appropriately. This method can
+     * be used for logging purposes where the ds name for a class is required.
      *
-     * @param <T> Any class reference which extends {@link CloudStorage}
-     * @param clazz class reference who's db name is required
+     * @param <T> Any class reference which extends {@link Db}
+     * @param clazz class reference who's ds name is required
      * @return Name of the DB
      */
-    public static <T extends CloudStorage> String getDbName(final Class<T> clazz) {
+    public static <T extends Db> String getDs(final Class<T> clazz) {
         final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        return entity != null && !StringUtil.isEmpty(entity.db()) ? entity.db() : Credentials.getInstance().getDb();
+        return entity != null && !StringUtil.isEmpty(entity.ds()) ? entity.ds() : Credentials.getInstance().getDb();
     }
     
-    public static String getDbName() {
+    public static String getDs() {
         return Credentials.getInstance().getDb();
     }
     
     /**
-     * Statically provides the table name for any instance/child of {@link CloudStorage} that is internally used by the
+     * Statically provides the collection name for any instance/child of {@link Db} that is internally used by the
      * adapter for querying. Note, this method is not used by the adapter internally but the logic here, should be kept
-     * in sync with the rest of the class to ensure table names are evaluated appropriately. This method can be used for
-     * logging purposes where the table name for a class is required.
+     * in sync with the rest of the class to ensure collection names are evaluated appropriately. This method can be used for
+     * logging purposes where the collection name for a class is required.
      *
-     * @param <T> Any class reference which extends {@link CloudStorage}
-     * @param clazz class reference who's table name is required
-     * @return Name of the table
+     * @param <T> Any class reference which extends {@link Db}
+     * @param clazz class reference who's collection name is required
+     * @return Name of the collection
      */
-    public static <T extends CloudStorage> String getTableName(final Class<T> clazz) {
+    public static <T extends Db> String getCollection(final Class<T> clazz) {
         final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        return entity != null && !StringUtil.isEmpty(entity.table()) ? entity.table() : clazz.getSimpleName();
+        return entity != null && !StringUtil.isEmpty(entity.collection()) ? entity.collection() : clazz.getSimpleName();
     }
     
     
@@ -142,9 +141,9 @@ public abstract class CloudStorage {
     }
     
     protected void setPk(Object pk) {
-        final Field primaryKeyField = TableStore.getInstance().getPkField(db, table);
+        final Field primaryKeyField = CollectionStore.getInstance().getPkField(ds, collection);
         if (primaryKeyField == null) {
-            throw new InternalAdapterException("Missing mandatory @Primary annotation for entity " + table + " [" + this.getClass().getName() + "]");
+            throw new InternalAdapterException("Missing mandatory @Primary annotation for entity " + collection + " [" + this.getClass().getName() + "]");
         }
         synchronized (primaryKeyField) {
             final boolean accessible = primaryKeyField.isAccessible();
@@ -169,11 +168,10 @@ public abstract class CloudStorage {
     
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        return super.clone(); //To change body of generated methods, choose Tools | Templates.
+        return super.clone();
     }
-    
-    // Public static methods
-    public static <T extends CloudStorage> T newInstance(Class<T> clazz) {
+
+    public static <T extends Db> T newInstance(Class<T> clazz) {
         try {
             return clazz.newInstance();
         } catch (InstantiationException ex) {
@@ -183,7 +181,7 @@ public abstract class CloudStorage {
         }
     }
 
-    public static <T extends CloudStorage> T newInstance(Class<T> clazz, Object pk) {
+    public static <T extends Db> T newInstance(Class<T> clazz, Object pk) {
         try {
             T obj = clazz.newInstance();
             obj.setPk(pk);
@@ -195,7 +193,7 @@ public abstract class CloudStorage {
         }
     }
 
-    public static <T extends CloudStorage> T newLoadedInstance(Class<T> clazz, Object pk) {
+    public static <T extends Db> T newLoadedInstance(Class<T> clazz, Object pk) {
         try {
             T obj = clazz.newInstance();
             obj.setPk(pk);
@@ -215,21 +213,21 @@ public abstract class CloudStorage {
      * }
      *
      * @see #search(com.blobcity.db.search.Query)
-     * @param <T> Any class reference which extends {@link CloudStorage}
+     * @param <T> Any class reference which extends {@link Db}
      * @param clazz class reference who's data is to be searched
      * @param columnName column to be searched
      * @param values values to be used to filter data in column
      * @return {@link List} of {@code T} that matches {@code searchParams}
      */
-    public static <T extends CloudStorage> List<T> select(final Class<T> clazz, final String columnName, final Object... values) {
+    public static <T extends Db> List<T> select(final Class<T> clazz, final String columnName, final Object... values) {
         return search(Query.table(clazz).where(SearchParam.create(columnName).in(values)));
     }
 
-    public static <T extends CloudStorage> List<Object> selectAll(Class<T> clazz) {
+    public static <T extends Db> List<Object> selectAll(Class<T> clazz) {
         return selectAll(clazz, Object.class);
     }
 
-    public static <T extends CloudStorage, K extends Object> List<K> selectAll(final Class<T> clazz, final Class<K> returnTypeClazz) {
+    public static <T extends Db, K extends Object> List<K> selectAll(final Class<T> clazz, final Class<K> returnTypeClazz) {
         final DbQueryResponse response = postStaticRequest(Credentials.getInstance(), clazz, QueryType.SELECT_ALL);
 
         if (response.isSuccessful()) {
@@ -239,11 +237,11 @@ public abstract class CloudStorage {
         throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
     }
 
-    public static <T extends CloudStorage> boolean contains(final Class<T> clazz, final Object key) {
+    public static <T extends Db> boolean contains(final Class<T> clazz, final Object key) {
         return contains(Credentials.getInstance(), clazz, key);
     }
 
-    public static <T extends CloudStorage> void remove(Class<T> clazz, final Object pk) {
+    public static <T extends Db> void remove(Class<T> clazz, final Object pk) {
         remove(Credentials.getInstance(), clazz, pk);
     }
 
@@ -251,203 +249,36 @@ public abstract class CloudStorage {
      * Allows search queries to be performed as defined by
      * <a href="http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH">
      *     http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH</a>. This method internally
-     * calls search(com.blobcity.db.config.Credentials, com.blobcity.db.search.Query) with default credentials
+     * calls search(com.blobcity.ds.config.Credentials, com.blobcity.ds.search.Query) with default credentials
      * from {@link Credentials#getInstance()}
      *
-     * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
+     * Note: This return type is prone to update when support for multiple collection queries (joins) is introduced.
      *
-     * see #search(com.blobcity.db.config.Credentials, com.blobcity.db.search.Query)
+     * see #search(com.blobcity.ds.config.Credentials, com.blobcity.ds.search.Query)
      * see Credentials#getInstance()
-     * @param <T> Any class reference which extends {@link CloudStorage}
+     * @param <T> Any class reference which extends {@link Db}
      * @param query {@link SearchParam}s which are to be used to search for data
      * @return {@link List} of {@code T} that matches {@code searchParams}
      */
-    public static <T extends CloudStorage> List<T> search(final Query<T> query) {
+    public static <T extends Db> List<T> search(final Query<T> query) {
         return search(Credentials.getInstance(), query);
     }
 
     public static DbQueryResponse execute(final String sql) {
         return execute(Credentials.getInstance(), sql);
     }
-    
-    public static <T extends CloudStorage> Object execute(final Query<T> query) {
-        return execute(Credentials.getInstance(), query);
-    }
 
-    public static void insertJsonData(final String table, final JsonObject insertJson){
-        insertJsonData(Credentials.getInstance(), table, insertJson);
-    }
-
-    public static boolean createDatastore(final String datastore) {
-        if(datastore == null || datastore.isEmpty() ){
-            throw new InternalAdapterException("datastore name must be specified");
-        }
-        return createCollection(Credentials.getInstance(), datastore);
-    }
-    
-    public static boolean createCollection(final String table){
-        if( table == null || table.isEmpty() ){
-            throw new InternalAdapterException("Table can't be empty");
-        }
-        return createCollection(Credentials.getInstance(), table);
-    }
-    
-    public static boolean createCollection(final String table, final JsonObject jsonSchema){
-        if(table == null || table.isEmpty() ){
-            throw new InternalAdapterException("Table can't be empty");
-        }
-        if(jsonSchema == null ){
-            throw new InternalAdapterException("Schema can't be empty or null");
-        }
-        return createCollection(Credentials.getInstance(), table, jsonSchema);
-    }
-    
-    public static boolean createCollection(final String table, final TableType tableType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
-        if(table == null || table.isEmpty() ){
-            throw new InternalAdapterException("Table can't be empty");
-        }
-        if( tableType == null || replicationType == null){
-            throw new InternalAdapterException("TableType and ReplicationType can't be empty");
-        }
-        return createCollection(Credentials.getInstance(), table, tableType, replicationType, replicationFactor, flexibleSchema);
-    }
-    
-    public static boolean dropCollection(final String table){
-        if(table == null || table.isEmpty() ){
-            throw new InternalAdapterException("Table can't be empty");
-        }
-        return dropCollection(Credentials.getInstance(), table);
-    }
-    
-    public static boolean truncateCollection(final String table){
-        if(table == null || table.isEmpty() ){
-            throw new InternalAdapterException("Table can't be empty");
-        }
-        return truncateCollection(Credentials.getInstance(), table);
-    }
-    
-    public static boolean addColumn(final String table, final String columnName, final ColumnType columnType, final IndexType indexType, final AutoDefineType autoDefineType){
-        if(table == null || table.isEmpty() || columnName == null || columnName.isEmpty() ){
-            throw new InternalAdapterException("Table and columnName can't be empty");
-        }
-        if(columnType == null ){
-            throw new InternalAdapterException("Column Type can't be null");
-        }
-        
-        return addColumn(Credentials.getInstance(), table, columnName, columnType, indexType, autoDefineType);
-    }
-    
-    public static boolean dropColumn(final String table, final String columnName){
-        if(table == null || table.isEmpty() || columnName == null || columnName.isEmpty() ){
-            throw new InternalAdapterException("Table and columnName can't be empty");
-        }
-        
-        return dropColumn(Credentials.getInstance(), table, columnName);
-    }
-    
-    public static boolean createIndex(final String table, final String columnName, final IndexType indexType){
-        if(table == null || table.isEmpty() || columnName == null || columnName.isEmpty() ){
-            throw new InternalAdapterException("Table and columnName can't be empty");
-        }
-        if(indexType == null  || indexType == IndexType.NONE){
-            throw new InternalAdapterException("Column Type can't be null or none. Use Drop-index to remove indexing");
-        }
-        
-        return createIndex(Credentials.getInstance(), table, columnName, indexType);
-    }
-    
-    public static boolean dropIndex(final String table, final String columnName){
-        if(table == null || table.isEmpty() || columnName == null || columnName.isEmpty() ){
-            throw new InternalAdapterException("Table and columnName can't be empty");
-        }
-        
-        return dropIndex(Credentials.getInstance(), table, columnName);
-    }
-    
-    public static Iterator<Object> searchFiltered(final String tableName, final String filterName, Object... params){
-        return searchFiltered(Credentials.getInstance(), tableName, filterName, params);
-    }
-    
-    public static <T extends CloudStorage> Iterator<Object> searchFiltered(final Class<T> tableClass, final String filterName, Object... params){
-        final Entity entity = (Entity) tableClass.getAnnotation(Entity.class);
-        final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : tableClass.getSimpleName();
-        return searchFiltered(Credentials.getInstance(), tableName, filterName, params);
-    }
-
-    public static <T extends CloudStorage, U extends Object> U invokeProcedure(final String storedProcedureName, final Class<U> retClazz, final Object... params) {
-        return invokeProcedure(Credentials.getInstance(), storedProcedureName, retClazz, params);
-    }
-
-    public static <T extends CloudStorage, U extends Object> U repopulateTable(final String tableName, final Class<U> retClazz, final String... params) {
-        return repopulateTable(Credentials.getInstance(), tableName, retClazz, params);
-    }
-    
-    public static void insert(final String tableName, final String interpreterName, final String... data){
-        if(data == null) return ; 
-        insert(Credentials.getInstance(), tableName, interpreterName, data);
-    }
-    
-    public static void insert(final String tableName, final String interpreterName, final List<String> data){
-        insert(Credentials.getInstance(), tableName, interpreterName, data.toArray(new String[data.size()]));
-    }
-   
-    // private static methods
-    private static <T extends CloudStorage> boolean contains(final Credentials credentials, final Class<T> clazz, final Object key) {
-        final DbQueryResponse response = postStaticRequest(credentials, clazz, QueryType.CONTAINS, key);
-
-        if (response.isSuccessful()) {
-            final JsonArray resultJsonArray = response.getPayload().getAsJsonArray();
-            final int resultCount = resultJsonArray.size();
-            final List<T> responseList = new ArrayList<T>();
-            final String tableName = getTableName(clazz);
-            final String dbName = getDbName(clazz);
-            TableStore.getInstance().registerClass(dbName, tableName, clazz);
-            
-            final Map<String, Field> structureMap = TableStore.getInstance().getStructure(dbName, tableName);
-            for (int i = 0; i < resultCount; i++) {
-                final T instance = CloudStorage.newInstance(clazz);
-                final JsonObject instanceData = resultJsonArray.get(i).getAsJsonObject();
-                final Set<Map.Entry<String, JsonElement>> entrySet = instanceData.entrySet();
-
-                for (final Map.Entry<String, JsonElement> entry : entrySet) {
-                    final String columnName = entry.getKey();
-
-                    final Field field = structureMap.get(columnName);
-                    if(field == null) {
-                        continue;
-                    }
-                    // Field field = structureMap.get(columnName);
-                    synchronized (field) {
-                        final boolean oldAccessibilityValue = field.isAccessible();
-                        field.setAccessible(true);
-
-                        try {
-                            field.set(instance, getCastedValue(field, instanceData.get(columnName), clazz));
-                        } catch (IllegalArgumentException ex) {
-                            throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
-                        } catch (IllegalAccessException ex) {
-                            throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
-                        } finally {
-                            field.setAccessible(oldAccessibilityValue);
-                        }
-                    }
-                }
-
-                responseList.add(instance);
-            }
-            return response.contains();
-        }
-
-        throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
-    }
-    
-    private static DbQueryResponse execute(final Credentials credentials, final String sql) {
+    public static DbQueryResponse execute(final Credentials credentials, final String sql) {
         return QueryExecuter.executeSql(DbQueryRequest.create(credentials, sql));
     }
     
-    private static <T extends CloudStorage> Object execute(final Credentials credentials, final Query<T> query) {
+    public static <T extends Db> Object execute(final Query<T> query) {
+        return execute(Credentials.getInstance(), query);
+    }
+
+    public static <T extends Db> Object execute(final Credentials credentials, final Query<T> query) {
         if (query.getFromTables() == null && query.getFromTables().isEmpty()) {
-            throw new InternalAdapterException("No table name set. Table name is a mandatory field queries.");
+            throw new InternalAdapterException("No collection name set. Table name is a mandatory field queries.");
         }
 
         final String queryStr = query.asSql();
@@ -463,13 +294,13 @@ public abstract class CloudStorage {
                 final JsonArray resultJsonArray = response.getPayload().getAsJsonArray();
                 final int resultCount = resultJsonArray.size();
                 final List<T> responseList = new ArrayList<T>();
-                final String tableName = clazz == null ? query.getFromTableStrings().get(0) : getTableName(clazz);
-                final String dbName = clazz == null ? CloudStorage.getDbName() : getDbName(clazz);
-                TableStore.getInstance().registerClass(dbName, tableName, clazz);
-                final Map<String, Field> structureMap = TableStore.getInstance().getStructure(dbName, tableName);
+                final String tableName = clazz == null ? query.getFromTableStrings().get(0) : getCollection(clazz);
+                final String dbName = clazz == null ? Db.getDs() : getDs(clazz);
+                CollectionStore.getInstance().registerClass(dbName, tableName, clazz);
+                final Map<String, Field> structureMap = CollectionStore.getInstance().getStructure(dbName, tableName);
 
                 for (int i = 0; i < resultCount; i++) {
-                    final T instance = CloudStorage.newInstance(clazz);
+                    final T instance = Db.newInstance(clazz);
                     final JsonObject instanceData = resultJsonArray.get(i).getAsJsonObject();
                     final Set<Map.Entry<String, JsonElement>> entrySet = instanceData.entrySet();
 
@@ -510,15 +341,480 @@ public abstract class CloudStorage {
 
         throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
     }
-    
-    private static void insertJsonData(final Credentials credentials, final String table, final JsonObject insertJson){
-        final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT, table, insertJson);
+
+    public static void insertJsonData(final String collection, final JsonObject insertJson){
+        insertJsonData(Credentials.getInstance(), collection, insertJson);
+    }
+
+    public static void insertJsonData(final Credentials credentials, final String collection, final JsonObject insertJson){
+        if(collection == null || collection.isEmpty()) {
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        if(insertJson == null) {
+            throw new InternalAdapterException("json data to insert cannot be null");
+        }
+
+        final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT, collection, insertJson);
         reportIfError(response);
     }
-    
-    private static <T extends CloudStorage> void remove(final Credentials credentials, Class<T> clazz, final Object pk) {
-        final DbQueryResponse response = postStaticRequest(credentials, clazz, QueryType.REMOVE, pk);
 
+    //TODO: Add support for inserting other data formats
+
+    public static boolean createDs(final String ds) {
+        return createDs(Credentials.getInstance(), ds);
+    }
+
+    public static boolean createDs(final Credentials credentials, final String ds) {
+        if(ds == null || ds.isEmpty()) {
+            throw new InternalAdapterException("ds (datastore) name must be specified");
+        }
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_DATASTORE, ds, null);
+        return response != null;
+    }
+    
+    public static boolean createCollection(final String collection){
+        return createCollection(Credentials.getInstance(), collection);
+    }
+
+    public static boolean createCollection(final Credentials credentials, final String collection){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()){
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, collection, null);
+        return response != null;
+    }
+    
+    public static boolean createCollection(final String collection, final JsonObject jsonSchema){
+        return createCollection(Credentials.getInstance(), collection, jsonSchema);
+    }
+
+    public static boolean createCollection(final Credentials credentials, final String collection, final JsonObject jsonSchema){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty() ){
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        if(jsonSchema == null ){
+            throw new InternalAdapterException("collection schema must be specified");
+        }
+
+        // this needs to be changed in future to be nested inside the payload json and not as payloadjson itself.
+        JsonObject payloadJson = jsonSchema;
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, collection, payloadJson);
+
+        return response != null;
+    }
+    
+    public static boolean createCollection(final String collection, final CollectionType collectionType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
+        return createCollection(Credentials.getInstance(), collection, collectionType, replicationType, replicationFactor, flexibleSchema);
+    }
+
+    public static boolean createCollection(final Credentials credentials, final String collection, final CollectionType collectionType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty() ){
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        if(collectionType == null) {
+            throw new InternalAdapterException("CollectionType must be specified");
+        }
+
+        if(replicationType == null){
+            throw new InternalAdapterException("ReplicationType must be specified");
+        }
+
+        JsonObject payloadJson = new JsonObject();
+        JsonObject metaJson = new JsonObject();
+        metaJson.addProperty("replication-type", replicationType.getType());
+        metaJson.addProperty("replication-factor", replicationFactor);
+        metaJson.addProperty("collection-type", collectionType.getType());
+        metaJson.addProperty("flexible-schema", flexibleSchema);
+        payloadJson.add("meta", metaJson);
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, collection, payloadJson);
+
+        return response != null;
+    }
+    
+    public static boolean dropCollection(final String collection){
+        return dropCollection(Credentials.getInstance(), collection);
+    }
+
+    public static boolean dropCollection(final Credentials credentials, final String collection){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()) {
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_COLLECTION, collection, null);
+        return response != null;
+    }
+    
+    public static boolean truncateCollection(final String collection){
+        return truncateCollection(Credentials.getInstance(), collection);
+    }
+
+    public static boolean truncateCollection(final Credentials credentials, final String collection){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()) {
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.TRUNCATE_COLLECTION, collection, null);
+        return response != null;
+    }
+    
+    public static boolean addColumn(final String collection, final String columnName, final ColumnType columnType, final IndexType indexType, final AutoDefineType autoDefineType){
+        return addColumn(Credentials.getInstance(), collection, columnName, columnType, indexType, autoDefineType);
+    }
+
+    public static boolean addColumn(final Credentials credentials, final String collection, final String columnName, final ColumnType columnType, final IndexType indexType, final AutoDefineType autoDefineType){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()){
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        if(columnName == null || columnName.isEmpty()) {
+            throw new InternalAdapterException("column name must be specified");
+        }
+
+        if(columnType == null ){
+            throw new InternalAdapterException("ColumnType must be specified");
+        }
+
+        JsonObject payloadJson = new JsonObject();
+        payloadJson.addProperty("name", columnName);
+        JsonObject typeJson = new JsonObject();
+        typeJson.addProperty("type", columnType.getType());
+        payloadJson.add("type", typeJson);
+
+        if( autoDefineType != null )
+            payloadJson.addProperty("auto-define", autoDefineType.getType());
+        if( indexType != null )
+            payloadJson.addProperty("index", indexType.getType());
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.ADD_COLUMN, collection, payloadJson);
+
+        return response != null;
+    }
+    
+    public static boolean dropColumn(final String collection, final String columnName){
+        return dropColumn(Credentials.getInstance(), collection, columnName);
+    }
+
+    public static boolean dropColumn(final Credentials credentials, final String collection, final String columnName){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()){
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        if(columnName == null || columnName.isEmpty()) {
+            throw new InternalAdapterException("column name must be specified");
+        }
+
+        JsonObject payloadJson = new JsonObject();
+        payloadJson.addProperty("name", columnName);
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_COLUMN, collection, payloadJson);
+
+        return response != null;
+    }
+    
+    public static boolean createIndex(final String collection, final String columnName, final IndexType indexType){
+        return createIndex(Credentials.getInstance(), collection, columnName, indexType);
+    }
+
+    public static boolean createIndex(final Credentials credentials, final String collection, final String columnName, final IndexType indexType){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()){
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        if(columnName == null || columnName.isEmpty()) {
+            throw new InternalAdapterException("column name must be specified");
+        }
+
+        if(indexType == null){
+            throw new InternalAdapterException("IndexType must be specified");
+        }
+
+        if(indexType == IndexType.NONE) {
+            throw new InternalAdapterException("Cannot change IndexType to NONE. Use drop-index operation instead");
+        }
+
+        JsonObject payloadJson = new JsonObject();
+        payloadJson.addProperty("name", columnName);
+        payloadJson.addProperty("index", indexType.getType());
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.INDEX, collection, payloadJson);
+
+        return response != null;
+    }
+    
+    public static boolean dropIndex(final String collection, final String columnName){
+        return dropIndex(Credentials.getInstance(), collection, columnName);
+    }
+
+    public static boolean dropIndex(final Credentials credentials, final String collection, final String columnName){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()){
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        if(columnName == null || columnName.isEmpty()){
+            throw new InternalAdapterException("column name must be specified");
+        }
+
+        JsonObject payloadJson = new JsonObject();
+        payloadJson.addProperty("name", columnName);
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_INDEX, collection, payloadJson);
+
+        return response != null;
+    }
+    
+    public static Iterator<Object> searchFiltered(final String collection, final String filterName, Object... params){
+        return searchFiltered(Credentials.getInstance(), collection, filterName, params);
+    }
+
+    public static <T extends Db> Iterator<Object> searchFiltered(final Class<T> collectionClass, final String filterName, Object... params){
+        if(collectionClass.getAnnotation(Entity.class) == null) {
+            throw new InternalAdapterException("@Entity annotation must be specified on the collection class");
+        }
+        final Entity entity = (Entity) collectionClass.getAnnotation(Entity.class);
+
+        final String collection = entity != null && entity.collection() != null && !"".equals(entity.collection()) ? entity.collection() : collectionClass.getSimpleName();
+        if(collection == null || collection.isEmpty()) {
+            throw new InternalAdapterException("could not identify a valid collection name from @Entity annotation");
+        }
+
+        return searchFiltered(Credentials.getInstance(), collection, filterName, params);
+    }
+
+    public static Iterator<Object> searchFiltered(final Credentials credentials, final String collection, final String filterName, final Object... params){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()){
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        if(filterName == null || filterName.isEmpty()) {
+            throw new InternalAdapterException("filter name must be specified");
+        }
+
+        JsonObject payloadJson = new JsonObject();
+        Gson gson = new Gson();
+        payloadJson.addProperty("name", filterName);
+        payloadJson.addProperty("params", gson.toJson(params));
+
+        final DbQueryResponse response = postStaticRequest(credentials, QueryType.SEARCH_FILTERED, collection, payloadJson);
+
+        reportIfError(response);
+
+        final JsonArray keysArray = response.getPayload().getAsJsonArray();
+        List<Object> keys = new ArrayList<Object>();
+        for(JsonElement key: keysArray){
+            keys.add(key.getAsString());
+        }
+        return keys.iterator();
+    }
+
+    public static <T extends Db, U extends Object> U invokeProcedure(final String storedProcedureName, final Class<U> retClazz, final Object... params) {
+        return invokeProcedure(Credentials.getInstance(), storedProcedureName, retClazz, params);
+    }
+
+    public static <T extends Db, U extends Object> U invokeProcedure(final Credentials credentials, final String storedProcedureName, final Class<U> retClazz, final Object... params) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(storedProcedureName == null || storedProcedureName.isEmpty()) {
+            throw new InternalAdapterException("stored procedure name must be specified")
+        }
+
+        JsonObject payloadJson = new JsonObject();
+        Gson gson = new Gson();
+        payloadJson.addProperty("name", storedProcedureName);
+        payloadJson.addProperty("params", gson.toJson(params));
+
+        // we dont need to pass any collection for this, we are passing a dummy collection
+        // (bcoz I m too lazy to create a new function which is only called once)
+        final DbQueryResponse  response = postStaticRequest(credentials, QueryType.STORED_PROC, "dummy", payloadJson);
+
+        /* If ack:0 then check for error code and report accordingly */
+        reportIfError(response);
+        //todo proper handling here.
+        // some things can return null also.
+        U returnObj = gson.fromJson(response.getPayload().getAsString(), retClazz);
+        return returnObj;
+    }
+
+    public static <T extends Db, U extends Object> U repopulateTable(final String collectionName, final Class<U> retClazz, final String... params) {
+        return repopulateTable(Credentials.getInstance(), collectionName, retClazz, params);
+    }
+
+    public static <T extends Db, U extends Object> U repopulateTable(final Credentials credentials, final String collection, final Class<U> retClazz, final String... params) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()){
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        JsonObject payloadJson = new JsonObject();
+        payloadJson.addProperty(QueryConstants.TABLE, collection);
+        payloadJson.addProperty("params", new Gson().toJson(params));
+
+        final DbQueryResponse response = postStaticRequest(credentials, QueryType.REPOP_TABLE, collection, payloadJson);
+
+        /* If ack:0 then check for error code and report accordingly */
+        reportIfError(response);
+
+        U returnObj = new Gson().fromJson(response.getPayload().getAsString(), retClazz);
+        return returnObj;
+    }
+    
+    public static void insert(final String collection, final String interpreterName, final String... data){
+        insert(Credentials.getInstance(), collection, interpreterName, data);
+    }
+    
+    public static void insert(final String collection, final String interpreterName, final List<String> data){
+        if(data == null || data.isEmpty()) {
+            throw new InternalAdapterException("cannot invoke an insert with interpreter on null or empty data");
+        }
+
+        insert(Credentials.getInstance(), collection, interpreterName, data.toArray(new String[data.size()]));
+    }
+
+    public static void insert(final Credentials credentials, final String collection, final String interpreterName, final List<String> data){
+        if(data == null || data.isEmpty()) {
+            throw new InternalAdapterException("cannot invoke an insert with interpreter on null or empty data");
+        }
+
+        insert(credentials, collection, interpreterName, data.toArray(new String[data.size()]));
+    }
+
+    public static void insert(final Credentials credentials, final String collection, final String interpreterName, final String... data){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()) {
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        if(interpreterName == null || interpreterName.isEmpty()) {
+            throw new InternalAdapterException("interpreter name must be specified");
+        }
+
+        if(data == null) {
+            throw new InternalAdapterException("cannot invoke an insert with interpreter on null data");
+        }
+
+        JsonObject payloadJson = new JsonObject();
+        payloadJson.addProperty("interpreter", interpreterName);
+        JSONArray arr = new JSONArray(data);
+        payloadJson.add("payload", new JsonParser().parse(arr.toString()).getAsJsonArray());
+        final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT_CUSTOM, collection, payloadJson);
+        reportIfError(response);
+    }
+
+    public static <T extends Db> boolean contains(final Credentials credentials, final Class<T> clazz, final Object key) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        final DbQueryResponse response = postStaticRequest(credentials, clazz, QueryType.CONTAINS, key);
+
+        if (response.isSuccessful()) {
+            final JsonArray resultJsonArray = response.getPayload().getAsJsonArray();
+            final int resultCount = resultJsonArray.size();
+            final List<T> responseList = new ArrayList<T>();
+            final String tableName = getCollection(clazz);
+            final String dbName = getDs(clazz);
+            CollectionStore.getInstance().registerClass(dbName, tableName, clazz);
+            
+            final Map<String, Field> structureMap = CollectionStore.getInstance().getStructure(dbName, tableName);
+            for (int i = 0; i < resultCount; i++) {
+                final T instance = Db.newInstance(clazz);
+                final JsonObject instanceData = resultJsonArray.get(i).getAsJsonObject();
+                final Set<Map.Entry<String, JsonElement>> entrySet = instanceData.entrySet();
+
+                for (final Map.Entry<String, JsonElement> entry : entrySet) {
+                    final String columnName = entry.getKey();
+
+                    final Field field = structureMap.get(columnName);
+                    if(field == null) {
+                        continue;
+                    }
+                    // Field field = structureMap.get(columnName);
+                    synchronized (field) {
+                        final boolean oldAccessibilityValue = field.isAccessible();
+                        field.setAccessible(true);
+
+                        try {
+                            field.set(instance, getCastedValue(field, instanceData.get(columnName), clazz));
+                        } catch (IllegalArgumentException ex) {
+                            throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
+                        } catch (IllegalAccessException ex) {
+                            throw new InternalAdapterException("Unable to set data into field \"" + clazz.getSimpleName() + "." + field.getName() + "\"", ex);
+                        } finally {
+                            field.setAccessible(oldAccessibilityValue);
+                        }
+                    }
+                }
+
+                responseList.add(instance);
+            }
+            return response.contains();
+        }
+
+        throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
+    }
+
+    public static <T extends Db> void remove(final Credentials credentials, Class<T> clazz, final Object pk) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(pk == null) {
+            throw new InternalAdapterException("primary key must be specified");
+        }
+
+        final DbQueryResponse response = postStaticRequest(credentials, clazz, QueryType.REMOVE, pk);
         if (!response.isSuccessful()) {
             throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
         }
@@ -529,16 +825,20 @@ public abstract class CloudStorage {
      * @see <a href="http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH">
      *     http://docs.blobcity.com/display/DB/Operations+on+data#Operationsondata-SEARCH</a>.
      *
-     * Note: This return type is prone to update when support for multiple table queries (joins) is introduced.
+     * Note: This return type is prone to update when support for multiple collection queries (joins) is introduced.
      *
-     * @param <T> Any class reference which extends {@link CloudStorage}
+     * @param <T> Any class reference which extends {@link Db}
      * @param credentials Credentials to be used for communicating with the database
      * @param query {@link SearchParam}s which are to be used to search for data
      * @return {@link List} of {@code T} that matches {@code searchParams}
      */
-    private static <T extends CloudStorage> List<T> search(final Credentials credentials, final Query<T> query) {
+    public static <T extends Db> List<T> search(final Credentials credentials, final Query<T> query) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
         if (query.getFromTables() == null && query.getFromTables().isEmpty()) {
-            throw new InternalAdapterException("No table name set. Table name is a mandatory field queries.");
+            throw new InternalAdapterException("No collection (table) name set. Collection Table name is a mandatory field queries.");
         }
 
         final String queryStr = query.asSql();
@@ -552,13 +852,13 @@ public abstract class CloudStorage {
             System.out.println(resultJsonArray);
             final int resultCount = resultJsonArray.size();
             final List<T> responseList = new ArrayList<T>();
-            final String tableName = getTableName(clazz);
-            final String dbName = getDbName(clazz);
-            TableStore.getInstance().registerClass(dbName, tableName, clazz);
-            final Map<String, Field> structureMap = TableStore.getInstance().getStructure(dbName, tableName);
+            final String tableName = getCollection(clazz);
+            final String dbName = getDs(clazz);
+            CollectionStore.getInstance().registerClass(dbName, tableName, clazz);
+            final Map<String, Field> structureMap = CollectionStore.getInstance().getStructure(dbName, tableName);
 
             for (int i = 0; i < resultCount; i++) {
-                final T instance = CloudStorage.newInstance(clazz);
+                final T instance = Db.newInstance(clazz);
                 final JsonObject instanceData = resultJsonArray.get(i).getAsJsonObject();
                 final Set<Map.Entry<String, JsonElement>> entrySet = instanceData.entrySet();
 
@@ -593,152 +893,20 @@ public abstract class CloudStorage {
         throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
     }
 
-    private static boolean createDatastore(final Credentials credentials, final String datastore) {
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_DATASTORE, datastore, null);
-        return response != null;
-    }
-    
-    private static boolean createCollection(final Credentials credentials, final String table){
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, table, null);
-        return response != null;
-    } 
-    
-    private static boolean createCollection(final Credentials credentials, final String table, final JsonObject jsonSchema){
-        // this needs to be changed in future to be nested inside the payload json and not as payloadjson itself.
-        JsonObject payloadJson = jsonSchema;
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, table, payloadJson);
-        
-        return response != null;
-    } 
-    
-    private static boolean createCollection(final Credentials credentials, final String table, final TableType tableType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
-        JsonObject payloadJson = new JsonObject();
-        JsonObject metaJson = new JsonObject();
-        metaJson.addProperty("replication-type", replicationType.getType());
-        metaJson.addProperty("replication-factor", replicationFactor);
-        metaJson.addProperty("table-type", tableType.getType());
-        metaJson.addProperty("flexible-schema", flexibleSchema);
-        payloadJson.add("meta", metaJson);
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, table, payloadJson);
-        
-        return response != null;
-    }
-    
-    private static boolean dropCollection(final Credentials credentials, final String table){
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_COLLECTION, table, null);
-        return response != null;
-    }
-    
-    private static boolean truncateCollection(final Credentials credentials, final String table){
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.TRUNCATE_COLLECTION, table, null);
-        return response != null;
-    }
-    
-    private static boolean addColumn(final Credentials credentials, final String table, final String columnName, final ColumnType columnType, final IndexType indexType, final AutoDefineType autoDefineType){
-        JsonObject payloadJson = new JsonObject();
-        payloadJson.addProperty("name", columnName);
-        JsonObject typeJson = new JsonObject();
-        typeJson.addProperty("type", columnType.getType());
-        payloadJson.add("type", typeJson);
-        
-        if( autoDefineType != null )
-            payloadJson.addProperty("auto-define", autoDefineType.getType());
-        if( indexType != null )
-            payloadJson.addProperty("index", indexType.getType());
-        
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.ADD_COLUMN, table, payloadJson);
-        
-        return response != null;
-    }
-   
-    private static boolean dropColumn(final Credentials credentials, final String table, final String columnName){
-        JsonObject payloadJson = new JsonObject();
-        payloadJson.addProperty("name", columnName);
-        
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_COLUMN, table, payloadJson);
-        
-        return response != null;
-    }
-    
-    private static boolean createIndex(final Credentials credentials, final String table, final String columnName, final IndexType indexType){
-        JsonObject payloadJson = new JsonObject();
-        payloadJson.addProperty("name", columnName);
-        payloadJson.addProperty("index", indexType.getType());
-        
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.INDEX, table, payloadJson);
-        
-        return response != null;
-    }
-    
-    private static boolean dropIndex(final Credentials credentials, final String table, final String columnName){
-        JsonObject payloadJson = new JsonObject();
-        payloadJson.addProperty("name", columnName);
-        
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_INDEX, table, payloadJson);
-        
-        return response != null;
-    }
-    
-    private static <T extends CloudStorage, U extends Object> U invokeProcedure(final Credentials credentials, final String storedProcedureName, final Class<U> retClazz, final Object... params) {
-        JsonObject payloadJson = new JsonObject();
-        Gson gson = new Gson();
-        payloadJson.addProperty("name", storedProcedureName);
-        payloadJson.addProperty("params", gson.toJson(params));
-        
-        // we dont need to pass any table for this, we are passing a dummy table 
-        // (bcoz I m too lazy to create a new function which is only called once)
-        final DbQueryResponse  response = postStaticRequest(credentials, QueryType.STORED_PROC, "dummy", payloadJson);
-
-        /* If ack:0 then check for error code and report accordingly */
-        reportIfError(response);
-        //todo proper handling here.
-        // some things can return null also.
-        U returnObj = gson.fromJson(response.getPayload().getAsString(), retClazz);
-        return returnObj;
-    }
-
-    private static Iterator<Object> searchFiltered(final Credentials credentials, final String tableName, final String filterName, final Object... params){
-        JsonObject payloadJson = new JsonObject();
-        Gson gson = new Gson();
-        payloadJson.addProperty("name", filterName);
-        payloadJson.addProperty("params", gson.toJson(params));
-        
-        final DbQueryResponse response = postStaticRequest(credentials, QueryType.SEARCH_FILTERED, tableName, payloadJson);
-        
-        reportIfError(response);
-        
-        final JsonArray keysArray = response.getPayload().getAsJsonArray();
-        List<Object> keys = new ArrayList<Object>();
-        for(JsonElement key: keysArray){
-            keys.add(key.getAsString());
-        }
-        return keys.iterator();
-    }
-    
-    private static <T extends CloudStorage, U extends Object> U repopulateTable(final Credentials credentials, final String tableName, final Class<U> retClazz, final String... params) {
-        JsonObject payloadJson = new JsonObject();
-        payloadJson.addProperty(QueryConstants.TABLE, tableName);
-        payloadJson.addProperty("params", new Gson().toJson(params));
-        
-        final DbQueryResponse response = postStaticRequest(credentials, QueryType.REPOP_TABLE, tableName, payloadJson);
-
-        /* If ack:0 then check for error code and report accordingly */
-        reportIfError(response);
-
-        U returnObj = new Gson().fromJson(response.getPayload().getAsString(), retClazz);
-        return returnObj;
-    }
-    
     // we need some intelligent idea to send large amount of data over network. Until then, this is of no use to us.
-    private static <T extends CloudStorage> Iterator<T> searchFiltered(final Credentials credentials, final Class<T> clazz, final String filterName, final Object... params){
+    public static <T extends Db> Iterator<T> searchFiltered(final Credentials credentials, final Class<T> clazz, final String filter, final Object... params){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
         JsonObject payloadJson = new JsonObject();
         Gson gson = new Gson();
-        payloadJson.addProperty("name", filterName);
+        payloadJson.addProperty("name", filter);
         payloadJson.addProperty("full-data", Boolean.TRUE);
         payloadJson.addProperty("params", gson.toJson(params));
         
         final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        final String tableName = getDbName(clazz);
+        final String tableName = getDs(clazz);
         final DbQueryResponse response = postStaticRequest(credentials, QueryType.SEARCH_FILTERED, tableName, payloadJson);
         
         reportIfError(response);
@@ -747,12 +915,12 @@ public abstract class CloudStorage {
         final int resultCount = resultJsonArray.size();
         final List<T> responseList = new ArrayList<T>();
         
-        final String dbName = getDbName(clazz);
-        TableStore.getInstance().registerClass(dbName, tableName, clazz);
-        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(dbName, tableName);
+        final String dbName = getDs(clazz);
+        CollectionStore.getInstance().registerClass(dbName, tableName, clazz);
+        final Map<String, Field> structureMap = CollectionStore.getInstance().getStructure(dbName, tableName);
 
         for (int i = 0; i < resultCount; i++) {
-            final T instance = CloudStorage.newInstance(clazz);
+            final T instance = Db.newInstance(clazz);
             final JsonObject instanceData = resultJsonArray.get(i).getAsJsonObject();
             final Set<Map.Entry<String, JsonElement>> entrySet = instanceData.entrySet();
 
@@ -781,24 +949,19 @@ public abstract class CloudStorage {
         }
         return responseList.iterator();
     }
-    
-    private static void insert(final Credentials credentials, final String tableName, final String interpreterName, final String... data){
-        JsonObject payloadJson = new JsonObject();
-        payloadJson.addProperty("interpreter", interpreterName);
-        JSONArray arr = new JSONArray(data);
-        payloadJson.add("payload", new JsonParser().parse(arr.toString()).getAsJsonArray());
-        final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT_CUSTOM, tableName, payloadJson);
-        reportIfError(response);
-    }
-    
+
     //private post request methods
     private DbQueryResponse postRequest(final Credentials credentials, QueryType queryType) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
         try {
             final JsonObject queryJson = new JsonObject();
-            queryJson.addProperty(QueryConstants.TABLE, table);
+            queryJson.addProperty(QueryConstants.TABLE, collection);
             queryJson.addProperty(QueryConstants.QUERY, queryType.getQueryCode());
 
-            final Credentials dbSpecificCredentials = db != null ? Credentials.create(credentials, null, null, null, db) : credentials;
+            final Credentials dbSpecificCredentials = ds != null ? Credentials.create(credentials, null, null, null, ds) : credentials;
             queryJson.addProperty(QueryConstants.DB, dbSpecificCredentials.getDb());
 
             switch (queryType) {
@@ -823,7 +986,7 @@ public abstract class CloudStorage {
         }
     }
 
-    /** Used to post requests that are not related to table or data operations. The credentials of the user are not required
+    /** Used to post requests that are not related to collection or data operations. The credentials of the user are not required
      * to have a datastore level authorisation to execute this, but the connecting user must be authorized to carry out
      * operations that can created and delete data stores, as well as perform other system level operations such as
      * adding and deleting nodes from a cluster.
@@ -857,13 +1020,13 @@ public abstract class CloudStorage {
         return response;
     }
     
-    private static <T extends CloudStorage> DbQueryResponse postStaticRequest(final Credentials credentials, final Class<T> clazz, final QueryType queryType) {
+    private static <T extends Db> DbQueryResponse postStaticRequest(final Credentials credentials, final Class<T> clazz, final QueryType queryType) {
         final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
 
-        final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
+        final String tableName = entity != null && entity.collection() != null && !"".equals(entity.collection()) ? entity.collection() : clazz.getSimpleName();
 
-        final boolean entityContainsDbName = entity != null && entity.db() != null && !"".equals(entity.db());
-        final String db = entityContainsDbName ? entity.db() : credentials.getDb(); // No NPEs here because entityContainsDbName handles that
+        final boolean entityContainsDbName = entity != null && entity.ds() != null && !"".equals(entity.ds());
+        final String db = entityContainsDbName ? entity.ds() : credentials.getDb(); // No NPEs here because entityContainsDbName handles that
         final Credentials dbSpecificCredentials = entityContainsDbName ? Credentials.create(credentials, null, null, null, db) : credentials;
 
         final JsonObject jsonObject = new JsonObject();
@@ -876,13 +1039,13 @@ public abstract class CloudStorage {
         return response;
     }
     
-    private static <T extends CloudStorage> DbQueryResponse postStaticRequest(final Credentials credentials, final Class<T> clazz, final QueryType queryType, final Object pk) {
+    private static <T extends Db> DbQueryResponse postStaticRequest(final Credentials credentials, final Class<T> clazz, final QueryType queryType, final Object pk) {
         final JsonObject queryJson = new JsonObject();
         final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
 
-        final String tableName = entity != null && entity.table() != null && !"".equals(entity.table()) ? entity.table() : clazz.getSimpleName();
-        final boolean entityContainsDbName = entity != null && entity.db() != null && !"".equals(entity.db());
-        final String db = entityContainsDbName ? entity.db() : credentials.getDb(); // No NPEs here because entityContainsDbName handles that
+        final String tableName = entity != null && entity.collection() != null && !"".equals(entity.collection()) ? entity.collection() : clazz.getSimpleName();
+        final boolean entityContainsDbName = entity != null && entity.ds() != null && !"".equals(entity.ds());
+        final String db = entityContainsDbName ? entity.ds() : credentials.getDb(); // No NPEs here because entityContainsDbName handles that
         final Credentials dbSpecificCredentials = entityContainsDbName ? Credentials.create(credentials, null, null, null, db) : credentials;
 
         queryJson.addProperty(QueryConstants.DB, db);
@@ -903,7 +1066,7 @@ public abstract class CloudStorage {
         }
     }
 
-    private boolean load(final Credentials credentials) {
+    public boolean load(final Credentials credentials) {
         final DbQueryResponse response = postRequest(credentials, QueryType.LOAD);
 
         /* If ack:0 then check for error code and report accordingly */
@@ -919,12 +1082,12 @@ public abstract class CloudStorage {
         return true;
     }
 
-    private void save(final Credentials credentials) {
+    public void save(final Credentials credentials) {
         final DbQueryResponse responseJson = postRequest(credentials, QueryType.SAVE);
         reportIfError(responseJson);
     }
 
-    private boolean insert(final Credentials credentials) {
+    public boolean insert(final Credentials credentials) {
         final DbQueryResponse response = postRequest(credentials, QueryType.INSERT);
         if (response.isSuccessful()) {
             final JsonElement payloadJson = response.getPayload();
@@ -941,7 +1104,7 @@ public abstract class CloudStorage {
         throw response.createException();
     }
 
-    private void remove(final Credentials credentials) {
+    public void remove(final Credentials credentials) {
         final DbQueryResponse response = postRequest(credentials, QueryType.REMOVE);
 
         /* If ack:0 then check for error code and report accordingly */
@@ -953,7 +1116,7 @@ public abstract class CloudStorage {
     /**
      * Instantiates current object with data from the provided {@link JsonObject}.
      *
-     * Every column mentioned in the {@link CloudStorage} instance (as maintained by {@link TableStore}) will be loaded
+     * Every column mentioned in the {@link Db} instance (as maintained by {@link CollectionStore}) will be loaded
      * with data. If any of these column name IDs do not exist in the provided {@link JsonObject}, an
      * {@link InternalDbException} will be thrown. If there are any issues whilst reflecting the data into the instance,
      * an {@link InternalAdapterException} will be thrown.
@@ -964,7 +1127,7 @@ public abstract class CloudStorage {
      * @param jsonData input {@link JsonObject} from which the data for the current instance are to be loaded.
      */
     private void fromJson(final JsonObject jsonData) {
-        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(db, table);
+        final Map<String, Field> structureMap = CollectionStore.getInstance().getStructure(ds, collection);
 
         for (final String columnName : structureMap.keySet()) {
             final Field field = structureMap.get(columnName);
@@ -984,7 +1147,7 @@ public abstract class CloudStorage {
     }
 
     /**
-     * Gets a JSON representation of the object. The column names are same as those loaded in {@link TableStore}
+     * Gets a JSON representation of the object. The column names are same as those loaded in {@link CollectionStore}
      *
      * @return {@link JsonObject} representing the entity class in its current state
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring
@@ -993,7 +1156,7 @@ public abstract class CloudStorage {
      * underlying field is inaccessible.
      */
     private JsonObject toJson() throws IllegalArgumentException, IllegalAccessException {
-        final Map<String, Field> structureMap = TableStore.getInstance().getStructure(db, table);
+        final Map<String, Field> structureMap = CollectionStore.getInstance().getStructure(ds, collection);
         final JsonObject dataJson = new JsonObject();
 
         for (String columnName : structureMap.keySet()) {
@@ -1038,7 +1201,7 @@ public abstract class CloudStorage {
     }
 
     private Object getPrimaryKeyValue() throws IllegalArgumentException, IllegalAccessException {
-        Map<String, Field> structureMap = TableStore.getInstance().getStructure(db, table);
+        Map<String, Field> structureMap = CollectionStore.getInstance().getStructure(ds, collection);
 
         for (String columnName : structureMap.keySet()) {
             Field field = structureMap.get(columnName);
@@ -1162,7 +1325,7 @@ public abstract class CloudStorage {
                 return new ArrayList();
             }
 
-            Logger.getLogger(CloudStorage.class.getName()).log(Level.WARNING, "Class of type \"{0}\" has field with name \"{1}\" and data type \"{2}\" for value to be set was \"{3}\" has a type of {4}. This will probably cause an exception.", new Object[]{parentClazz, field.getName(), type, value, value.getClass()});
+            Logger.getLogger(Db.class.getName()).log(Level.WARNING, "Class of type \"{0}\" has field with name \"{1}\" and data type \"{2}\" for value to be set was \"{3}\" has a type of {4}. This will probably cause an exception.", new Object[]{parentClazz, field.getName(), type, value, value.getClass()});
         }
 
         /* Beyound this point empty string should return null as the below types cannot have empty string values */

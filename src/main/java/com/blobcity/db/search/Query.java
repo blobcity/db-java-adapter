@@ -3,19 +3,16 @@
  */
 package com.blobcity.db.search;
 
-import com.blobcity.db.CloudStorage;
+import com.blobcity.db.Db;
 import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.exceptions.InternalDbException;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Query builder interface for the adapter to support querying mechanism for search functionality
@@ -23,7 +20,7 @@ import java.util.logging.Logger;
  * @param <T> Class on which the query is being performed
  * @author Karun AB
  */
-public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
+public class Query<T extends Db> implements ObjectJsonable, Sqlable {
 
     private final List<String> selectColumnNames;
     private final List<Class<T>> fromTables; //for backward compatibility upto 1.2.5
@@ -41,7 +38,7 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
      * @see #select()
      * @see #select(java.lang.String[])
      * @see #table(java.lang.Class)
-     * @param selectColumnNames names of columns to be selected from the table(s) on which the query is being run
+     * @param selectColumnNames names of columns to be selected from the collection(s) on which the query is being run
      */
     private Query(final List<String> selectColumnNames) {
         this.selectColumnNames = selectColumnNames;
@@ -61,7 +58,7 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     /**
      * Static initializer for selected columns
      *
-     * @param columnNames names of columns to be selected from the table(s) on which the query is being run
+     * @param columnNames names of columns to be selected from the collection(s) on which the query is being run
      * @return an instance of {@link Query} initialized to pick up data from specified columns
      */
     public static Query select(final String... columnNames) {
@@ -73,27 +70,27 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     }
 
     /**
-     * Static initializer for selecting data from all columns and setting the table. Internally uses
+     * Static initializer for selecting data from all columns and setting the collection. Internally uses
      * {@link Query#select()} and {@link Query#from(java.lang.Class)}
      *
      * @see #select()
      * @see #from(java.lang.Class)
-     * @param <T> instance of {@link CloudStorage}
-     * @param tableName name of the table being queried
+     * @param <T> instance of {@link Db}
+     * @param tableName name of the collection being queried
      * @return an instance of {@link Query}
      */
-    public static <T extends CloudStorage> Query table(Class<T> tableName) {
+    public static <T extends Db> Query table(Class<T> tableName) {
         return Query.select().from(tableName);
     }
 
     /**
-     * Method to add a table to the list of tables on which the query is to be performed. Joins are performed L-R
+     * Method to add a collection to the list of tables on which the query is to be performed. Joins are performed L-R
      * (FIFO).
      *
      * Note, currently joins are not supported. Calling this method repeatedly will cause an {@link InternalDbException}
      * to be thrown.
      *
-     * @param tableName name of the table to be queried
+     * @param tableName name of the collection to be queried
      * @return an instance of {@link Query}
      */
     public Query from(Class<T> tableName) {
@@ -168,7 +165,7 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
 
         // From
         if ((fromTables == null || fromTables.isEmpty()) && (fromTablesString == null || fromTablesString.isEmpty())) {
-            throw new InternalAdapterException("No table name set. Table name is a mandatory field query.");
+            throw new InternalAdapterException("No collection name set. Table name is a mandatory field query.");
         }
         final JsonArray tableNames = new JsonArray();
         for (Object tableClazz : (fromTables.isEmpty() ? fromTablesString : fromTables)) {
@@ -219,7 +216,7 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
         sb.append("SELECT ").append(StringUtil.join(selectColumnNames, ", ", "*", "`"));
 
         if ((fromTables == null || fromTables.isEmpty()) && (fromTablesString == null || fromTablesString.isEmpty())) {
-            throw new InternalAdapterException("No table name set. Table name is a mandatory field queries.");
+            throw new InternalAdapterException("No collection name set. Table name is a mandatory field queries.");
         }
         
         boolean binaryClassNames = true;
@@ -231,9 +228,9 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
         final int fromTableCount = binaryClassNames ? fromTables.size() : fromTablesString.size();
         for (int i = 0; i < fromTableCount; i++) {
             if(binaryClassNames) {
-                sb.append('`').append(CloudStorage.getDbName(fromTables.get(i))).append("`.`").append(CloudStorage.getTableName(fromTables.get(i)));
+                sb.append('`').append(Db.getDs(fromTables.get(i))).append("`.`").append(Db.getCollection(fromTables.get(i)));
             }else{
-                sb.append('`').append(CloudStorage.getDbName()).append("`.`").append(fromTablesString.get(i));
+                sb.append('`').append(Db.getDs()).append("`.`").append(fromTablesString.get(i));
             }
 
             if (i < fromTableCount - 1) {
@@ -277,11 +274,11 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
     }
 
     public String getDbName(Class <T> cls) {
-        return CloudStorage.getDbName(cls);
+        return Db.getDs(cls);
     }
     
     private String getDbDotTableName(Class <T> cls) {
-        return CloudStorage.getDbName(cls) + "." + CloudStorage.getTableName(cls);
+        return Db.getDs(cls) + "." + Db.getCollection(cls);
     }
     
     private String getDbDotTableName(String tableName) {
@@ -289,7 +286,7 @@ public class Query<T extends CloudStorage> implements ObjectJsonable, Sqlable {
             return tableName;
         }
         
-        return CloudStorage.getDbName() + "." + tableName;
+        return Db.getDs() + "." + tableName;
     }
     
     private String getDbDotTableName(Object table) {

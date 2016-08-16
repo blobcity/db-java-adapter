@@ -4,7 +4,7 @@
 
 package com.blobcity.db.entity;
 
-import com.blobcity.db.CloudStorage;
+import com.blobcity.db.Db;
 import com.blobcity.db.annotations.Entity;
 import com.blobcity.db.annotations.Primary;
 
@@ -14,7 +14,7 @@ import com.blobcity.db.annotations.Primary;
  */
 
 @Entity
-public class TestTable extends CloudStorage {
+public class TestTable extends Db {
     @Primary
     private String myPk;
     private String column1;

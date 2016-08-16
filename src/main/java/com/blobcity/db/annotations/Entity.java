@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Entity {
 
-    public String table() default "";
+    public String collection() default "";
 
-    public String db() default "";
+    public String ds() default "";
 }

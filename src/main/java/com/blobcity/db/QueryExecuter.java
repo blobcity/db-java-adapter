@@ -34,7 +34,7 @@ class QueryExecuter {
 
 //        try {
 //
-//            Class<?> cls = Class.forName( "com.blobcity.db.bquery.SQLExecutorBean" );
+//            Class<?> cls = Class.forName( "com.blobcity.ds.bquery.SQLExecutorBean" );
 //
 //            final long startTime = System.currentTimeMillis();
 //            Method  method;
@@ -57,7 +57,7 @@ class QueryExecuter {
 //                    //    + "DB: \"{}\"\n"
 //                    //    + "Query: \"{}\"\n\n"
 //                    //    + "Response: \"{}\"\n\n"
-//                    //    + "End of result.", new Object[]{username, db, queryPayload, response});
+//                    //    + "End of result.", new Object[]{username, ds, queryPayload, response});
 //                    //logger.debug("Execution time (ms): " + executionTime);
 //                    System.out.println("Execution time (ms) = " + executionTime);
 //                    return new DbQueryResponse(response);
