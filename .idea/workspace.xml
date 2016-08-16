@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="77510550-b8a7-4052-bc5d-0598e999ffb5" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/CloudStorage.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/TableStore.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/CollectionStore.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/DbQueryRequest.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/DbQueryRequest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryExecuter.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryExecuter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/annotations/Entity.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/annotations/Entity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/config/Credentials.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/config/Credentials.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/ReplicationType.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/ReplicationType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Query.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Query.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/blobcity/db/entity/TestTable.java" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/entity/TestTable.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TableOperationsIT.java" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TableOperationsIT.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/IndexType.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/IndexType.java" />
     </list>
     <ignored path="java-adapter.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -57,7 +47,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Db.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Db.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-3644">
@@ -68,6 +58,16 @@
                 <element signature="e#15654#15655#0" expanded="true" />
                 <element signature="e#15716#15717#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="IndexType.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/IndexType.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="330">
+              <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -184,9 +184,9 @@
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/CloudStorage.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/TableStore.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/CollectionStore.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/IndexType.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/annotations/Entity.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/IndexType.java" />
       </list>
     </option>
   </component>
@@ -1301,14 +1301,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/IndexType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="11" column="12" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/AutoDefineType.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
@@ -1327,6 +1319,14 @@
             <element signature="e#15654#15655#0" expanded="true" />
             <element signature="e#15716#15717#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/IndexType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

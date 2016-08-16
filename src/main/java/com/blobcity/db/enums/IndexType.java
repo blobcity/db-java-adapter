@@ -8,13 +8,16 @@ package com.blobcity.db.enums;
 /**
  *
  * @author Prikshit Kumar
+ * @author Sanket Sarang
  */
 public enum IndexType {
     NONE("none"),
     UNIQUE("unique"),
     BTREE("btree"),
     HASHED("hashed"),
-    BITMAP("bitmap");
+    BITMAP("bitmap"),
+    TIMESERIES("timeseries"),
+    GEO_SPATIAL("geo-spatial");
     private String type;
 
     IndexType(final String type) {
