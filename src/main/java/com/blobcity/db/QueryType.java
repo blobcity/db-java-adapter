@@ -20,8 +20,9 @@ enum QueryType {
     CONTAINS("contains"),
     INSERT_CUSTOM("insert-custom"),
     // database related commands
-    CREATE_DATASTORE("create-datastore"),
+    CREATE_DS("create-ds"),
     CREATE_COLLECTION("create-collection"),
+    DROP_DATASTORE("drop-ds"),
     DROP_COLLECTION("drop-collection"),
     TRUNCATE_COLLECTION("truncate-collection"),
     ADD_COLUMN("add-column"),

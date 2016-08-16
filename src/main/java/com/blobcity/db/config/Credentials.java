@@ -48,11 +48,18 @@ public class Credentials {
 
     public static Credentials init(final String serverAddress, final String username, final String password, final String db) {
         if (instance != null) {
-            throw new IllegalStateException("Attempting to change application credentails. "
-                    + "Application credentails cannot be changed once set.");
+            throw new IllegalStateException("Credentials are already initialised");
         }
 
         return instance = create(serverAddress, username, password, db);
+    }
+
+    public static void unInit() {
+        instance = null;
+    }
+
+    public static boolean areInitialised() {
+        return instance != null;
     }
 
     public static Credentials create(final String username, final String password, final String db) {

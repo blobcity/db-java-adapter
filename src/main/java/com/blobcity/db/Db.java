@@ -370,8 +370,25 @@ public abstract class Db {
             throw new InternalAdapterException("ds (datastore) name must be specified");
         }
 
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_DATASTORE, ds, null);
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_DS, ds, null);
         return response != null;
+    }
+
+    public static boolean dropDs(final String ds) {
+        return dropDs(Credentials.getInstance(), ds);
+    }
+
+    public static boolean dropDs(final Credentials credentials, final String ds) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(ds == null || ds.isEmpty()){
+            throw new InternalAdapterException("ds (datastore) name must be specified");
+        }
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_DATASTORE, ds, null);
+        return response.getAckCode() == 1;
     }
     
     public static boolean createCollection(final String collection){
@@ -388,7 +405,7 @@ public abstract class Db {
         }
 
         DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, collection, null);
-        return response != null;
+        return response.getAckCode() == 1;
     }
     
     public static boolean createCollection(final String collection, final JsonObject jsonSchema){
@@ -412,7 +429,7 @@ public abstract class Db {
         JsonObject payloadJson = jsonSchema;
         DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, collection, payloadJson);
 
-        return response != null;
+        return response.getAckCode() == 1;
     }
     
     public static boolean createCollection(final String collection, final CollectionType collectionType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
@@ -445,7 +462,7 @@ public abstract class Db {
         payloadJson.add("meta", metaJson);
         DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, collection, payloadJson);
 
-        return response != null;
+        return response.getAckCode() == 1;
     }
     
     public static boolean dropCollection(final String collection){
@@ -661,7 +678,7 @@ public abstract class Db {
         }
 
         if(storedProcedureName == null || storedProcedureName.isEmpty()) {
-            throw new InternalAdapterException("stored procedure name must be specified")
+            throw new InternalAdapterException("stored procedure name must be specified");
         }
 
         JsonObject payloadJson = new JsonObject();
