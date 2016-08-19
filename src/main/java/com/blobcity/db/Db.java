@@ -362,8 +362,8 @@ public abstract class Db {
             throw new InternalAdapterException("ds (datastore) name must be specified");
         }
 
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_DS, ds, null);
-        return response != null;
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_DS, null, null);
+        return response.getAckCode() == 1;
     }
 
     public static boolean dropDs(final String ds) {

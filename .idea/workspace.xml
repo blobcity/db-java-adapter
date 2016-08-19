@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="77510550-b8a7-4052-bc5d-0598e999ffb5" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java" />
     </list>
@@ -25,11 +26,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="DatastoreAndCollectionOperationsIT.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="DatastoreAndCollectionOperationsIT.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3225">
-              <caret line="219" column="130" selection-start-line="219" selection-start-column="130" selection-end-line="219" selection-end-column="130" />
+            <state relative-caret-position="390">
+              <caret line="36" column="64" selection-start-line="36" selection-start-column="64" selection-end-line="36" selection-end-column="64" />
               <folding />
             </state>
           </provider>
@@ -65,18 +66,18 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Db.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Db.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="40">
-              <caret line="391" column="26" selection-start-line="391" selection-start-column="26" selection-end-line="391" selection-end-column="26" />
+            <state relative-caret-position="265">
+              <caret line="1035" column="36" selection-start-line="1035" selection-start-column="36" selection-end-line="1035" selection-end-column="36" />
               <folding>
                 <element signature="e#8840#8841#0" expanded="true" />
                 <element signature="e#8893#8894#0" expanded="true" />
                 <element signature="e#15443#15444#0" expanded="true" />
                 <element signature="e#15505#15506#0" expanded="true" />
-                <element signature="e#15922#15923#0" expanded="true" />
-                <element signature="e#15982#15983#0" expanded="true" />
+                <element signature="e#15934#15935#0" expanded="true" />
+                <element signature="e#15994#15995#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -167,8 +168,8 @@
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TableOperationsIT.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/CollectionOperationsIT.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
       </list>
     </option>
   </component>
@@ -789,8 +790,8 @@
             <element signature="e#8893#8894#0" expanded="true" />
             <element signature="e#15443#15444#0" expanded="true" />
             <element signature="e#15505#15506#0" expanded="true" />
-            <element signature="e#15922#15923#0" expanded="true" />
-            <element signature="e#15982#15983#0" expanded="true" />
+            <element signature="e#15934#15935#0" expanded="true" />
+            <element signature="e#15994#15995#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -836,8 +837,8 @@
             <element signature="e#8893#8894#0" expanded="true" />
             <element signature="e#15443#15444#0" expanded="true" />
             <element signature="e#15505#15506#0" expanded="true" />
-            <element signature="e#15922#15923#0" expanded="true" />
-            <element signature="e#15982#15983#0" expanded="true" />
+            <element signature="e#15934#15935#0" expanded="true" />
+            <element signature="e#15994#15995#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1175,26 +1176,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="36" column="64" selection-start-line="36" selection-start-column="64" selection-end-line="36" selection-end-column="64" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="40">
-          <caret line="391" column="26" selection-start-line="391" selection-start-column="26" selection-end-line="391" selection-end-column="26" />
+        <state relative-caret-position="265">
+          <caret line="1035" column="36" selection-start-line="1035" selection-start-column="36" selection-end-line="1035" selection-end-column="36" />
           <folding>
             <element signature="e#8840#8841#0" expanded="true" />
             <element signature="e#8893#8894#0" expanded="true" />
             <element signature="e#15443#15444#0" expanded="true" />
             <element signature="e#15505#15506#0" expanded="true" />
-            <element signature="e#15922#15923#0" expanded="true" />
-            <element signature="e#15982#15983#0" expanded="true" />
+            <element signature="e#15934#15935#0" expanded="true" />
+            <element signature="e#15994#15995#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3225">
-          <caret line="219" column="130" selection-start-line="219" selection-start-column="130" selection-end-line="219" selection-end-column="130" />
-          <folding />
         </state>
       </provider>
     </entry>

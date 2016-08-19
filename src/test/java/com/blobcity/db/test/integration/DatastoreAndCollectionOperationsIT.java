@@ -32,6 +32,22 @@ public class DatastoreAndCollectionOperationsIT {
     }
 
     @Test
+    public void createAndDropDs() {
+        System.out.println("IT: createDs(\"ds1\")");
+        Assert.assertTrue("Failed to create datastore", Db.createDs("ds1"));
+
+        System.out.println("IT: createDs(\"ds1\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a datastore with duplicate name", Db.createDs("ds1"));
+
+        System.out.println("IT: dropDs(\"ds1\")");
+        Assert.assertTrue("Failed to drop datastore", Db.dropDs("ds1"));
+
+        System.out.println("IT: dropDs(\"ds1\") on an inexistent datastore");
+        Assert.assertTrue("Reported an error when dropping an inexistent datastore, Should return true on no-op",
+                Db.dropDs("ds1"));
+    }
+
+    @Test
     public void createAndDropCollectionWithName() {
 
         /* Testing for on-disk collections */
