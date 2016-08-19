@@ -2,6 +2,8 @@ package com.blobcity.db.test.integration;
 
 import com.blobcity.db.Db;
 import com.blobcity.db.config.Credentials;
+import com.blobcity.db.enums.CollectionType;
+import com.blobcity.db.enums.ReplicationType;
 import org.junit.*;
 
 /**
@@ -31,28 +33,462 @@ public class DatastoreAndCollectionOperationsIT {
 
     @Test
     public void createAndDropCollectionWithName() {
-        System.out.println("IT: createCollection(\"test\")");
-        Assert.assertTrue("Failed to create collection", Db.createCollection("test"));
 
-        System.out.println("IT: createCollection(\"test\") with duplicate name");
+        /* Testing for on-disk collections */
+        System.out.println("IT: createCollection(\"diskCollection\", \"on-disk\")");
+        Assert.assertTrue("Failed to create collection", Db.createCollection("diskCollection", CollectionType.ON_DISK));
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"on-disk\") with duplicate name");
         Assert.assertFalse("Did not report error when creating a collection with duplicate name",
-                Db.createCollection("test")); //duplicate name
+                Db.createCollection("diskCollection", CollectionType.ON_DISK)); //duplicate name
 
-        System.out.println("IT: dropCollection(\"test\")");
-        Assert.assertTrue("Failed to drop collection", Db.dropCollection("test"));
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-non-durable\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY)); //duplicate name
 
-        System.out.println("IT: dropCollection(\"test\") on an inexistent collection");
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-nd\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY_NON_DURABLE)); //duplicate name
+
+
+        /* Testing for in-memory collections */
+        System.out.println("IT: createCollection(\"memoryCollection\", \"in-memory\")");
+        Assert.assertTrue("Failed to create collection", Db.createCollection("memoryCollection", CollectionType.IN_MEMORY));
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"on-disk\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.ON_DISK)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-non-durable\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-nd\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY_NON_DURABLE)); //duplicate name
+
+
+        /* Testing for in-memory-non-durable collections */
+        System.out.println("IT: createCollection(\"memoryNDCollection\", \"in-memory-non-durable\")");
+        Assert.assertTrue("Failed to create collection", Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE));
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"on-disk\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.ON_DISK)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-non-durable\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-nd\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE)); //duplicate name
+
+
+        /* Dropping all created collections */
+        System.out.println("IT: dropCollection(\"diskCollection\")");
+        Assert.assertTrue("Failed to drop an on-disk collection", Db.dropCollection("diskCollection"));
+
+        System.out.println("IT: dropCollection(\"memoryCollection\")");
+        Assert.assertTrue("Failed to drop an in-memory collection", Db.dropCollection("memoryCollection"));
+
+        System.out.println("IT: dropCollection(\"memoryNDCollection\")");
+        Assert.assertTrue("Failed to drop an in-memory-non-durable collection", Db.dropCollection("memoryNDCollection"));
+
+
+        /* Confirming redrops to be working fine */
+        System.out.println("IT: dropCollection(\"diskCollection\") on an inexistent collection");
         Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
-                Db.dropCollection("test")); //inexistent
+                Db.dropCollection("diskCollection")); //inexistent
+
+        System.out.println("IT: dropCollection(\"memoryCollection\") on an inexistent collection");
+        Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
+                Db.dropCollection("memoryCollection")); //inexistent
+
+        System.out.println("IT: dropCollection(\"memoryNDCollection\") on an inexistent collection");
+        Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
+                Db.dropCollection("memoryNDollection")); //inexistent
+
+        System.out.println("IT: dropCollection(\"neverCreated\") on an inexistent collection");
+        Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
+                Db.dropCollection("neverCreated")); //inexistent
     }
 
     @Test
-    public void createAndDropCollectionWithSchema() {
+    public void createAndDropDistributedCollections() {
+        /* Testing for on-disk collections */
+        System.out.println("IT: createCollection(\"diskCollection\", \"on-disk\", \"DISTRIBUTED\", 0)");
+        Assert.assertTrue("Failed to create collection", Db.createCollection("diskCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 0));
 
+        System.out.println("IT: createCollection(\"diskCollection\",\"on-disk\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.ON_DISK)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-non-durable\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-nd\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY_NON_DURABLE)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"on-disk\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-non-durable\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"on-disk\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-non-durable\",  \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"on-disk\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.ON_DISK, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-non-durable\",  \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-nd\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.MIRRORED, null)); //duplicate name
+
+
+        /* Testing for in-memory collections */
+        System.out.println("IT: createCollection(\"memoryCollection\", \"in-memory\", \"DISTRIBUTED\", 0)");
+        Assert.assertTrue("Failed to create collection", Db.createCollection("memoryCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 0));
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"on-disk\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.ON_DISK)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-non-durable\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-nd\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY_NON_DURABLE)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"on-disk\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-non-durable\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"on-disk\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-non-durable\",  \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"on-disk\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.ON_DISK, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-non-durable\",  \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-nd\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.MIRRORED, null)); //duplicate name
+
+
+        /* Testing for in-memory-non-durable collections */
+        System.out.println("IT: createCollection(\"memoryNDCollection\", \"in-memory-non-durable\", \"DISTRIBUTED\", 0)");
+        Assert.assertTrue("Failed to create collection", Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 0));
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"on-disk\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.ON_DISK)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-non-durable\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-nd\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"on-disk\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-non-durable\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"on-disk\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-non-durable\",  \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"on-disk\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.ON_DISK, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-non-durable\",  \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-nd\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.MIRRORED, null)); //duplicate name
+
+        /* Dropping all created collections */
+        System.out.println("IT: dropCollection(\"diskCollection\")");
+        Assert.assertTrue("Failed to drop an on-disk collection", Db.dropCollection("diskCollection"));
+
+        System.out.println("IT: dropCollection(\"memoryCollection\")");
+        Assert.assertTrue("Failed to drop an in-memory collection", Db.dropCollection("memoryCollection"));
+
+        System.out.println("IT: dropCollection(\"memoryNDCollection\")");
+        Assert.assertTrue("Failed to drop an in-memory-non-durable collection", Db.dropCollection("memoryNDCollection"));
+
+
+        /* Confirming redrops to be working fine */
+        System.out.println("IT: dropCollection(\"diskCollection\") on an inexistent collection");
+        Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
+                Db.dropCollection("diskCollection")); //inexistent
+
+        System.out.println("IT: dropCollection(\"memoryCollection\") on an inexistent collection");
+        Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
+                Db.dropCollection("memoryCollection")); //inexistent
+
+        System.out.println("IT: dropCollection(\"memoryNDCollection\") on an inexistent collection");
+        Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
+                Db.dropCollection("memoryNDollection")); //inexistent
+
+        System.out.println("IT: dropCollection(\"neverCreated\") on an inexistent collection");
+        Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
+                Db.dropCollection("neverCreated")); //inexistent
     }
 
     @Test
-    public void createAndDropCollectionWithStorageAndReplicationType() {
+    public void createAndDropMirroredCollections() {
+        /* Testing for on-disk collections */
+        System.out.println("IT: createCollection(\"diskCollection\", \"on-disk\", \"MIRRORED\", null)");
+        Assert.assertTrue("Failed to create collection", Db.createCollection("diskCollection", CollectionType.ON_DISK, ReplicationType.MIRRORED, null));
 
+        System.out.println("IT: createCollection(\"diskCollection\",\"on-disk\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.ON_DISK)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-non-durable\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-nd\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY_NON_DURABLE)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"on-disk\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-non-durable\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"on-disk\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-non-durable\",  \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"on-disk\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.ON_DISK, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-non-durable\",  \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"diskCollection\",\"in-memory-nd\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("diskCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.MIRRORED, null)); //duplicate name
+
+
+        /* Testing for in-memory collections */
+        System.out.println("IT: createCollection(\"memoryCollection\", \"in-memory\", \"MIRRORED\", null)");
+        Assert.assertTrue("Failed to create collection", Db.createCollection("memoryCollection", CollectionType.IN_MEMORY, ReplicationType.MIRRORED, null));
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"on-disk\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.ON_DISK)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-non-durable\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-nd\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY_NON_DURABLE)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"on-disk\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-non-durable\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"on-disk\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-non-durable\",  \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"on-disk\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.ON_DISK, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-non-durable\",  \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryCollection\",\"in-memory-nd\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.MIRRORED, null)); //duplicate name
+
+
+        /* Testing for in-memory-non-durable collections */
+        System.out.println("IT: createCollection(\"memoryNDCollection\", \"in-memory-non-durable\", \"MIRRORED\", null)");
+        Assert.assertTrue("Failed to create collection", Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.MIRRORED, null));
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"on-disk\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.ON_DISK)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-non-durable\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-nd\") with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"on-disk\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-non-durable\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 0) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 0)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"on-disk\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.ON_DISK, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-non-durable\",  \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-nd\", \"DISTRIBUTED\", 1) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.DISTRIBUTED, 1)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"on-disk\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.ON_DISK, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-non-durable\",  \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY, ReplicationType.MIRRORED, null)); //duplicate name
+
+        System.out.println("IT: createCollection(\"memoryNDCollection\",\"in-memory-nd\", \"MIRRORED\", null) with duplicate name");
+        Assert.assertFalse("Did not report error when creating a collection with duplicate name",
+                Db.createCollection("memoryNDCollection", CollectionType.IN_MEMORY_NON_DURABLE, ReplicationType.MIRRORED, null)); //duplicate name
+
+        /* Dropping all created collections */
+        System.out.println("IT: dropCollection(\"diskCollection\")");
+        Assert.assertTrue("Failed to drop an on-disk collection", Db.dropCollection("diskCollection"));
+
+        System.out.println("IT: dropCollection(\"memoryCollection\")");
+        Assert.assertTrue("Failed to drop an in-memory collection", Db.dropCollection("memoryCollection"));
+
+        System.out.println("IT: dropCollection(\"memoryNDCollection\")");
+        Assert.assertTrue("Failed to drop an in-memory-non-durable collection", Db.dropCollection("memoryNDCollection"));
+
+
+        /* Confirming redrops to be working fine */
+        System.out.println("IT: dropCollection(\"diskCollection\") on an inexistent collection");
+        Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
+                Db.dropCollection("diskCollection")); //inexistent
+
+        System.out.println("IT: dropCollection(\"memoryCollection\") on an inexistent collection");
+        Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
+                Db.dropCollection("memoryCollection")); //inexistent
+
+        System.out.println("IT: dropCollection(\"memoryNDCollection\") on an inexistent collection");
+        Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
+                Db.dropCollection("memoryNDollection")); //inexistent
+
+        System.out.println("IT: dropCollection(\"neverCreated\") on an inexistent collection");
+        Assert.assertTrue("Reported an error when dropping an inexistent collection, Should return true on no-op",
+                Db.dropCollection("neverCreated")); //inexistent
     }
 }

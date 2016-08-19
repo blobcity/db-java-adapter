@@ -26,15 +26,7 @@ import com.google.gson.JsonParser;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
@@ -390,12 +382,26 @@ public abstract class Db {
         DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_DATASTORE, ds, null);
         return response.getAckCode() == 1;
     }
-    
-    public static boolean createCollection(final String collection){
-        return createCollection(Credentials.getInstance(), collection);
+
+    /**
+     * Creates a new collection with the specified name and storage type
+     * @param collection the name of the collection
+     * @param collectionType the {@link CollectionType} specifying the type of storage for the collection
+     * @return true if the new collection is created; false otherwise
+     */
+    public static boolean createCollection(final String collection, final CollectionType collectionType) {
+        return createCollection(Credentials.getInstance(), collection, collectionType);
     }
 
-    public static boolean createCollection(final Credentials credentials, final String collection){
+    /**
+     * Creates a new collection with the specified name and storage type, by connecting to the database with the
+     * explicitly provided credentials
+     * @param credentials the credentials to use for connecting to DB
+     * @param collection the name of the collection
+     * @param collectionType the {@link CollectionType} specifying the type of storage for the collection
+     * @return true if the new collection is created; false otherwise
+     */
+    public static boolean createCollection(final Credentials credentials, final String collection, final CollectionType collectionType) {
         if(credentials == null) {
             throw new InternalAdapterException("connection credentials must be specified");
         }
@@ -404,39 +410,41 @@ public abstract class Db {
             throw new InternalAdapterException("collection name must be specified");
         }
 
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, collection, null);
+        JsonObject payloadJson = new JsonObject();
+        payloadJson.addProperty("name", collection);
+        payloadJson.addProperty("type", collectionType.getType());
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, payloadJson);
         return response.getAckCode() == 1;
     }
-    
-    public static boolean createCollection(final String collection, final JsonObject jsonSchema){
-        return createCollection(Credentials.getInstance(), collection, jsonSchema);
+
+    /**
+     * Creates a new collection with full parameter specifications
+     * @param collection the name of the collection
+     * @param collectionType the {@link CollectionType} specifying the type of storage for the collection
+     * @param replicationType the {@link ReplicationType} specifying the data distribution strategy
+     * @param replicationFactor specifies the number of replica copies to create. Valid only for
+     *                          <code>ReplicationType.DISTRIBUTED</code> collections.
+     *                          A value of 0 indicates no replication.
+     * @return true if the new collection is created; false otherwise
+     */
+    public static boolean createCollection(final String collection, final CollectionType collectionType, final ReplicationType replicationType, final Integer replicationFactor){
+        return createCollection(Credentials.getInstance(), collection, collectionType, replicationType, replicationFactor);
     }
 
-    public static boolean createCollection(final Credentials credentials, final String collection, final JsonObject jsonSchema){
-        if(credentials == null) {
-            throw new InternalAdapterException("connection credentials must be specified");
-        }
-
-        if(collection == null || collection.isEmpty() ){
-            throw new InternalAdapterException("collection name must be specified");
-        }
-
-        if(jsonSchema == null ){
-            throw new InternalAdapterException("collection schema must be specified");
-        }
-
-        // this needs to be changed in future to be nested inside the payload json and not as payloadjson itself.
-        JsonObject payloadJson = jsonSchema;
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, collection, payloadJson);
-
-        return response.getAckCode() == 1;
-    }
-    
-    public static boolean createCollection(final String collection, final CollectionType collectionType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
-        return createCollection(Credentials.getInstance(), collection, collectionType, replicationType, replicationFactor, flexibleSchema);
-    }
-
-    public static boolean createCollection(final Credentials credentials, final String collection, final CollectionType collectionType, final ReplicationType replicationType, final Integer replicationFactor, final boolean flexibleSchema){
+    /**
+     * Creates a new collection with full parameter specifications, by connecting to the database with the
+     * explicitly provided credentials.
+     * @param credentials the credentials to use for connecting to DB
+     * @param collection the name of the collection
+     * @param collectionType the {@link CollectionType} specifying the type of storage for the collection
+     * @param replicationType the {@link ReplicationType} specifying the data distribution strategy
+     * @param replicationFactor specifies the number of replica copies to create. Valid only for
+     *                          <code>ReplicationType.DISTRIBUTED</code> collections.
+     *                          A value of 0 indicates no replication.
+     * @return true if the new collection is created; false otherwise
+     */
+    public static boolean createCollection(final Credentials credentials, final String collection, final CollectionType collectionType, final ReplicationType replicationType, final Integer replicationFactor){
         if(credentials == null) {
             throw new InternalAdapterException("connection credentials must be specified");
         }
@@ -454,14 +462,12 @@ public abstract class Db {
         }
 
         JsonObject payloadJson = new JsonObject();
-        JsonObject metaJson = new JsonObject();
-        metaJson.addProperty("replication-type", replicationType.getType());
-        metaJson.addProperty("replication-factor", replicationFactor);
-        metaJson.addProperty("collection-type", collectionType.getType());
-        metaJson.addProperty("flexible-schema", flexibleSchema);
-        payloadJson.add("meta", metaJson);
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, collection, payloadJson);
+        payloadJson.addProperty("name", collection);
+        payloadJson.addProperty("type", collectionType.getType());
+        payloadJson.addProperty("replication-type", replicationType.getType());
+        payloadJson.addProperty("replication-factor", replicationFactor);
 
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, collection, payloadJson);
         return response.getAckCode() == 1;
     }
     
@@ -1018,6 +1024,9 @@ public abstract class Db {
         queryJson.addProperty(QueryConstants.QUERY, queryType.getQueryCode());
         queryJson.addProperty(QueryConstants.USER, credentials.getUsername());
         queryJson.addProperty(QueryConstants.PASS, credentials.getPassword());
+        if(credentials.getDb() != null && !credentials.getDb().isEmpty()) {
+            queryJson.addProperty(QueryConstants.DB, credentials.getDb());
+        }
         queryJson.add(QueryConstants.PAYLOAD, payloadJson);
 
         final DbQueryResponse response = QueryExecuter.executeBql(DbQueryRequest.create(credentials, queryJson.toString()));
