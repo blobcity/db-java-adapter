@@ -353,23 +353,46 @@ public abstract class Db {
 
     //TODO: Add support for inserting other data formats
 
+    /**
+     * Creates a datastore with the specified name
+     * @param ds the datastore name
+     * @return true if a new datastore is created; false otherwise
+     */
     public static boolean createDs(final String ds) {
         return createDs(Credentials.getInstance(), ds);
     }
 
+    /**
+     * Creates a datastore with the specified name, buy using the specified connection credentials
+     * @param credentials the credentials used to connect to the database
+     * @param ds the name of the datastore
+     * @return true if a new datastore is created; false otherwise
+     */
     public static boolean createDs(final Credentials credentials, final String ds) {
         if(ds == null || ds.isEmpty()) {
             throw new InternalAdapterException("ds (datastore) name must be specified");
         }
-
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_DS, null, null);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("name", ds);
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_DS, jsonObject);
         return response.getAckCode() == 1;
     }
 
+    /**
+     * Drops a datastore with the spcified name
+     * @param ds the name of the datastore to drop
+     * @return true if post operation a datastore with the given name is does not exist; false otherwise
+     */
     public static boolean dropDs(final String ds) {
         return dropDs(Credentials.getInstance(), ds);
     }
 
+    /**
+     * Drops a datastore with the specified name; by connecting to the database using the specified credentials
+     * @param credentials the credentials used to connect to the database
+     * @param ds the name of the datastore
+     * @return true if post operation a datastore with the given name does not exist; false otherwise
+     */
     public static boolean dropDs(final Credentials credentials, final String ds) {
         if(credentials == null) {
             throw new InternalAdapterException("connection credentials must be specified");
@@ -379,7 +402,9 @@ public abstract class Db {
             throw new InternalAdapterException("ds (datastore) name must be specified");
         }
 
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_DATASTORE, ds, null);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("name", ds);
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_DATASTORE, jsonObject);
         return response.getAckCode() == 1;
     }
 
