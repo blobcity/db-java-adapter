@@ -379,6 +379,38 @@ public abstract class Db {
     }
 
     /**
+     * Fetches the list of datastores accessible to the connecting user
+     * @return the list of datastores if the operation is successful; {@link InternalAdapterException} otherwise
+     */
+    public static List<String> listDs() {
+        return listDs(Credentials.getInstance());
+    }
+
+    /**
+     * Fetches the list of datastores accessible to the connecting user, but connecting to the database using the
+     * specified connection credentials
+     * @param credentials the credentials used to connect to the datastore
+     * @return the list of datastores if the operation is successful; {@link InternalAdapterException} otherwise
+     */
+    public static List<String> listDs(Credentials credentials) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.LIST_DS, null);
+        if(response.getAckCode() != 1) {
+            throw new InternalAdapterException(response.getErrorCode() + " : " + response.getErrorCause());
+        }
+        JsonArray dsJsonArray = response.getPayload().getAsJsonObject().getAsJsonArray("ds");
+        List<String> dsList = new ArrayList<String>();
+        for(int i = 0; i < dsJsonArray.size(); i++) {
+            dsList.add(dsJsonArray.get(i).getAsString());
+        }
+
+        return dsList;
+    }
+
+    /**
      * Drops a datastore with the spcified name
      * @param ds the name of the datastore to drop
      * @return true if post operation a datastore with the given name is does not exist; false otherwise
@@ -495,6 +527,64 @@ public abstract class Db {
         DbQueryResponse response = postStaticRequest(credentials, QueryType.CREATE_COLLECTION, collection, payloadJson);
         return response.getAckCode() == 1;
     }
+
+    /**
+     * Fetches a list of the collections the connecting user is authorized to present within the specified datastore
+     * @param ds the name of the datastore
+     * @return the list of collections names as datastoreName.collectionName; {@link InternalAdapterException} in case
+     * of any error
+     */
+    public static List<String> listCollections(final String ds) {
+        return listCollections(Credentials.getInstance(), ds);
+    }
+
+    /**
+     * Fetches a list of the collections the connecting user is authorized to present within the specified datastore, by
+     * connecting to the database using the specified credentials
+     * @param credentials the connection credentials
+     * @param ds the name of the datastore
+     * @return the list of collections names as datastoreName.collectionName; {@link InternalAdapterException} in case
+     * of any error
+     */
+    public static List<String> listCollections(final Credentials credentials, final String ds) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(ds == null || ds.isEmpty()) {
+            throw new InternalAdapterException("ds (datastore) name must be specified");
+        }
+
+        JsonObject payloadJson = new JsonObject();
+        payloadJson.addProperty("ds", ds);
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.LIST_COLLECTIONS, payloadJson);
+        if(response.getAckCode() != 1) {
+            throw new InternalAdapterException(response.getErrorCode() + " : " + response.getErrorCause());
+        }
+        JsonArray collectionJsonArray = response.getPayload().getAsJsonObject().getAsJsonArray("c");
+        List<String> collectionList = new ArrayList<String>();
+        for(int i = 0; i < collectionJsonArray.size(); i++) {
+            collectionList.add(collectionJsonArray.get(i).getAsString());
+        }
+        return collectionList;
+    }
+
+    public static boolean truncateCollection(final String collection){
+        return truncateCollection(Credentials.getInstance(), collection);
+    }
+
+    public static boolean truncateCollection(final Credentials credentials, final String collection){
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()) {
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.TRUNCATE_COLLECTION, collection, null);
+        return response != null;
+    }
     
     public static boolean dropCollection(final String collection){
         return dropCollection(Credentials.getInstance(), collection);
@@ -510,23 +600,6 @@ public abstract class Db {
         }
 
         DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_COLLECTION, collection, null);
-        return response != null;
-    }
-    
-    public static boolean truncateCollection(final String collection){
-        return truncateCollection(Credentials.getInstance(), collection);
-    }
-
-    public static boolean truncateCollection(final Credentials credentials, final String collection){
-        if(credentials == null) {
-            throw new InternalAdapterException("connection credentials must be specified");
-        }
-
-        if(collection == null || collection.isEmpty()) {
-            throw new InternalAdapterException("collection name must be specified");
-        }
-
-        DbQueryResponse response = postStaticRequest(credentials, QueryType.TRUNCATE_COLLECTION, collection, null);
         return response != null;
     }
     
