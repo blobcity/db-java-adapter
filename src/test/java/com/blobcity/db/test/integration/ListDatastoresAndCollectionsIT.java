@@ -25,8 +25,8 @@ public class ListDatastoresAndCollectionsIT {
 
     @AfterClass
     public static void tearDownClass() {
-        Db.dropDs("test");
         Db.dropDs("ds1");
+        Db.dropDs("ds2");
         Credentials.unInit();
     }
 

@@ -27,6 +27,7 @@ enum QueryType {
     LIST_COLLECTIONS("list-collections"),
     DROP_DATASTORE("drop-ds"),
     DROP_COLLECTION("drop-collection"),
+    TRUNCATE_DS("truncate-ds"),
     TRUNCATE_COLLECTION("truncate-collection"),
     ADD_COLUMN("add-column"),
     DROP_COLUMN("drop-column"),

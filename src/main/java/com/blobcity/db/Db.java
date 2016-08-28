@@ -410,6 +410,25 @@ public abstract class Db {
         return dsList;
     }
 
+    public static boolean truncateDs(final String ds) {
+        return truncateDs(Credentials.getInstance(), ds);
+    }
+
+    public static boolean truncateDs(final Credentials credentials, final String ds) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(ds == null || ds.isEmpty()) {
+            throw new InternalAdapterException("ds (datastore) name must be specified");
+        }
+
+        JsonObject payloadJson = new JsonObject();
+        payloadJson.addProperty("name", ds);
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.TRUNCATE_DS, payloadJson);
+        return response.getAckCode() == 1;
+    }
+
     /**
      * Drops a datastore with the spcified name
      * @param ds the name of the datastore to drop
