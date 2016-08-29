@@ -410,6 +410,44 @@ public abstract class Db {
         return dsList;
     }
 
+    /**
+     * Checks if the specified datastore is present
+     * @param ds name of the datastore
+     * @return <code>true</code> if the datastore is present; <code>false</code> if the datastore is absent or not
+     * accessible to the connecting user
+     */
+    public static boolean dsExists(final String ds) {
+        return dsExists(Credentials.getInstance(), ds);
+    }
+
+    /**
+     * Checks if the specified datastore is present, by connecting to the database using the specifeid credentials
+     * @param credentials the credentails used to connect to the database
+     * @param ds name of the datastore
+     * @return <code>true</code> if the datastore is present; <code>false</code> if the datastore is absent or not
+     * accessible to the connecting user
+     */
+    public static boolean dsExists(final Credentials credentials, final String ds) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(ds == null || ds.isEmpty()) {
+            throw new InternalAdapterException("ds (datastore) name must be specified");
+        }
+
+        JsonObject requestPayload = new JsonObject();
+        requestPayload.addProperty("ds", ds);
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.DS_EXISTS, requestPayload);
+
+        if(response.getAckCode() != 1) {
+            throw new InternalAdapterException(response.getErrorCode() + " : " + response.getErrorCause());
+        }
+
+        JsonObject responsePayload = response.getPayload().getAsJsonObject();
+        return responsePayload.get("exists").getAsBoolean();
+    }
+
     public static boolean truncateDs(final String ds) {
         return truncateDs(Credentials.getInstance(), ds);
     }
@@ -586,6 +624,50 @@ public abstract class Db {
             collectionList.add(collectionJsonArray.get(i).getAsString());
         }
         return collectionList;
+    }
+
+    /**
+     * Checks if a collection is present within a specified datastore
+     * @param ds name of datastore
+     * @param collection name of collection
+     * @return <code>true</code> if collection is present; <code>false</code> otherwise
+     */
+    public static boolean collectionExists(final String ds, final String collection) {
+        return collectionExists(Credentials.getInstance(), ds, collection);
+    }
+
+    /**
+     * Checks if a collection is present within a specified datastore by connecting to the database using specified
+     * credentials
+     * @param credentials the credentials used to connect to the database
+     * @param ds name of the datastore
+     * @param collection name of the collection
+     * @return <code>true</code> if the collection is present; <code>false</code> otherwise
+     */
+    public static boolean collectionExists(final Credentials credentials, final String ds, final String collection) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(ds == null || ds.isEmpty()) {
+            throw new InternalAdapterException("ds (datastore) name must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()) {
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        JsonObject requestPayload = new JsonObject();
+        requestPayload.addProperty("ds", ds);
+        requestPayload.addProperty("c", collection);
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.COLLECTION_EXISTS, requestPayload);
+
+        if(response.getAckCode() != 1) {
+            throw new InternalAdapterException(response.getErrorCode() + " : " + response.getErrorCause());
+        }
+
+        JsonObject responsePayload = response.getPayload().getAsJsonObject();
+        return responsePayload.get("exists").getAsBoolean();
     }
 
     public static boolean truncateCollection(final String collection){

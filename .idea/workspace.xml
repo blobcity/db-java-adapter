@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="77510550-b8a7-4052-bc5d-0598e999ffb5" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TruncateDsAndCollectionIT.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DsAndCollectionExistsIT.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/ListDatastoresAndCollectionsIT.java" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/ListDatastoresAndCollectionsIT.java" />
     </list>
     <ignored path="java-adapter.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -50,11 +49,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TruncateDsAndCollectionIT.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="TruncateDsAndCollectionIT.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TruncateDsAndCollectionIT.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+            <state relative-caret-position="330">
+              <caret line="24" column="5" selection-start-line="15" selection-start-column="4" selection-end-line="24" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -65,11 +64,25 @@
       <file leaf-file-name="Db.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="620">
-              <caret line="429" column="5" selection-start-line="429" selection-start-column="5" selection-end-line="429" selection-end-column="5" />
+            <state relative-caret-position="587">
+              <caret line="448" column="5" selection-start-line="448" selection-start-column="5" selection-end-line="448" selection-end-column="5" />
               <folding>
-                <element signature="e#17913#17914#0" expanded="true" />
-                <element signature="e#17977#17978#0" expanded="true" />
+                <element signature="e#18174#18175#0" expanded="true" />
+                <element signature="e#18236#18237#0" expanded="true" />
+                <element signature="e#19567#19568#0" expanded="true" />
+                <element signature="e#19631#19632#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DsAndCollectionExistsIT.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DsAndCollectionExistsIT.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="793">
+              <caret line="57" column="139" selection-start-line="57" selection-start-column="139" selection-end-line="57" selection-end-column="139" />
+              <folding>
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -131,10 +144,11 @@
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/ListDsIT.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryConstants.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/ListDatastoresAndCollectionsIT.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TruncateDsAndCollectionIT.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DsAndCollectionExistsIT.java" />
       </list>
     </option>
   </component>
@@ -718,17 +732,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#17913#17914#0" expanded="true" />
-            <element signature="e#17977#17978#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/entity/TestTable.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
@@ -765,8 +768,10 @@
         <state relative-caret-position="11445">
           <caret line="811" column="36" selection-start-line="811" selection-start-column="36" selection-end-line="811" selection-end-column="36" />
           <folding>
-            <element signature="e#17913#17914#0" expanded="true" />
-            <element signature="e#17977#17978#0" expanded="true" />
+            <element signature="e#18174#18175#0" expanded="true" />
+            <element signature="e#18236#18237#0" expanded="true" />
+            <element signature="e#19567#19568#0" expanded="true" />
+            <element signature="e#19631#19632#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1052,25 +1057,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="29" column="31" selection-start-line="29" selection-start-column="31" selection-end-line="29" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="620">
-          <caret line="429" column="5" selection-start-line="429" selection-start-column="5" selection-end-line="429" selection-end-column="5" />
-          <folding>
-            <element signature="e#17913#17914#0" expanded="true" />
-            <element signature="e#17977#17978#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="420">
@@ -1078,6 +1064,14 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="32" column="43" selection-start-line="32" selection-start-column="43" selection-end-line="32" selection-end-column="43" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1089,10 +1083,33 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="587">
+          <caret line="448" column="5" selection-start-line="448" selection-start-column="5" selection-end-line="448" selection-end-column="5" />
+          <folding>
+            <element signature="e#18174#18175#0" expanded="true" />
+            <element signature="e#18236#18237#0" expanded="true" />
+            <element signature="e#19567#19568#0" expanded="true" />
+            <element signature="e#19631#19632#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TruncateDsAndCollectionIT.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+        <state relative-caret-position="330">
+          <caret line="24" column="5" selection-start-line="15" selection-start-column="4" selection-end-line="24" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DsAndCollectionExistsIT.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="793">
+          <caret line="57" column="139" selection-start-line="57" selection-start-column="139" selection-end-line="57" selection-end-column="139" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

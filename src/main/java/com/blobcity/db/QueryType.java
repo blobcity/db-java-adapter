@@ -29,6 +29,8 @@ enum QueryType {
     DROP_COLLECTION("drop-collection"),
     TRUNCATE_DS("truncate-ds"),
     TRUNCATE_COLLECTION("truncate-collection"),
+    DS_EXISTS("ds-exists"),
+    COLLECTION_EXISTS("collection-exists"),
     ADD_COLUMN("add-column"),
     DROP_COLUMN("drop-column"),
     INDEX("index"),
