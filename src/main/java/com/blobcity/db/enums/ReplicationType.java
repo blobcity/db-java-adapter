@@ -12,7 +12,7 @@ package com.blobcity.db.enums;
 public enum ReplicationType {
     /* Data distributed to match the replication factor of the cluster */
     DISTRIBUTED("distributed"),
-    /* Data is fully replicated across all nodes in the cluster for the specified table. The table on all nodes at all 
+    /* Data is fully replicated across all nodes in the cluster for the specified collection. The collection on all nodes at all
      times will have the same data */
     MIRRORED("mirrored");
     private final String type;

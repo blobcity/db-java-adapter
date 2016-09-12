@@ -41,7 +41,7 @@ class DbQueryRequest {
 
     public String createPostParam() {
         try {
-            return MessageFormat.format("username={0}&password={1}&db={2}&q={3}", credentials.getUsername(), credentials.getPassword(), credentials.getDb(), URLEncoder.encode(query, "UTF-8"));
+            return MessageFormat.format("username={0}&password={1}&ds={2}&q={3}", credentials.getUsername(), credentials.getPassword(), credentials.getDb(), URLEncoder.encode(query, "UTF-8"));
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(DbQueryRequest.class.getName()).log(Level.SEVERE, null, ex);
             throw new DbOperationException("UNKNOWN", "The requested data could not be encoded to UTF-8 format for transmission over network");

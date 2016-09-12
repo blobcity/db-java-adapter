@@ -19,15 +19,23 @@ enum QueryType {
     SEARCH("search"),
     CONTAINS("contains"),
     INSERT_CUSTOM("insert-custom"),
+
     // database related commands
-    CREATE_DATASTORE("create-datastore"),
+    CREATE_DS("create-ds"),
     CREATE_COLLECTION("create-collection"),
+    LIST_DS("list-ds"),
+    LIST_COLLECTIONS("list-collections"),
+    DROP_DATASTORE("drop-ds"),
     DROP_COLLECTION("drop-collection"),
+    TRUNCATE_DS("truncate-ds"),
     TRUNCATE_COLLECTION("truncate-collection"),
+    DS_EXISTS("ds-exists"),
+    COLLECTION_EXISTS("collection-exists"),
     ADD_COLUMN("add-column"),
     DROP_COLUMN("drop-column"),
     INDEX("index"),
     DROP_INDEX("drop-index"),
+
     // user-provided code related commands
     SEARCH_FILTERED("search-filtered"),
     STORED_PROC("sp"),
