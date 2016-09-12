@@ -74,8 +74,8 @@
       <file leaf-file-name="DsAndCollectionExistsIT.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DsAndCollectionExistsIT.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="525">
-              <caret line="35" column="44" selection-start-line="35" selection-start-column="44" selection-end-line="35" selection-end-column="44" />
+            <state relative-caret-position="645">
+              <caret line="43" column="90" selection-start-line="43" selection-start-column="90" selection-end-line="43" selection-end-column="90" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#407#408#0" expanded="true" />
@@ -1122,8 +1122,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DsAndCollectionExistsIT.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="35" column="44" selection-start-line="35" selection-start-column="44" selection-end-line="35" selection-end-column="44" />
+        <state relative-caret-position="645">
+          <caret line="43" column="90" selection-start-line="43" selection-start-column="90" selection-end-line="43" selection-end-column="90" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#407#408#0" expanded="true" />
