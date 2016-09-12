@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="77510550-b8a7-4052-bc5d-0598e999ffb5" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DsAndCollectionExistsIT.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java" />
-    </list>
+    <list default="true" id="77510550-b8a7-4052-bc5d-0598e999ffb5" name="Default" comment="" />
     <ignored path="java-adapter.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/out/" />
