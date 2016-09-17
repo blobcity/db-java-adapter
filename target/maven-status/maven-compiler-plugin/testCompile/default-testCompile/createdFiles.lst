@@ -1,0 +1,5 @@
+com/blobcity/db/test/integration/DsAndCollectionExistsIT.class
+com/blobcity/db/entity/TestTable.class
+com/blobcity/db/test/integration/ListDatastoresAndCollectionsIT.class
+com/blobcity/db/test/integration/TruncateDsAndCollectionIT.class
+com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.class
