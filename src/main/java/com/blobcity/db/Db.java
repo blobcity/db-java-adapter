@@ -17,11 +17,7 @@ import com.blobcity.db.exceptions.InternalAdapterException;
 import com.blobcity.db.exceptions.InternalDbException;
 import com.blobcity.db.search.Query;
 import com.blobcity.db.search.StringUtil;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -45,6 +41,7 @@ public abstract class Db {
 
     private String collection = null;
     private String ds = null;
+    private String _id = null; //primary key value holder, in case the sub class does not have this property
 
     public Db() {
         for (Annotation annotation : this.getClass().getAnnotations()) {
@@ -57,10 +54,6 @@ public abstract class Db {
                 }
                 else{
                     ds = blobCityEntity.ds();
-                    String dbName = Credentials.getInstance().getDb();
-                    if(dbName.equals("dummy")) {
-                        Credentials.getInstance().setDb(ds);
-                    }
                 }
 
                 if (StringUtil.isEmpty(collection)) {
@@ -334,21 +327,134 @@ public abstract class Db {
         throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
     }
 
-    public static void insertJsonData(final String collection, final JsonObject insertJson){
-        insertJsonData(Credentials.getInstance(), collection, insertJson);
+    public static void insertJson(final String collection, final JsonObject insertJson){
+        insertJson(Credentials.getInstance(), collection, Arrays.asList(new JsonObject[]{insertJson}));
     }
 
-    public static void insertJsonData(final Credentials credentials, final String collection, final JsonObject insertJson){
+    public static void insertJson(final Credentials credentials, final String collection, final JsonObject insertJson){
+        insertJson(credentials, collection, Arrays.asList(new JsonObject[]{insertJson}));
+    }
+
+    public static void insertJson(final String collection, final List<JsonObject> jsonList) {
+        insertJson(Credentials.getInstance(), collection, jsonList);
+    }
+
+    public static void insertJson(final Credentials credentials, final String collection, final List<JsonObject> jsonList) {
         if(collection == null || collection.isEmpty()) {
             throw new InternalAdapterException("collection name must be specified");
         }
 
-        if(insertJson == null) {
-            throw new InternalAdapterException("json data to insert cannot be null");
+        if(jsonList == null || jsonList.isEmpty()) {
+            throw new InternalAdapterException("At-least one json required for a json insert operation");
         }
 
-        final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT, collection, insertJson);
+        JsonObject payloadJsonObject = new JsonObject();
+        JsonArray dataArray = new JsonArray();
+        for(JsonObject element : jsonList) {
+            dataArray.add(element);
+        }
+        payloadJsonObject.add(QueryConstants.DATA, dataArray);
+        payloadJsonObject.addProperty(QueryConstants.TYPE, "json");
+
+        final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT, collection, payloadJsonObject);
         reportIfError(response);
+    }
+
+    public static void insertCsv(final String collection, final String csvString) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insertCsv(final Credentials credentials, final String collection, final String csvString) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insertCsv(final String collection, final List<String> csvList) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insertCsv(final Credentials credentials, final String collection, final List<String> csvList) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insertXml(final String collection, final String xmlString) {
+        insertXml(Credentials.getInstance(), collection, Arrays.asList(new String[]{xmlString}));
+    }
+
+    public static void insertXml(final Credentials credentials, final String collection, final String xmlString) {
+        insertXml(credentials, collection, Arrays.asList(new String[]{xmlString}));
+    }
+
+    public static void insertXml(final String collection, final List<String> xmlList) {
+        insertXml(Credentials.getInstance(), collection, xmlList);
+    }
+
+    public static void insertXml(final Credentials credentials, final String collection, final List<String> xmlList) {
+        if(collection == null || collection.isEmpty()) {
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        if(xmlList == null || xmlList.isEmpty()) {
+            throw new InternalAdapterException("At-least one xml required for a xml insert operation");
+        }
+
+        JsonObject payloadJsonObject = new JsonObject();
+        JsonArray dataArray = new JsonArray();
+        for(String element : xmlList) {
+            dataArray.add(new JsonPrimitive(element));
+        }
+        payloadJsonObject.add(QueryConstants.DATA, dataArray);
+        payloadJsonObject.addProperty(QueryConstants.TYPE, "xml");
+
+        final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT, collection, payloadJsonObject);
+        reportIfError(response);
+    }
+
+    public static void insertSql(final String collection, final String sqlString) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insertSql(final Credentials credentials, final String collection, final String sqlString) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insertSql(final String collection, final List<String> sqlList) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insertSql(final Credentials credentials, final String collection, final List<String> sqlList) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insertText(final String collection, final String text) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insertText(final Credentials credentials, final String collection, final String text) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insertText(final String collection, final List<String> text) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insertText(final Credentials credentials, final String collection, final List<String> text) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insert(final String collection, final String insertString) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insert(final Credentials credentials, final String collection, final String insertString) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insert(final String collection, final List<String> insertList) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public static void insert(final Credentials credentials, final List<String> insertList) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     //TODO: Add support for inserting other data formats
@@ -1193,7 +1299,12 @@ public abstract class Db {
                     break;
                 case INSERT:
                 case SAVE:
-                    queryJson.add(QueryConstants.PAYLOAD, toJson());
+                    JsonObject payloadJson = new JsonObject();
+                    payloadJson.addProperty(QueryConstants.TYPE,"json");
+                    JsonArray jsonArray = new JsonArray();
+                    jsonArray.add(toJson());
+                    payloadJson.add(QueryConstants.DATA, jsonArray);
+                    queryJson.add(QueryConstants.PAYLOAD, payloadJson);
                     break;
                 default:
                     throw new InternalDbException("Attempting to executed unknown or unidentifed query");
@@ -1315,8 +1426,8 @@ public abstract class Db {
     public boolean insert(final Credentials credentials) {
         final DbQueryResponse response = postRequest(credentials, QueryType.INSERT);
         if (response.isSuccessful()) {
-            final JsonElement payloadJson = response.getPayload();
-            fromJson(payloadJson.getAsJsonObject());
+//            final JsonElement payloadJson = response.getPayload();
+//            fromJson(payloadJson.getAsJsonObject());
             return true;
         }
 

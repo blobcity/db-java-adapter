@@ -1,7 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="77510550-b8a7-4052-bc5d-0598e999ffb5" name="Default" comment="" />
+    <list default="true" id="77510550-b8a7-4052-bc5d-0598e999ffb5" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataInsertIT.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/JSONDataInsertIT.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/XMLDataInsertIT.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/demo/DemoMain.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/demo/Person.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/schema/DatastoreAndCollectionOperationsIT.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DsAndCollectionExistsIT.java" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/schema/DsAndCollectionExistsIT.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/ListDatastoresAndCollectionsIT.java" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/schema/ListDatastoresAndCollectionsIT.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TruncateDsAndCollectionIT.java" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/schema/TruncateDsAndCollectionIT.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/db-java-adapter-1.2.6-SNAPSHOT-javadoc.jar" afterPath="$PROJECT_DIR$/target/db-java-adapter-1.2.6-SNAPSHOT-javadoc.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/db-java-adapter-1.2.6-SNAPSHOT-sources.jar" afterPath="$PROJECT_DIR$/target/db-java-adapter-1.2.6-SNAPSHOT-sources.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/db-java-adapter-1.2.6-SNAPSHOT.jar" afterPath="$PROJECT_DIR$/target/db-java-adapter-1.2.6-SNAPSHOT.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/DbQueryResponse.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/DbQueryResponse.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryConstants.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryConstants.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/allclasses-frame.html" afterPath="$PROJECT_DIR$/target/apidocs/allclasses-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/allclasses-noframe.html" afterPath="$PROJECT_DIR$/target/apidocs/allclasses-noframe.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/Db.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/Db.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/Column.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/Column.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/Entity.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/Entity.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/Primary.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/Primary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/class-use/Column.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/class-use/Column.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/class-use/Entity.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/class-use/Entity.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/class-use/Primary.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/class-use/Primary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/package-frame.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/package-summary.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/package-tree.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/package-use.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/annotations/package-use.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/class-use/Db.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/class-use/Db.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/Credentials.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/Credentials.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/class-use/Credentials.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/class-use/Credentials.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/package-frame.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/package-summary.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/package-tree.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/package-use.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/config/package-use.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/AutoDefineType.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/AutoDefineType.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/CollectionType.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/CollectionType.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/ColumnType.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/ColumnType.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/IndexType.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/IndexType.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/ReplicationType.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/ReplicationType.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/class-use/AutoDefineType.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/class-use/AutoDefineType.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/class-use/CollectionType.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/class-use/CollectionType.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/class-use/ColumnType.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/class-use/ColumnType.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/class-use/IndexType.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/class-use/IndexType.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/class-use/ReplicationType.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/class-use/ReplicationType.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/package-frame.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/package-summary.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/package-tree.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/package-use.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/enums/package-use.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/DbOperationException.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/DbOperationException.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/InternalAdapterException.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/InternalAdapterException.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/InternalDbException.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/InternalDbException.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/class-use/DbOperationException.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/class-use/DbOperationException.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/class-use/InternalAdapterException.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/class-use/InternalAdapterException.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/class-use/InternalDbException.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/class-use/InternalDbException.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/package-frame.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/package-summary.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/package-tree.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/package-use.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/exceptions/package-use.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/package-frame.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/package-summary.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/package-tree.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/package-use.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/package-use.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/Order.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/Order.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/OrderElement.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/OrderElement.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/ParamOperator.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/ParamOperator.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/Query.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/Query.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/SearchOperator.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/SearchOperator.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/SearchParam.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/SearchParam.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/StringUtil.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/StringUtil.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/Order.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/Order.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/OrderElement.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/OrderElement.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/ParamOperator.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/ParamOperator.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/Query.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/Query.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/SearchOperator.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/SearchOperator.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/SearchParam.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/SearchParam.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/StringUtil.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/class-use/StringUtil.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/package-frame.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/package-summary.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/package-tree.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/package-use.html" afterPath="$PROJECT_DIR$/target/apidocs/com/blobcity/db/search/package-use.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/constant-values.html" afterPath="$PROJECT_DIR$/target/apidocs/constant-values.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/deprecated-list.html" afterPath="$PROJECT_DIR$/target/apidocs/deprecated-list.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/help-doc.html" afterPath="$PROJECT_DIR$/target/apidocs/help-doc.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/index-all.html" afterPath="$PROJECT_DIR$/target/apidocs/index-all.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/index.html" afterPath="$PROJECT_DIR$/target/apidocs/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/overview-frame.html" afterPath="$PROJECT_DIR$/target/apidocs/overview-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/overview-summary.html" afterPath="$PROJECT_DIR$/target/apidocs/overview-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/overview-tree.html" afterPath="$PROJECT_DIR$/target/apidocs/overview-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/apidocs/serialized-form.html" afterPath="$PROJECT_DIR$/target/apidocs/serialized-form.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" />
+    </list>
     <ignored path="java-adapter.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/out/" />
@@ -22,11 +117,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="DatastoreAndCollectionOperationsIT.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java">
+      <file leaf-file-name="JSONDataInsertIT.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/JSONDataInsertIT.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="28" column="0" selection-start-line="17" selection-start-column="4" selection-end-line="28" selection-end-column="0" />
+            <state relative-caret-position="733">
+              <caret line="58" column="89" selection-start-line="58" selection-start-column="89" selection-end-line="58" selection-end-column="89" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -34,23 +129,76 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ListDatastoresAndCollectionsIT.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/ListDatastoresAndCollectionsIT.java">
+      <file leaf-file-name="EntityDataInsertIT.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataInsertIT.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="703">
-              <caret line="68" column="101" selection-start-line="68" selection-start-column="101" selection-end-line="68" selection-end-column="101" />
+            <state relative-caret-position="165">
+              <caret line="18" column="65" selection-start-line="18" selection-start-column="65" selection-end-line="18" selection-end-column="65" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TruncateDsAndCollectionIT.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TruncateDsAndCollectionIT.java">
+      <file leaf-file-name="XMLDataInsertIT.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/XMLDataInsertIT.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="24" column="5" selection-start-line="15" selection-start-column="4" selection-end-line="24" selection-end-column="5" />
+            <state relative-caret-position="600">
+              <caret line="46" column="35" selection-start-line="43" selection-start-column="8" selection-end-line="46" selection-end-column="35" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DemoMain.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/demo/DemoMain.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="355">
+              <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="QueryExecuter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryExecuter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="208">
+              <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Person.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/demo/Person.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="150">
+              <caret line="11" column="12" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#555#556#0" expanded="true" />
+                <element signature="e#582#583#0" expanded="true" />
+                <element signature="e#622#623#0" expanded="true" />
+                <element signature="e#654#655#0" expanded="true" />
+                <element signature="e#681#682#0" expanded="true" />
+                <element signature="e#707#708#0" expanded="true" />
+                <element signature="e#742#743#0" expanded="true" />
+                <element signature="e#772#773#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DbQueryResponse.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/DbQueryResponse.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="553">
+              <caret line="68" column="5" selection-start-line="68" selection-start-column="5" selection-end-line="68" selection-end-column="5" />
+              <folding>
+                <element signature="e#2168#2169#0" expanded="true" />
+                <element signature="e#2238#2239#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -59,28 +207,32 @@
       <file leaf-file-name="Db.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="587">
-              <caret line="448" column="5" selection-start-line="448" selection-start-column="5" selection-end-line="448" selection-end-column="5" />
+            <state relative-caret-position="194">
+              <caret line="1179" column="28" selection-start-line="1179" selection-start-column="12" selection-end-line="1179" selection-end-column="28" />
               <folding>
-                <element signature="e#18174#18175#0" expanded="true" />
-                <element signature="e#18236#18237#0" expanded="true" />
-                <element signature="e#19567#19568#0" expanded="true" />
-                <element signature="e#19631#19632#0" expanded="true" />
+                <element signature="e#4541#4542#0" expanded="true" />
+                <element signature="e#4595#4596#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DsAndCollectionExistsIT.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DsAndCollectionExistsIT.java">
+      <file leaf-file-name="CollectionStore.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/CollectionStore.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="645">
-              <caret line="43" column="90" selection-start-line="43" selection-start-column="90" selection-end-line="43" selection-end-column="90" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#407#408#0" expanded="true" />
-                <element signature="e#478#479#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="246">
+              <caret line="73" column="48" selection-start-line="73" selection-start-column="48" selection-end-line="73" selection-end-column="48" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Class.java" pinned="false" current-in-tab="false">
+        <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/src.zip!/java/lang/Class.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="208">
+              <caret line="426" column="0" selection-start-line="426" selection-start-column="0" selection-end-line="426" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -119,7 +271,6 @@
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Sqlable.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/StringUtil.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/DbQueryRequest.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/DbQueryResponse.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryExecuter.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Jsonable.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TableOperations.java" />
@@ -139,13 +290,22 @@
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TableOperationsIT.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/CollectionOperationsIT.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/ListDsIT.java" />
-        <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryConstants.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/ListDatastoresAndCollectionsIT.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TruncateDsAndCollectionIT.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DsAndCollectionExistsIT.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/schema/TruncateDsAndCollectionIT.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryConstants.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/DataInsertIT.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/test.xml" />
+        <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/JSONDataInsertIT.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataInsertIT.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/XMLDataInsertIT.java" />
+        <option value="$PROJECT_DIR$/src/test/java/demo/Person.java" />
+        <option value="$PROJECT_DIR$/src/test/java/demo/DemoMain.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/DbQueryResponse.java" />
       </list>
     </option>
   </component>
@@ -162,9 +322,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="23" />
     <option name="width" value="1920" />
-    <option name="height" value="983" />
+    <option name="height" value="1080" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -191,7 +350,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -226,6 +384,32 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-adapter" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-adapter" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="demo" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -318,6 +502,86 @@
               <option name="myItemId" value="db" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="integration" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-adapter" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-adapter" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="db" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="integration" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="EntityDataInsertIT.java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-adapter" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java-adapter" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="db" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -363,22 +627,9 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java-adapter" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java-adapter" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="docs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
       <pane id="PackagesPane" />
     </panes>
   </component>
@@ -391,16 +642,144 @@
     <property name="Repository.Attach.Sources" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="full.screen.before.presentation.mode" value="true" />
+    <property name="FullScreen" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="com.blobcity.db.test.unit" />
     </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.blobcity.db.test.integration.data" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/docs" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.DemoMain">
+    <configuration default="false" name="XMLDataInsertIT.insertXmlOnDisk" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="com.blobcity.db.test.integration.data.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="db-java-adapter" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.blobcity.db.test.integration.data" />
+      <option name="MAIN_CLASS_NAME" value="com.blobcity.db.test.integration.data.XMLDataInsertIT" />
+      <option name="METHOD_NAME" value="insertXmlOnDisk" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="false" name="EntityDataInsertIT" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="com.blobcity.db.test.integration.data.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="db-java-adapter" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.blobcity.db.test.integration.data" />
+      <option name="MAIN_CLASS_NAME" value="com.blobcity.db.test.integration.data.EntityDataInsertIT" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="false" name="EntityDataInsertIT.insertEntityOnDisk" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="com.blobcity.db.test.integration.data.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="db-java-adapter" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.blobcity.db.test.integration.data" />
+      <option name="MAIN_CLASS_NAME" value="com.blobcity.db.test.integration.data.EntityDataInsertIT" />
+      <option name="METHOD_NAME" value="insertEntityOnDisk" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="false" name="JSONDataInsertIT.insertOnDisk" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="com.blobcity.db.test.integration.data.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="db-java-adapter" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.blobcity.db.test.integration.data" />
+      <option name="MAIN_CLASS_NAME" value="com.blobcity.db.test.integration.data.JSONDataInsertIT" />
+      <option name="METHOD_NAME" value="insertOnDisk" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="false" name="DemoMain" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="demo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="demo.DemoMain" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="db-java-adapter" />
+      <envs />
+      <method />
+    </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
@@ -651,6 +1030,22 @@
       <listeners />
       <method />
     </configuration>
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="JUnit.XMLDataInsertIT.insertXmlOnDisk" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.EntityDataInsertIT" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.EntityDataInsertIT.insertEntityOnDisk" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.JSONDataInsertIT.insertOnDisk" />
+      <item index="4" class="java.lang.String" itemvalue="Application.DemoMain" />
+    </list>
+    <recent_temporary>
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Application.DemoMain" />
+        <item index="1" class="java.lang.String" itemvalue="JUnit.XMLDataInsertIT.insertXmlOnDisk" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.JSONDataInsertIT.insertOnDisk" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.EntityDataInsertIT.insertEntityOnDisk" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.EntityDataInsertIT" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
@@ -668,34 +1063,66 @@
     </task>
     <servers />
   </component>
+  <component name="TestHistory">
+    <history-entry file="EntityDataInsertIT_insertEntityOnDisk - 2016.11.26 at 23h 04m 39s.xml">
+      <configuration name="EntityDataInsertIT.insertEntityOnDisk" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="JSONDataInsertIT_insertOnDisk - 2016.11.26 at 19h 07m 13s.xml">
+      <configuration name="JSONDataInsertIT.insertOnDisk" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="JSONDataInsertIT_insertOnDisk - 2016.11.26 at 19h 08m 43s.xml">
+      <configuration name="JSONDataInsertIT.insertOnDisk" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="JSONDataInsertIT_insertOnDisk - 2016.11.26 at 19h 12m 02s.xml">
+      <configuration name="JSONDataInsertIT.insertOnDisk" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="JSONDataInsertIT_insertOnDisk - 2016.11.26 at 19h 16m 20s.xml">
+      <configuration name="JSONDataInsertIT.insertOnDisk" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="JSONDataInsertIT_insertOnDisk - 2016.11.26 at 19h 16m 54s.xml">
+      <configuration name="JSONDataInsertIT.insertOnDisk" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="JSONDataInsertIT_insertOnDisk - 2016.11.26 at 19h 17m 08s.xml">
+      <configuration name="JSONDataInsertIT.insertOnDisk" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="JSONDataInsertIT_insertOnDisk - 2016.11.26 at 19h 19m 44s.xml">
+      <configuration name="JSONDataInsertIT.insertOnDisk" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="JSONDataInsertIT_insertOnDisk - 2016.12.01 at 13h 53m 47s.xml">
+      <configuration name="JSONDataInsertIT.insertOnDisk" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="XMLDataInsertIT_insertXmlOnDisk - 2016.12.01 at 13h 54m 01s.xml">
+      <configuration name="XMLDataInsertIT.insertXmlOnDisk" configurationId="JUnit" />
+    </history-entry>
+  </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1920" height="983" extended-state="6" />
+    <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32871288" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32970297" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32970297" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17465389" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32970297" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934928" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32970297" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -746,79 +1173,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/entity/TestTable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/unit/QueryTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="615">
-          <caret line="53" column="5" selection-start-line="53" selection-start-column="5" selection-end-line="53" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="15" column="28" selection-start-line="15" selection-start-column="28" selection-end-line="15" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Jsonable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11445">
-          <caret line="811" column="36" selection-start-line="811" selection-start-column="36" selection-end-line="811" selection-end-column="36" />
-          <folding>
-            <element signature="e#18174#18175#0" expanded="true" />
-            <element signature="e#18236#18237#0" expanded="true" />
-            <element signature="e#19567#19568#0" expanded="true" />
-            <element signature="e#19631#19632#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Jsonable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/db-java-adapter.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" column="9" selection-start-line="24" selection-start-column="9" selection-end-line="24" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="3" selection-start-line="1" selection-start-column="3" selection-end-line="1" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/ArrayJsonable.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
@@ -903,20 +1257,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/DbQueryResponse.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="16" column="19" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryExecuter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="20" column="19" selection-start-line="20" selection-start-column="19" selection-end-line="20" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Query.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-975">
@@ -928,13 +1268,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
           <caret line="23" column="7" selection-start-line="23" selection-start-column="7" selection-end-line="23" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/CollectionStore.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="30" column="31" selection-start-line="30" selection-start-column="31" selection-end-line="30" selection-end-column="31" />
         </state>
       </provider>
     </entry>
@@ -994,17 +1327,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/config/Credentials.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="59" column="0" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
-          <folding>
-            <element signature="e#1998#1999#0" expanded="false" />
-            <element signature="e#2029#2030#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/entity/TestTable.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -1034,13 +1356,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/annotations/Entity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3465">
@@ -1063,71 +1378,193 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="32" column="43" selection-start-line="32" selection-start-column="43" selection-end-line="32" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/schema/DsAndCollectionExistsIT.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
+          <folding>
+            <element signature="e#414#415#0" expanded="false" />
+            <element signature="e#485#486#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/schema/TruncateDsAndCollectionIT.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#416#417#0" expanded="false" />
+            <element signature="e#487#488#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryConstants.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="24" column="47" selection-start-line="24" selection-start-column="47" selection-end-line="24" selection-end-column="47" />
+        <state relative-caret-position="270">
+          <caret line="20" column="45" selection-start-line="20" selection-start-column="45" selection-end-line="20" selection-end-column="45" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DatastoreAndCollectionOperationsIT.java">
+    <entry file="jar://$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.2.4/gson-2.2.4-sources.jar!/com/google/gson/JsonElement.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="28" column="0" selection-start-line="17" selection-start-column="4" selection-end-line="28" selection-end-column="0" />
+        <state relative-caret-position="195">
+          <caret line="32" column="22" selection-start-line="32" selection-start-column="22" selection-end-line="32" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.2.4/gson-2.2.4-sources.jar!/com/google/gson/JsonArray.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="38" column="9" selection-start-line="38" selection-start-column="9" selection-end-line="38" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/schema/ListDatastoresAndCollectionsIT.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="465">
+          <caret line="44" column="46" selection-start-line="44" selection-start-column="46" selection-end-line="44" selection-end-column="46" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#528#529#0" expanded="false" />
+            <element signature="e#599#600#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/test.xml" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/annotations/Entity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="17" column="34" selection-start-line="17" selection-start-column="34" selection-end-line="17" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/config/Credentials.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="690">
+          <caret line="48" column="30" selection-start-line="48" selection-start-column="30" selection-end-line="48" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/schema/DatastoreAndCollectionOperationsIT.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="645">
+          <caret line="51" column="5" selection-start-line="17" selection-start-column="4" selection-end-line="51" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/XMLDataInsertIT.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="600">
+          <caret line="46" column="35" selection-start-line="43" selection-start-column="8" selection-end-line="46" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataInsertIT.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="18" column="65" selection-start-line="18" selection-start-column="65" selection-end-line="18" selection-end-column="65" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/JSONDataInsertIT.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="733">
+          <caret line="58" column="89" selection-start-line="58" selection-start-column="89" selection-end-line="58" selection-end-column="89" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryType.java">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/src.zip!/java/lang/Class.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="32" column="43" selection-start-line="32" selection-start-column="43" selection-end-line="32" selection-end-column="43" />
+        <state relative-caret-position="208">
+          <caret line="426" column="0" selection-start-line="426" selection-start-column="0" selection-end-line="426" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/ListDatastoresAndCollectionsIT.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/CollectionStore.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="703">
-          <caret line="68" column="101" selection-start-line="68" selection-start-column="101" selection-end-line="68" selection-end-column="101" />
+        <state relative-caret-position="246">
+          <caret line="73" column="48" selection-start-line="73" selection-start-column="48" selection-end-line="73" selection-end-column="48" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/demo/Person.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="11" column="12" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#555#556#0" expanded="true" />
+            <element signature="e#582#583#0" expanded="true" />
+            <element signature="e#622#623#0" expanded="true" />
+            <element signature="e#654#655#0" expanded="true" />
+            <element signature="e#681#682#0" expanded="true" />
+            <element signature="e#707#708#0" expanded="true" />
+            <element signature="e#742#743#0" expanded="true" />
+            <element signature="e#772#773#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryExecuter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/demo/DemoMain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="355">
+          <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="587">
-          <caret line="448" column="5" selection-start-line="448" selection-start-column="5" selection-end-line="448" selection-end-column="5" />
+        <state relative-caret-position="194">
+          <caret line="1179" column="28" selection-start-line="1179" selection-start-column="12" selection-end-line="1179" selection-end-column="28" />
           <folding>
-            <element signature="e#18174#18175#0" expanded="true" />
-            <element signature="e#18236#18237#0" expanded="true" />
-            <element signature="e#19567#19568#0" expanded="true" />
-            <element signature="e#19631#19632#0" expanded="true" />
+            <element signature="e#4541#4542#0" expanded="true" />
+            <element signature="e#4595#4596#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TruncateDsAndCollectionIT.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/DbQueryResponse.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="24" column="5" selection-start-line="15" selection-start-column="4" selection-end-line="24" selection-end-column="5" />
+        <state relative-caret-position="553">
+          <caret line="68" column="5" selection-start-line="68" selection-start-column="5" selection-end-line="68" selection-end-column="5" />
           <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/DsAndCollectionExistsIT.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="645">
-          <caret line="43" column="90" selection-start-line="43" selection-start-column="90" selection-end-line="43" selection-end-column="90" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#407#408#0" expanded="true" />
-            <element signature="e#478#479#0" expanded="true" />
+            <element signature="e#2168#2169#0" expanded="true" />
+            <element signature="e#2238#2239#0" expanded="true" />
           </folding>
         </state>
       </provider>
