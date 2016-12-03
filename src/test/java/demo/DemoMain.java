@@ -32,20 +32,18 @@ public class DemoMain {
 
         Db.insertXml("Person", xml1);
 
-        /* Selecting a record */
-
-//        List<Person> list = Db.search(Query.select().from(Person.class).where(SearchParam.create("age").gt(25)));
-
-//        for(Person person : list) {
-//            System.out.println(person.getName() + " " + person.getAge());
-//        }
-
         List<Object> pkList = Db.selectAll(Person.class);
-
         for(Object pk : pkList) {
             Person person = Db.newLoadedInstance(Person.class, pk);
             System.out.println(person.getName() + " " + person.getAge());
         }
 
+        List<Person> personList = Db.search(Query.select().from(Person.class).where(SearchParam.create("age").gteq(20)));
+        for(Person person : personList) {
+            System.out.println(person.getName() + " " + person.getAge());
+        }
+
+
+        Db.dropDs("test");
     }
 }

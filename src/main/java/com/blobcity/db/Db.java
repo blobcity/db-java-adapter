@@ -441,6 +441,22 @@ public abstract class Db {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public static void insertText(final String collection, final String text, final String interpreterName) {
+        insertText(Credentials.getInstance(), collection, Arrays.asList(new String[]{text}), interpreterName);
+    }
+
+    public static void insertText(final String collection, final List<String> text, final String interpreterName) {
+        insertText(Credentials.getInstance(), collection, text, interpreterName);
+    }
+
+    public static void insertText(final Credentials credentials, final String collection, final String text, final String interpreterName) {
+        insertText(credentials, collection, Arrays.asList(new String[]{text}), interpreterName);
+    }
+
+    public static void insertText(final Credentials credentials, final String collection, final List<String> text, final String interpreterName) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     public static void insert(final String collection, final String insertString) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
