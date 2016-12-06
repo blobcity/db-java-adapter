@@ -19,6 +19,7 @@ class QueryConstants {
     public static final String PASS = "password";
     public static final String DATA = "data";
     public static final String TYPE = "type";
+    public static final String INTERPRETER = "interpreter";
 
     /* Response data keys */
     public static final String PAYLOAD = "p";

@@ -356,6 +356,9 @@ public abstract class Db {
         payloadJsonObject.add(QueryConstants.DATA, dataArray);
         payloadJsonObject.addProperty(QueryConstants.TYPE, "json");
 
+        payloadJsonObject.addProperty("interpreter", "MyInterpreter");
+        payloadJsonObject.addProperty("interceptor", "MyInterceptor");
+
         final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT, collection, payloadJsonObject);
         reportIfError(response);
     }
@@ -426,19 +429,19 @@ public abstract class Db {
     }
 
     public static void insertText(final String collection, final String text) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        insertText(Credentials.getInstance(), collection, Arrays.asList(new String[]{text}));
     }
 
     public static void insertText(final Credentials credentials, final String collection, final String text) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        insertText(credentials, collection, Arrays.asList(new String[]{text}));
     }
 
-    public static void insertText(final String collection, final List<String> text) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static void insertText(final String collection, final List<String> textList) {
+        insertText(Credentials.getInstance(), collection, textList);
     }
 
-    public static void insertText(final Credentials credentials, final String collection, final List<String> text) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static void insertText(final Credentials credentials, final String collection, final List<String> textList) {
+        insertText(credentials, collection, textList, null);
     }
 
     public static void insertText(final String collection, final String text, final String interpreterName) {
@@ -453,8 +456,29 @@ public abstract class Db {
         insertText(credentials, collection, Arrays.asList(new String[]{text}), interpreterName);
     }
 
-    public static void insertText(final Credentials credentials, final String collection, final List<String> text, final String interpreterName) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static void insertText(final Credentials credentials, final String collection, final List<String> textList, final String interpreterName) {
+        if(collection == null || collection.isEmpty()) {
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        if(textList == null || textList.isEmpty()) {
+            throw new InternalAdapterException("At-least one text record required for a text insert operation");
+        }
+
+        JsonObject payloadJsonObject = new JsonObject();
+        JsonArray dataArray = new JsonArray();
+        for(String element : textList) {
+            dataArray.add(new JsonPrimitive(element));
+        }
+        payloadJsonObject.add(QueryConstants.DATA, dataArray);
+        payloadJsonObject.addProperty(QueryConstants.TYPE, "text");
+
+        if(interpreterName != null) {
+            payloadJsonObject.addProperty(QueryConstants.INTERPRETER, interpreterName);
+        }
+
+        final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT, collection, payloadJsonObject);
+        reportIfError(response);
     }
 
     public static void insert(final String collection, final String insertString) {
@@ -1193,7 +1217,6 @@ public abstract class Db {
 
         if (response.isSuccessful()) {
             final JsonArray resultJsonArray = response.getPayload().getAsJsonArray();
-            System.out.println(resultJsonArray);
             final int resultCount = resultJsonArray.size();
             final List<T> responseList = new ArrayList<T>();
             final String tableName = getCollection(clazz);
