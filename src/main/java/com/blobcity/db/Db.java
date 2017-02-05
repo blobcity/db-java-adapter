@@ -499,6 +499,9 @@ public abstract class Db {
 
     //TODO: Add support for inserting other data formats
 
+    /* Update queries */
+
+
     /**
      * Creates a datastore with the specified name
      * @param ds the datastore name
