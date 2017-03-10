@@ -41,7 +41,7 @@ public abstract class Db {
 
     private String collection = null;
     private String ds = null;
-    private String _id = null; //primary key value holder, in case the sub class does not have this property
+    protected String _id = null; //primary key value holder, in case the sub class does not have this property
 
     public Db() {
         for (Annotation annotation : this.getClass().getAnnotations()) {
@@ -106,6 +106,58 @@ public abstract class Db {
         final Entity entity = (Entity) clazz.getAnnotation(Entity.class);
         return entity != null && !StringUtil.isEmpty(entity.collection()) ? entity.collection() : clazz.getSimpleName();
     }
+
+    public void set_id(final String _id) {
+        final Field primaryKeyField = CollectionStore.getInstance().getStructure(ds, collection).get("_id");
+        if (primaryKeyField == null) {
+            throw new InternalAdapterException("Call to set_id failed as could not find field _id in" + collection + " [" + this.getClass().getName() + "]");
+        }
+        synchronized (primaryKeyField) {
+            final boolean accessible = primaryKeyField.isAccessible();
+
+            try {
+                if (!accessible) {
+                    primaryKeyField.setAccessible(true);
+                }
+
+                primaryKeyField.set(this, _id);
+            } catch (IllegalArgumentException ex) {
+                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+            } catch (IllegalAccessException ex) {
+                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+            } finally {
+                if (!accessible) {
+                    primaryKeyField.setAccessible(false);
+                }
+            }
+        }
+    }
+
+    public String get_id() {
+        final Field primaryKeyField = CollectionStore.getInstance().getStructure(ds, collection).get("_id");
+        if (primaryKeyField == null) {
+            throw new InternalAdapterException("Call to get_id failed as could not find field _id in" + collection + " [" + this.getClass().getName() + "]");
+        }
+        synchronized (primaryKeyField) {
+            final boolean accessible = primaryKeyField.isAccessible();
+
+            try {
+                if (!accessible) {
+                    primaryKeyField.setAccessible(true);
+                }
+
+                return primaryKeyField.get(this).toString();
+            } catch (IllegalArgumentException ex) {
+                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+            } catch (IllegalAccessException ex) {
+                throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
+            } finally {
+                if (!accessible) {
+                    primaryKeyField.setAccessible(false);
+                }
+            }
+        }
+    }
     
     
     // Public instance methods
@@ -160,8 +212,10 @@ public abstract class Db {
         try {
             return clazz.newInstance();
         } catch (InstantiationException ex) {
+            ex.printStackTrace();
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         }
     }
@@ -172,8 +226,10 @@ public abstract class Db {
             obj.setPk(pk);
             return obj;
         } catch (InstantiationException ex) {
+            ex.printStackTrace();
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         }
     }
@@ -187,8 +243,10 @@ public abstract class Db {
             }
             return null;
         } catch (InstantiationException ex) {
+            ex.printStackTrace();
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
             throw new InternalAdapterException("An error has occurred in the adapter. Check stack trace for more details.", ex);
         }
     }
@@ -356,8 +414,8 @@ public abstract class Db {
         payloadJsonObject.add(QueryConstants.DATA, dataArray);
         payloadJsonObject.addProperty(QueryConstants.TYPE, "json");
 
-        payloadJsonObject.addProperty("interpreter", "MyInterpreter");
-        payloadJsonObject.addProperty("interceptor", "MyInterceptor");
+//        payloadJsonObject.addProperty("interpreter", "MyInterpreter");
+//        payloadJsonObject.addProperty("interceptor", "MyInterceptor");
 
         final DbQueryResponse response = postStaticRequest(credentials, QueryType.INSERT, collection, payloadJsonObject);
         reportIfError(response);
@@ -1234,7 +1292,6 @@ public abstract class Db {
 
                 for (final Map.Entry<String, JsonElement> entry : entrySet) {
                     final String columnName = entry.getKey();
-
                     final Field field = structureMap.get(columnName);
                     if(field == null) {
                         continue;
@@ -1337,7 +1394,7 @@ public abstract class Db {
             switch (queryType) {
                 case LOAD:
                 case REMOVE:
-                    queryJson.addProperty(QueryConstants.PRIMARY_KEY, getPrimaryKeyValue().toString());
+                    queryJson.addProperty(QueryConstants.PRIMARY_KEY, get_id());
                     break;
                 case INSERT:
                 case SAVE:
@@ -1581,25 +1638,25 @@ public abstract class Db {
     private Object getPrimaryKeyValue() throws IllegalArgumentException, IllegalAccessException {
         Map<String, Field> structureMap = CollectionStore.getInstance().getStructure(ds, collection);
 
-        for (String columnName : structureMap.keySet()) {
-            Field field = structureMap.get(columnName);
-            if(field == null) {
-                continue;
-            }
-            if (field.getAnnotation(Primary.class) != null) {
-                final boolean accessible = field.isAccessible();
-
-                field.setAccessible(true);
-                try {
-                    final Object value = field.get(this);
-                    return value;
-                } catch (IllegalAccessException iae) {
-                    throw iae;
-                } finally {
-                    field.setAccessible(accessible);
-                }
-            }
-        }
+//        for (String columnName : structureMap.keySet()) {
+//            Field field = structureMap.get(columnName);
+//            if(field == null) {
+//                continue;
+//            }
+//            if (field.getAnnotation(Primary.class) != null) {
+//                final boolean accessible = field.isAccessible();
+//
+//                field.setAccessible(true);
+//                try {
+//                    final Object value = field.get(this);
+//                    return value;
+//                } catch (IllegalAccessException iae) {
+//                    throw iae;
+//                } finally {
+//                    field.setAccessible(accessible);
+//                }
+//            }
+//        }
 
         return null;
     }

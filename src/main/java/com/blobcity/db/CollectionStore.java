@@ -115,6 +115,19 @@ class CollectionStore {
             allFieldMap.put(columnName, field);
         }
 
+        if(primaryKeyField == null) {
+            try {
+                primaryKeyField = tableClassMap.get(key).getSuperclass().getDeclaredField("_id");
+                if(columnFieldMap.isEmpty()) {
+                    allFieldMap.put("_id", primaryKeyField);
+                } else {
+                    columnFieldMap.put("_id", primaryKeyField);
+                }
+            } catch (NoSuchFieldException e) {
+                //do nothing
+            }
+        }
+
         tablePrimaryMap.put(key, primaryKeyField);
         tableStructureMap.put(key, columnFieldMap.isEmpty() ? allFieldMap : columnFieldMap);
     }
