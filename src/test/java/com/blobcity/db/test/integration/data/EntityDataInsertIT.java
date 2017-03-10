@@ -4,10 +4,13 @@ import com.blobcity.db.Db;
 import com.blobcity.db.annotations.Entity;
 import com.blobcity.db.config.Credentials;
 import com.blobcity.db.enums.CollectionType;
+import com.blobcity.db.search.Query;
+import com.blobcity.db.search.SearchParam;
 import com.google.gson.JsonObject;
 import org.junit.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by sanketsarang on 18/11/16.
@@ -43,6 +46,12 @@ public class EntityDataInsertIT {
 
         Assert.assertTrue("Cannot perform data insert tests as on-disk collection creation failed", Db.createCollection("User", CollectionType.ON_DISK));
         new User("name1","address1").insert();
+
+        List<User> userList = Db.search(Query.select().from(User.class).where(SearchParam.create("name").eq("name1")));
+
+        for(User user : userList) {
+            System.out.println(user.get_id());
+        }
     }
 
     @Test
@@ -56,29 +65,3 @@ public class EntityDataInsertIT {
     }
 }
 
-@Entity(ds = "test", collection = "User")
-class User extends Db {
-    private String name;
-    private String address;
-
-    public User(final String name, final String address) {
-        this.name = name;
-        this.address = address;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-}
