@@ -51,6 +51,11 @@ public class OrderElement implements ObjectJsonable, Sqlable, Cloneable {
     }
 
     @Override
+    public String asSql(final String ds) {
+        throw new RuntimeException("Incorrect invocation. Sqlable.asSql(ds) should not be invoked by OrderElement class");
+    }
+
+    @Override
     protected OrderElement clone() {
         return new OrderElement(columnName, order);
     }

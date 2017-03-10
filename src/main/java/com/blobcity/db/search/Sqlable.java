@@ -12,13 +12,23 @@ package com.blobcity.db.search;
  *
  * @see Jsonable
  * @author Karun AB
+ * @author Sanket Sarang
  */
 interface Sqlable {
 
     /**
      * Provides a legal SQL form of the implementing class
      *
+     * @return instance of a legal SQL format as a (@link String}
+     */
+
+    public String asSql();
+
+    /**
+     * Provides a legal SQL form of the implementing class with the generated SQL being for the specified datastore
+     *
+     * @param ds name of datastore
      * @return instance of a legal SQL format as a {@link String}
      */
-    public String asSql();
+    public String asSql(final String ds);
 }

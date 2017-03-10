@@ -254,6 +254,11 @@ public class SearchParam implements ArrayJsonable, Sqlable {
         return sb.toString();
     }
 
+    @Override
+    public String asSql(final String ds) {
+        throw new RuntimeException("Incorrect invocation. Sqlable.asSql(ds) should not be invoked by SearchParam class");
+    }
+
     /**
      * Method is internally called whenever the {@link #condition} and/or {@link #args} are updated.
      *

@@ -2,13 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="77510550-b8a7-4052-bc5d-0598e999ffb5" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/CollectionStore.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/CollectionStore.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataInsertIT.java" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataInsertIT.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataSaveIT.java" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataSaveIT.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/User.java" afterPath="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/User.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/OrderElement.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/OrderElement.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/ParamOperator.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/ParamOperator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Query.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Query.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/SearchParam.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/SearchParam.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Sqlable.java" afterPath="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Sqlable.java" />
     </list>
     <ignored path="java-adapter.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -30,11 +30,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="EntityDataInsertIT.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="EntityDataInsertIT.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataInsertIT.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="310">
-              <caret line="46" column="90" selection-start-line="46" selection-start-column="90" selection-end-line="46" selection-end-column="90" />
+            <state relative-caret-position="645">
+              <caret line="53" column="9" selection-start-line="53" selection-start-column="9" selection-end-line="53" selection-end-column="9" />
               <folding>
                 <element signature="e#2088#2089#0" expanded="true" />
                 <element signature="e#2172#2173#0" expanded="true" />
@@ -64,8 +64,51 @@
       <file leaf-file-name="Query.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Query.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="328">
-              <caret line="230" column="44" selection-start-line="230" selection-start-column="44" selection-end-line="230" selection-end-column="44" />
+            <state relative-caret-position="424">
+              <caret line="228" column="37" selection-start-line="228" selection-start-column="37" selection-end-line="228" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Sqlable.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Sqlable.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="480">
+              <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ParamOperator.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/ParamOperator.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="490">
+              <caret line="57" column="13" selection-start-line="57" selection-start-column="13" selection-end-line="57" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SearchParam.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/SearchParam.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="454">
+              <caret line="256" column="13" selection-start-line="256" selection-start-column="13" selection-end-line="256" selection-end-column="13" />
+              <folding>
+                <element signature="e#2079#2080#0" expanded="true" />
+                <element signature="e#2128#2129#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OrderElement.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/OrderElement.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="538">
+              <caret line="57" column="13" selection-start-line="57" selection-start-column="13" selection-end-line="57" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -83,16 +126,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="JSONDataInsertIT.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/JSONDataInsertIT.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="600">
-              <caret line="48" column="16" selection-start-line="48" selection-start-column="16" selection-end-line="48" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="DemoMain.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/demo/DemoMain.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -103,41 +136,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TextDataInsertIT.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/TextDataInsertIT.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="43" column="24" selection-start-line="43" selection-start-column="24" selection-end-line="43" selection-end-column="24" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Db.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-45">
-              <caret line="37" column="13" selection-start-line="37" selection-start-column="13" selection-end-line="37" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="QueryExecuter.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/QueryExecuter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="100">
-              <caret line="50" column="89" selection-start-line="50" selection-start-column="89" selection-end-line="50" selection-end-column="89" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CollectionStore.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/CollectionStore.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="265">
-              <caret line="117" column="37" selection-start-line="117" selection-start-column="37" selection-end-line="117" selection-end-column="37" />
+            <state relative-caret-position="299">
+              <caret line="326" column="65" selection-start-line="326" selection-start-column="65" selection-end-line="326" selection-end-column="65" />
               <folding />
             </state>
           </provider>
@@ -168,18 +171,13 @@
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/ArrayJsonable.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/ObjectJsonable.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Order.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/ParamOperator.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/SearchOperator.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Sqlable.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/StringUtil.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/DbQueryRequest.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Jsonable.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TableOperations.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/TableOperationsTest.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/OrderElement.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Query.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/SearchParam.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/TableType.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/enums/CollectionType.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/CloudStorage.java" />
@@ -212,8 +210,13 @@
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataInsertIT.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataSaveIT.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/User.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
         <option value="$PROJECT_DIR$/src/test/java/demo/DemoMain.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Sqlable.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Query.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/ParamOperator.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/SearchParam.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/blobcity/db/search/OrderElement.java" />
       </list>
     </option>
   </component>
@@ -1093,24 +1096,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/ParamOperator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="10" column="19" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/StringUtil.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="12" column="19" selection-start-line="12" selection-start-column="19" selection-end-line="12" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/OrderElement.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="23" column="7" selection-start-line="23" selection-start-column="7" selection-end-line="23" selection-end-column="7" />
         </state>
       </provider>
     </entry>
@@ -1121,24 +1110,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Sqlable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="22" column="26" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Jsonable.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="435">
           <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/SearchParam.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="35" column="19" selection-start-line="35" selection-start-column="19" selection-end-line="35" selection-end-column="19" />
         </state>
       </provider>
     </entry>
@@ -1386,26 +1361,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Query.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="230" column="44" selection-start-line="230" selection-start-column="44" selection-end-line="230" selection-end-column="44" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/CollectionStore.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="265">
           <caret line="117" column="37" selection-start-line="117" selection-start-column="37" selection-end-line="117" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-45">
-          <caret line="37" column="13" selection-start-line="37" selection-start-column="13" selection-end-line="37" selection-end-column="13" />
           <folding />
         </state>
       </provider>
@@ -1444,14 +1403,65 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/com/blobcity/db/test/integration/data/EntityDataInsertIT.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="310">
-          <caret line="46" column="90" selection-start-line="46" selection-start-column="90" selection-end-line="46" selection-end-column="90" />
+        <state relative-caret-position="645">
+          <caret line="53" column="9" selection-start-line="53" selection-start-column="9" selection-end-line="53" selection-end-column="9" />
           <folding>
             <element signature="e#2088#2089#0" expanded="true" />
             <element signature="e#2172#2173#0" expanded="true" />
             <element signature="e#2224#2225#0" expanded="true" />
             <element signature="e#2310#2311#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/Db.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="326" column="65" selection-start-line="326" selection-start-column="65" selection-end-line="326" selection-end-column="65" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Sqlable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/Query.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="424">
+          <caret line="228" column="37" selection-start-line="228" selection-start-column="37" selection-end-line="228" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/ParamOperator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="490">
+          <caret line="57" column="13" selection-start-line="57" selection-start-column="13" selection-end-line="57" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/SearchParam.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="454">
+          <caret line="256" column="13" selection-start-line="256" selection-start-column="13" selection-end-line="256" selection-end-column="13" />
+          <folding>
+            <element signature="e#2079#2080#0" expanded="true" />
+            <element signature="e#2128#2129#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/blobcity/db/search/OrderElement.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="538">
+          <caret line="57" column="13" selection-start-line="57" selection-start-column="13" selection-end-line="57" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>

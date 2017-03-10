@@ -212,6 +212,11 @@ public class Query<T extends Db> implements ObjectJsonable, Sqlable {
 
     @Override
     public String asSql() {
+        throw new RuntimeException("Incorrect invocation. Sqlable.asSql() should not be invoked by Query class");
+    }
+
+    @Override
+    public String asSql(final String ds) {
         final StringBuffer sb = new StringBuffer();
         sb.append("SELECT ").append(StringUtil.join(selectColumnNames, ", ", "*", "`"));
 
@@ -228,9 +233,9 @@ public class Query<T extends Db> implements ObjectJsonable, Sqlable {
         final int fromTableCount = binaryClassNames ? fromTables.size() : fromTablesString.size();
         for (int i = 0; i < fromTableCount; i++) {
             if(binaryClassNames) {
-                sb.append('`').append(Db.getDs(fromTables.get(i))).append("`.`").append(Db.getCollection(fromTables.get(i)));
+                sb.append('`').append(ds).append("`.`").append(Db.getCollection(fromTables.get(i)));
             }else{
-                sb.append('`').append(Db.getDs()).append("`.`").append(fromTablesString.get(i));
+                sb.append('`').append(ds).append("`.`").append(fromTablesString.get(i));
             }
 
             if (i < fromTableCount - 1) {

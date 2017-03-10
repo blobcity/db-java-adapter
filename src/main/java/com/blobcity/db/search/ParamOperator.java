@@ -59,4 +59,9 @@ public enum ParamOperator implements Sqlable {
     public String asSql() {
         return sqlText == null ? name() : sqlText;
     }
+
+    @Override
+    public String asSql(final String ds) {
+        throw new RuntimeException("Incorrect invocation. Sqlable.asSql(ds) should not be invoked by ParamOperator class");
+    }
 }
