@@ -1270,7 +1270,7 @@ public abstract class Db {
             throw new InternalAdapterException("No collection (table) name set. Collection Table name is a mandatory field queries.");
         }
 
-        final String queryStr = query.asSql();
+        final String queryStr = query.asSql(credentials.getDb());
         
         final DbQueryResponse response = QueryExecuter.executeSql(DbQueryRequest.create(credentials, queryStr));
         
