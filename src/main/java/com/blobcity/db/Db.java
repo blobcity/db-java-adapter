@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * This class provides the connection and query execution framework for performing operations on the BlobCity data
@@ -305,6 +306,10 @@ public abstract class Db {
      */
     public static <T extends Db> List<T> search(final Query<T> query) {
         return search(Credentials.getInstance(), query);
+    }
+
+    public static <T extends Db> List<JSONObject> searchAsJson(final Query<T> query) {
+        return searchAsJson(Credentials.getInstance(), query);
     }
 
     public static DbQueryResponse execute(final String sql) {
@@ -910,6 +915,44 @@ public abstract class Db {
         DbQueryResponse response = postStaticRequest(credentials, QueryType.DROP_COLLECTION, collection, null);
         return response != null;
     }
+
+    public static JSONObject fetchSchema(final Credentials credentials, final String collection) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if(collection == null || collection.isEmpty()) {
+            throw new InternalAdapterException("collection name must be specified");
+        }
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.FETCH_SCHEMA, collection, null);
+
+        if(response.getAckCode() != 1) {
+            throw new InternalAdapterException(response.getErrorCode() + " : " + response.getErrorCause());
+        }
+
+        JsonObject responsePayload = response.getPayload().getAsJsonObject();
+        return new JSONObject(responsePayload.toString());
+    }
+
+    public static JSONObject tableauRequiresSync() {
+        return tableauRequiresSync(Credentials.getInstance());
+    }
+
+    public static JSONObject tableauRequiresSync(final Credentials credentials) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        DbQueryResponse response = postStaticRequest(credentials, QueryType.TABLEAU_REQUIRES_SYNC, null);
+
+        if(response.getAckCode() != 1) {
+            throw new InternalAdapterException(response.getErrorCode() + " : " + response.getErrorCause());
+        }
+
+        JsonObject responsePayload = response.getPayload().getAsJsonObject();
+        return new JSONObject(responsePayload.toString());
+    }
     
     public static boolean addColumn(final String collection, final String columnName, final ColumnType columnType, final IndexType indexType, final AutoDefineType autoDefineType){
         return addColumn(Credentials.getInstance(), collection, columnName, columnType, indexType, autoDefineType);
@@ -1247,6 +1290,33 @@ public abstract class Db {
         if (!response.isSuccessful()) {
             throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
         }
+    }
+
+    public static <T extends Db> List<JSONObject> searchAsJson(final Credentials credentials, final Query<T> query) {
+        if(credentials == null) {
+            throw new InternalAdapterException("connection credentials must be specified");
+        }
+
+        if (query.getFromTables() == null && query.getFromTables().isEmpty()) {
+            throw new InternalAdapterException("No collection (table) name set. Collection Table name is a mandatory field queries.");
+        }
+
+        final String queryStr = query.asSql(credentials.getDb());
+
+        final DbQueryResponse response = QueryExecuter.executeSql(DbQueryRequest.create(credentials, queryStr));
+
+        if (response.isSuccessful()) {
+            final JsonArray resultJsonArray = response.getPayload().getAsJsonArray();
+            final int resultCount = resultJsonArray.size();
+            final List<JSONObject> responseList = new ArrayList<JSONObject>();
+
+            for (int i = 0; i < resultCount; i++) {
+                responseList.add(new JSONObject(resultJsonArray.get(i).getAsJsonObject().toString()));
+            }
+            return responseList;
+        }
+
+        throw new DbOperationException(response.getErrorCode(), response.getErrorCause());
     }
     
     /**

@@ -35,6 +35,10 @@ enum QueryType {
     DROP_COLUMN("drop-column"),
     INDEX("index"),
     DROP_INDEX("drop-index"),
+    FETCH_SCHEMA("view-collection"),
+
+    //tableau
+    TABLEAU_REQUIRES_SYNC("tableau-requires-sync"),
 
     // user-provided code related commands
     SEARCH_FILTERED("search-filtered"),
