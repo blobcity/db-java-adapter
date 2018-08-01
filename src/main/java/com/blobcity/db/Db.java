@@ -1617,6 +1617,25 @@ public abstract class Db {
             reportIfError(response);
         }
     }
+
+    /**
+     * Runs an SQL query on the database and gives back the response received as a raw JSONObject
+     * @param sql the sql query to run
+     * @return an instance of {@link JSONObject}
+     */
+    public JSONObject runSql(final String sql) {
+        return runSql(Credentials.getInstance(), sql);
+    }
+
+    /**
+     * Runs an SQL query with custom credentials on the database and gives back the response received as a raw JSONObject
+     * @param credentials the sepcific connection credentials to use
+     * @param sql the sql query to run
+     * @return an instance of {@link JSONObject}
+     */
+    public JSONObject runSql(final Credentials credentials, final String sql) {
+        throw new UnsupportedOperationException("Not supported yet");
+    }
     
     /**
      * Instantiates current object with data from the provided {@link JsonObject}.
