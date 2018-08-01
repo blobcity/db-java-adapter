@@ -16,10 +16,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 /**
  * Class to create Search parameters to be used as the WHERE clause in a query which helps in filtering result sets.
@@ -67,6 +65,12 @@ public class SearchParam implements ArrayJsonable, Sqlable {
      * @return updated current instance of {@link SearchParam}
      */
     public SearchParam in(final Object... args) {
+        this.condition = ParamOperator.IN;
+        addArgs(args);
+        return updateBaseParams();
+    }
+
+    public SearchParam in(final Collection<Object> args) {
         this.condition = ParamOperator.IN;
         addArgs(args);
         return updateBaseParams();
@@ -336,6 +340,13 @@ public class SearchParam implements ArrayJsonable, Sqlable {
     }
 
     private void addArgs(final Object... objs) {
+        args = new JsonArray();
+        for (final Object obj : objs) {
+            args.add(getJsonPrimitive(obj));
+        }
+    }
+
+    private void addArgs(final Collection<Object> objs) {
         args = new JsonArray();
         for (final Object obj : objs) {
             args.add(getJsonPrimitive(obj));
