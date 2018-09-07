@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class Query<T extends Db> implements ObjectJsonable, Sqlable {
 
+    private final boolean distinct;
     private final List<String> selectColumnNames;
     private final List<Class<T>> fromTables; //for backward compatibility upto 1.2.5
     private final List<String> fromTablesString;
@@ -44,6 +45,14 @@ public class Query<T extends Db> implements ObjectJsonable, Sqlable {
         this.selectColumnNames = selectColumnNames;
         this.fromTables = new ArrayList<Class<T>>();
         this.fromTablesString = new ArrayList<String>();
+        this.distinct = false;
+    }
+
+    private Query(final List<String> selectColumnNames, final boolean distinct) {
+        this.selectColumnNames = selectColumnNames;
+        this.fromTables = new ArrayList<Class<T>>();
+        this.fromTablesString = new ArrayList<String>();
+        this.distinct = true;
     }
 
     /**
@@ -63,6 +72,10 @@ public class Query<T extends Db> implements ObjectJsonable, Sqlable {
      */
     public static Query select(final String... columnNames) {
         return new Query(columnNames != null && columnNames.length > 0 ? Arrays.asList(columnNames) : Collections.EMPTY_LIST);
+    }
+
+    public static Query selectDistinct(final String... columnNames) {
+        return new Query(columnNames != null && columnNames.length > 0 ? Arrays.asList(columnNames) : Collections.EMPTY_LIST, true);
     }
     
     public static Query count() {
@@ -218,7 +231,13 @@ public class Query<T extends Db> implements ObjectJsonable, Sqlable {
     @Override
     public String asSql(final String ds) {
         final StringBuffer sb = new StringBuffer();
-        sb.append("SELECT ").append(StringUtil.join(selectColumnNames, ", ", "*", "`"));
+
+        if(distinct == true) {
+            sb.append("SELECT DISTINCT ").append(StringUtil.join(selectColumnNames, ", ", "*", "`"));
+        } else {
+            sb.append("SELECT ").append(StringUtil.join(selectColumnNames, ", ", "*", "`"));
+        }
+
 
         if ((fromTables == null || fromTables.isEmpty()) && (fromTablesString == null || fromTablesString.isEmpty())) {
             throw new InternalAdapterException("No collection name set. Table name is a mandatory field queries.");
