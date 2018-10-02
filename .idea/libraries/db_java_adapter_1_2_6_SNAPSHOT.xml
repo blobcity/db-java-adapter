@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="db-java-adapter-1.2.6-SNAPSHOT">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/target/db-java-adapter-1.2.6-SNAPSHOT.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
