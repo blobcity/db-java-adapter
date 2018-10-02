@@ -6,21 +6,20 @@
 package com.blobcity.db.enums;
 
 /**
- *
  * @author Prikshit Kumar
  */
 public enum AutoDefineType {
-    NONE("none"),
-    UUID("uuid"),
-    TIMESTAMP("timestamp");
-    private String type;
+  NONE("none"),
+  UUID("uuid"),
+  TIMESTAMP("timestamp");
+  private String type;
 
-    AutoDefineType(String type) {
-        this.type = type;
-    }
+  AutoDefineType(String type) {
+    this.type = type;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
 }

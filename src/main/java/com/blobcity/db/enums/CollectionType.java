@@ -4,21 +4,20 @@
 package com.blobcity.db.enums;
 
 /**
- *
  * @author Prikshit Kumar
  */
 public enum CollectionType {
-    
-    ON_DISK("on-disk"),
-    IN_MEMORY("in-memory"),
-    IN_MEMORY_NON_DURABLE("in-memory-nd");
-    private final String type;
 
-    CollectionType(final String type) {
-        this.type = type;
-    }
+  ON_DISK("on-disk"),
+  IN_MEMORY("in-memory"),
+  IN_MEMORY_NON_DURABLE("in-memory-nd");
+  private final String type;
 
-    public String getType() {
-        return type;
-    }
+  CollectionType(final String type) {
+    this.type = type;
+  }
+
+  public String getType() {
+    return type;
+  }
 }
