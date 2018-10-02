@@ -10,5 +10,5 @@ package com.blobcity.db.search;
  */
 public enum Order {
 
-    ASC, DESC
+  ASC, DESC
 }

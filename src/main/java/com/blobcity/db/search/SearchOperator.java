@@ -10,12 +10,12 @@ package com.blobcity.db.search;
  */
 public enum SearchOperator {
 
-    /**
-     * And condition for queries
-     */
-    AND,
-    /**
-     * Or condition for queries
-     */
-    OR;
+  /**
+   * And condition for queries
+   */
+  AND,
+  /**
+   * Or condition for queries
+   */
+  OR;
 }

@@ -7,7 +7,7 @@ import com.google.gson.JsonArray;
 
 /**
  * Implementation of {@link Jsonable} which provides a {@link JsonArray} as an output.
- *
+ * <p>
  * This interface has default visibility since its visibility is to be restricted to its package.
  *
  * @author Karun AB
