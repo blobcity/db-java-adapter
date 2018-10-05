@@ -11,28 +11,28 @@ package com.blobcity.db.exceptions;
  */
 public class DbOperationException extends RuntimeException {
 
-    private static final long serialVersionUID = -7783116773042144796L;
+  private static final long serialVersionUID = -7783116773042144796L;
 
-    private String errorCode = "";
+  private String errorCode = "";
 
-    public DbOperationException(final String errorCode) {
-        this.errorCode = errorCode;
-    }
+  public DbOperationException(final String errorCode) {
+    this.errorCode = errorCode;
+  }
 
-    public DbOperationException(final String errorCode, final String message) {
-        super(message);
-        this.errorCode = errorCode;
-    }
-    
-    public String getErrorCode() {
-        return errorCode;
-    }
+  public DbOperationException(final String errorCode, final String message) {
+    super(message);
+    this.errorCode = errorCode;
+  }
 
-    @Override
-    public String toString() {
-        final String s = getClass().getName();
-        final String message = getLocalizedMessage();
-        final String baseStr = (message != null) ? (s + ": " + message) : s;
-        return errorCode != null && !"".equals(errorCode) ? baseStr + " (" + errorCode + ")" : baseStr;
-    }
+  public String getErrorCode() {
+    return errorCode;
+  }
+
+  @Override
+  public String toString() {
+    final String s = getClass().getName();
+    final String message = getLocalizedMessage();
+    final String baseStr = (message != null) ? (s + ": " + message) : s;
+    return errorCode != null && !"".equals(errorCode) ? baseStr + " (" + errorCode + ")" : baseStr;
+  }
 }

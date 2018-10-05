@@ -8,11 +8,14 @@ search: exclude
 {% for page in site.tooltips %}
 {% if page.product == "mydoc" %}
 {
-"id"    : "{{ page.id }}",
+"id": "{{ page.id }}",
 "body": "{{ page.content | strip_newlines | replace: '\', '\\\\' | replace: '"', '\\"' }}"
-} {% unless forloop.last %},{% endunless %}
-{% endif %}
-{% endfor %}
+} {% unless forloop.last %}, {% endunless %}
+{
+% endif %
+}
+{
+% endfor %}
 ]
 }
 
