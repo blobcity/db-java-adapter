@@ -19,6 +19,7 @@ import java.util.List;
 public class DbQueryResponse {
 
     // Ack code
+	
     private final int ackCode;
     // Select keys
     private final List keys;
