@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author Karun AB
  */
-class  DbQueryResponse {
+public class DbQueryResponse {
 
     // Ack code
     private final int ackCode;
