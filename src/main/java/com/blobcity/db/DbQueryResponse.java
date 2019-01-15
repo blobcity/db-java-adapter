@@ -16,10 +16,10 @@ import java.util.List;
  *
  * @author Karun AB
  */
-class  DbQueryResponse {
+public class DbQueryResponse {
 
     // Ack code
-    private final int ackCode;
+	 private final int ackCode;
     // Select keys
     private final List keys;
     // Contains
