@@ -28,4 +28,6 @@ class QueryConstants {
     public static final String CAUSE = "cause";
     public static final String KEYS = "keys";
     public static final String CONTAINS = "contains";
+    public static final String ROWS = "rows";
+    public static final String TIME = "time";
 }

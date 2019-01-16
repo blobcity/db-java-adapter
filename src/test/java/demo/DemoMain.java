@@ -1,10 +1,12 @@
 package demo;
 
 import com.blobcity.db.Db;
+import com.blobcity.db.DbQueryResponse;
 import com.blobcity.db.config.Credentials;
 import com.blobcity.db.enums.CollectionType;
 import com.blobcity.db.search.Query;
 import com.blobcity.db.search.SearchParam;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.List;
@@ -43,6 +45,10 @@ public class DemoMain {
             System.out.println(person.getName() + " " + person.getAge());
         }
 
+        System.out.println("count *: " + Db.execute("select count(*) from `test`.`Person`").getPayload().getAsJsonArray().get(0).getAsJsonObject().get("COUNT(*)").getAsInt());
+
+        DbQueryResponse dbQueryResponse = Db.execute("delete from `test`.`Person`");
+        System.out.println("Deleted rows: " + dbQueryResponse.getRows());
 
         Db.dropDs("test");
     }

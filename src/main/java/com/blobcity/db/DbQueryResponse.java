@@ -29,6 +29,8 @@ public class DbQueryResponse {
     private final String errorCause;
     // Response data
     private final JsonElement payload;
+    private final int rows;
+    private final long time;
 
     public DbQueryResponse(final String response) {
         final JsonObject jsonObj = new JsonParser().parse(response).getAsJsonObject();
@@ -44,6 +46,9 @@ public class DbQueryResponse {
         errorCode = codeElement != null ? jsonObj.get(QueryConstants.CODE).getAsString() : null;
         final JsonElement causeElement = jsonObj.get(QueryConstants.CAUSE);
         errorCause = causeElement != null ? jsonObj.get(QueryConstants.CAUSE).getAsString() : null;
+
+        rows = jsonObj.get(QueryConstants.ROWS) != null ? jsonObj.get(QueryConstants.ROWS).getAsInt() : -1;
+        time = jsonObj.get(QueryConstants.TIME) != null ? jsonObj.get(QueryConstants.TIME).getAsLong() : -1;
 
         payload = jsonObj.get(QueryConstants.PAYLOAD);
     }
@@ -70,6 +75,14 @@ public class DbQueryResponse {
 
     public String getErrorCause() {
         return errorCause;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public long getTime() {
+        return time;
     }
 
     public DbOperationException createException() {

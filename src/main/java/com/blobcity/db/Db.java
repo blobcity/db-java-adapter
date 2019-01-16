@@ -379,10 +379,11 @@ public abstract class Db {
                 }
                 return responseList;
             } else {
-                JsonObject jsonObject = response.getPayload().getAsJsonObject();
-                if (jsonObject.has("count")) {
-                    return jsonObject.get("count").getAsLong();
-                }
+                return response.getPayload();
+//                JsonObject jsonObject = response.getPayload().getAsJsonObject();
+//                if (jsonObject.has("count")) {
+//                    return jsonObject.get("count").getAsLong();
+//                }
             }
 
         }

@@ -5,6 +5,9 @@ package com.blobcity.db;
 
 import com.blobcity.db.config.Credentials;
 import com.blobcity.db.exceptions.InternalAdapterException;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -107,7 +110,7 @@ class QueryExecuter {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
-            
+
             return new DbQueryResponse(response.toString());
         } catch (MalformedURLException ex) {
             throw new InternalAdapterException("Invalid database endpoint address format", ex);
