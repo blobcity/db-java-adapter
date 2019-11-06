@@ -137,10 +137,12 @@ class QueryExecuter {
     }
 
     private static String getBqlServiceUrl(final Credentials credentials) {
-        return MessageFormat.format("http://{0}/rest/bquery", credentials.getServiceAddress());
+        if(credentials.getServiceAddress().startsWith("http")) return credentials.getServiceAddress() + "/rest/bquery";
+        else return MessageFormat.format("http://{0}/rest/bquery", credentials.getServiceAddress());
     }
 
     private static String getSqlServiceUrl(final Credentials credentials) {
-        return MessageFormat.format("http://{0}/rest/sql", credentials.getServiceAddress());
+        if(credentials.getServiceAddress().startsWith("http")) return credentials.getServiceAddress() + "/rest/sql";
+        else return MessageFormat.format("http://{0}/rest/sql", credentials.getServiceAddress());
     }
 }
